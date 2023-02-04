@@ -1,0 +1,15 @@
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Infrastructure\obj\Debug\net6.0\WebFilm.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Infrastructure\obj\Debug\net6.0\WebFilm.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Infrastructure\obj\Debug\net6.0\WebFilm.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Infrastructure\obj\Debug\net6.0\WebFilm.Infrastructure.AssemblyInfo.cs
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Infrastructure\obj\Debug\net6.0\WebFilm.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Infrastructure\bin\Debug\net6.0\WebFilm.Infrastructure.deps.json
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Infrastructure\bin\Debug\net6.0\WebFilm.Infrastructure.dll
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Infrastructure\bin\Debug\net6.0\WebFilm.Infrastructure.pdb
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Infrastructure\bin\Debug\net6.0\WebFilm.Core.dll
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Infrastructure\bin\Debug\net6.0\WebFilm.Core.pdb
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Infrastructure\obj\Debug\net6.0\WebFilm.Infrastructure.csproj.CopyComplete
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Infrastructure\obj\Debug\net6.0\WebFilm.Infrastructure.dll
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Infrastructure\obj\Debug\net6.0\refint\WebFilm.Infrastructure.dll
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Infrastructure\obj\Debug\net6.0\WebFilm.Infrastructure.pdb
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Infrastructure\obj\Debug\net6.0\ref\WebFilm.Infrastructure.dll

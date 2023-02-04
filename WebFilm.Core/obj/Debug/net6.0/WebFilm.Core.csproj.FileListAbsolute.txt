@@ -1,0 +1,14 @@
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Core\bin\Debug\net6.0\WebFilm.Core.deps.json
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Core\bin\Debug\net6.0\WebFilm.Core.dll
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Core\bin\Debug\net6.0\WebFilm.Core.pdb
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Core\obj\Debug\net6.0\WebFilm.Core.csproj.AssemblyReference.cache
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Core\obj\Debug\net6.0\WebFilm.Core.Resources.Resource.resources
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Core\obj\Debug\net6.0\WebFilm.Core.csproj.GenerateResource.cache
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Core\obj\Debug\net6.0\WebFilm.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Core\obj\Debug\net6.0\WebFilm.Core.AssemblyInfoInputs.cache
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Core\obj\Debug\net6.0\WebFilm.Core.AssemblyInfo.cs
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Core\obj\Debug\net6.0\WebFilm.Core.csproj.CoreCompileInputs.cache
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Core\obj\Debug\net6.0\WebFilm.Core.dll
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Core\obj\Debug\net6.0\refint\WebFilm.Core.dll
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Core\obj\Debug\net6.0\WebFilm.Core.pdb
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm.Core\obj\Debug\net6.0\ref\WebFilm.Core.dll
