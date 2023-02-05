@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Configuration;
 using MySqlConnector;
-using WebFilm.Core.Enitites;
+using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Interfaces.Repository;
 
 namespace WebFilm.Infrastructure.Repository
@@ -22,14 +22,14 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCommand = "Proc_GetUserByID";
+                var sqlCommand = "SELECT * FROM User WHERE UserID = @v_UserID";
                 DynamicParameters parameters = new DynamicParameters();
-                parameters.Add("m_UserID", userID);
-                var user = SqlConnection.Query<User>(sqlCommand, parameters, commandType: System.Data.CommandType.StoredProcedure).ToList();
+                parameters.Add("v_UserID", userID);
+                var user = SqlConnection.QueryFirstOrDefault<User>(sqlCommand, parameters);
 
                 //Trả dữ liệu về client
                 SqlConnection.Close();
-                return user[0];
+                return user;
             }
         }
 
@@ -38,16 +38,18 @@ namespace WebFilm.Infrastructure.Repository
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public int Signup(User user)
+        public int Signup(UserDto user)
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCommand = "Proc_InserUser";
+                var sqlCommand = $"INSERT INTO user (UserID, UserName, Password, Email, IsAdmin, CreatedDate, CreatedBy, ModifiedDate, ModifiedBy) " + 
+                                 $"VALUES (UUID(), @v_UserName, @v_Password, @v_Email, @v_IsAdmin, NOW(), '', NOW(), '');";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("v_UserName", user.UserName);
                 parameters.Add("v_Password", user.Password);
                 parameters.Add("v_Email", user.Email);
-                var res = SqlConnection.Execute(sqlCommand, parameters, commandType: System.Data.CommandType.StoredProcedure);
+                parameters.Add("v_IsAdmin", user.IsAdmin);
+                var res = SqlConnection.Execute(sqlCommand, parameters);
 
                 //Trả dữ liệu về client
                 SqlConnection.Close();
@@ -60,14 +62,14 @@ namespace WebFilm.Infrastructure.Repository
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        public User Login(string userName)
+        public UserDto Login(string userName)
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 var sqlCommand = $"SELECT * FROM user WHERE UserName = @v_UserName";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@v_UserName", userName);
-                var res = SqlConnection.QueryFirstOrDefault<User>(sqlCommand, parameters);
+                var res = SqlConnection.QueryFirstOrDefault<UserDto>(sqlCommand, parameters);
 
                 //Trả dữ liệu về client
                 SqlConnection.Close();
@@ -95,6 +97,7 @@ namespace WebFilm.Infrastructure.Repository
                 return false;
             }
         }
+
 
         #endregion
     }

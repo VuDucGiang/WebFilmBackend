@@ -1,6 +1,4 @@
-﻿using WebFilm.Core.Enitites;
-
-namespace WebFilm.Core.Enitites
+﻿namespace WebFilm.Core.Enitites.User
 {
     public class User : BaseEntity
     {
@@ -16,14 +14,9 @@ namespace WebFilm.Core.Enitites
         public string UserName { get; set; }
 
         /// <summary>
-        /// Mật khẩu 
-        /// </summary>
-        public string Password { get; set; }
-
-        /// <summary>
         /// Email
         /// </summary>
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         /// <summary>
         /// Có phải Admin không

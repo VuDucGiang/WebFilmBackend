@@ -1,0 +1,13 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/WebFilm/obj/Debug/net6.0/WebFilm.csproj.AssemblyReference.cache
+/.vs/WebFilm/FileContentIndex/311c38aa-1412-4b22-b749-7c411bff20af.vsidx
+*.vsidx
+/.vs/WebFilm/config/applicationhost.config
+/.vs/WebFilm/v17/.suo
+/WebFilm.Core/bin/Debug/net6.0/WebFilm.Core.dll
+/WebFilm.Core/bin/Debug/net6.0/WebFilm.Core.pdb
+/WebFilm.Infrastructure/obj/Debug/net6.0/WebFilm.Infrastructure.pdb
+/WebFilm.Infrastructure/obj/Debug/net6.0/WebFilm.Infrastructure.dll

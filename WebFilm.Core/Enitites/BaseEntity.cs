@@ -17,7 +17,7 @@ namespace WebFilm.Core.Enitites
         /// <summary>
         /// Người tạo
         /// </summary>
-        public String? CreatedBy { get; set; }
+        public string? CreatedBy { get; set; }
 
         /// <summary>
         /// Ngày sửa
@@ -27,7 +27,7 @@ namespace WebFilm.Core.Enitites
         /// <summary>
         /// Người sửa
         /// </summary>
-        public String? ModifiedBy { get; set; }
+        public string? ModifiedBy { get; set; }
         #endregion
     }
 }

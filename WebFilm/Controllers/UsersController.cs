@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebFilm.Controllers;
-using WebFilm.Core.Enitites;
+using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Interfaces.Services;
 
 namespace WebFilm.Controllers
@@ -28,7 +28,7 @@ namespace WebFilm.Controllers
         /// <param name="user"></param>
         /// <returns></returns>
         [HttpPost("signup")]
-        public IActionResult Signup(User user)
+        public IActionResult Signup(UserDto user)
         {
             try
             {

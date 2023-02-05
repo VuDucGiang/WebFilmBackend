@@ -1,4 +1,4 @@
-﻿using WebFilm.Core.Enitites;
+﻿using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Exceptions;
 using WebFilm.Core.Interfaces.Repository;
 using WebFilm.Core.Interfaces.Services;
@@ -32,7 +32,7 @@ namespace WebFilm.Core.Services
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public int Signup(User user)
+        public int Signup(UserDto user)
         {
             //Email phải đúng định dạng
             if (user.Email != null && user.Email.Length > 0)

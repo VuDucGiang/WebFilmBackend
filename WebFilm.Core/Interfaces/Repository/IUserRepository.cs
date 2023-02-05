@@ -1,4 +1,4 @@
-﻿using WebFilm.Core.Enitites;
+﻿using WebFilm.Core.Enitites.User;
 
 namespace WebFilm.Core.Interfaces.Repository
 {
@@ -16,14 +16,14 @@ namespace WebFilm.Core.Interfaces.Repository
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        int Signup(User user);
+        int Signup(UserDto user);
 
         /// <summary>
         /// Đăng nhập
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        User Login(string userName);
+        UserDto Login(string userName);
 
         /// <summary>
         /// Kiểm tra có trùng tên đăng nhập không

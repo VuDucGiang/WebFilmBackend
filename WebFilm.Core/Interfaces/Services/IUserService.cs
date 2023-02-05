@@ -1,4 +1,4 @@
-﻿using WebFilm.Core.Enitites;
+﻿using WebFilm.Core.Enitites.User;
 
 namespace WebFilm.Core.Interfaces.Services
 {
@@ -17,7 +17,7 @@ namespace WebFilm.Core.Interfaces.Services
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        int Signup(User user);
+        int Signup(UserDto user);
 
         User Login(string userName, string password);
 
