@@ -11,3 +11,6 @@
 /WebFilm.Core/bin/Debug/net6.0/WebFilm.Core.pdb
 /WebFilm.Infrastructure/obj/Debug/net6.0/WebFilm.Infrastructure.pdb
 /WebFilm.Infrastructure/obj/Debug/net6.0/WebFilm.Infrastructure.dll
+/WebFilm/obj/Debug/net6.0/
+/.vs/WebFilm/
+/WebFilm/bin/Debug/net6.0/

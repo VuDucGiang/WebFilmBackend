@@ -47,7 +47,7 @@ namespace WebFilm.Controllers
         /// <param name="userName"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        [HttpPost("login")]
+        [HttpGet("login")]
         public IActionResult Login(string userName, string password)
         {
             try
