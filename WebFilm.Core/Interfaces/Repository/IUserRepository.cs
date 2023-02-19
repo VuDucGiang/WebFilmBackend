@@ -2,7 +2,7 @@
 
 namespace WebFilm.Core.Interfaces.Repository
 {
-    public interface IUserRepository : IBaseRepository<User>
+    public interface IUserRepository : IBaseRepository<Guid, User>
     {
         /// <summary>
         /// Lấy thông tin user theo ID

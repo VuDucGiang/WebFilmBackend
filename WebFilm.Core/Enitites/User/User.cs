@@ -1,8 +1,11 @@
-﻿namespace WebFilm.Core.Enitites.User
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace WebFilm.Core.Enitites.User
 {
     public class User : BaseEntity
     {
         #region Prop
+        [Key]
         /// <summary>
         /// Id user
         /// </summary>

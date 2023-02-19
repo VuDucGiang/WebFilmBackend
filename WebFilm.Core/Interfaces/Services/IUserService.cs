@@ -2,7 +2,7 @@
 
 namespace WebFilm.Core.Interfaces.Services
 {
-    public interface IUserService : IBaseService<User>
+    public interface IUserService : IBaseService<Guid, User>
     {
         /// <summary>
         /// Kiểm tra trước khi lấy thông tin người dùng theo Id

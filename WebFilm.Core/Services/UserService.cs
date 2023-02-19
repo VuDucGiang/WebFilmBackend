@@ -5,7 +5,7 @@ using WebFilm.Core.Interfaces.Services;
 
 namespace WebFilm.Core.Services
 {
-    public class UserService : BaseService<User>, IUserService
+    public class UserService : BaseService<Guid, User>, IUserService
     {
         IUserRepository _userRepository;
 

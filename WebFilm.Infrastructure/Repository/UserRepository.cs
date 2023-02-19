@@ -6,7 +6,7 @@ using WebFilm.Core.Interfaces.Repository;
 
 namespace WebFilm.Infrastructure.Repository
 {
-    public class UserRepository : BaseRepository<User>, IUserRepository
+    public class UserRepository : BaseRepository<Guid, User>, IUserRepository
     {
         public UserRepository(IConfiguration configuration) : base(configuration)
         {

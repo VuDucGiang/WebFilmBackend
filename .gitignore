@@ -292,3 +292,17 @@ __pycache__/
 /WebFilm.Infrastructure/obj/Debug/net6.0/WebFilm.Infrastructure.csproj.AssemblyReference.cache
 /.vs/ProjectEvaluation/webfilm.metadata.v5.2
 /.vs/ProjectEvaluation/webfilm.projects.v5.2
+/WebFilm.Infrastructure/bin/Debug/net6.0/WebFilm.Infrastructure.dll
+/WebFilm.Infrastructure/obj/Debug/net6.0/ref/WebFilm.Infrastructure.dll
+/WebFilm.Infrastructure/bin/Debug/net6.0/WebFilm.Core.pdb
+/WebFilm.Infrastructure/obj/Debug/net6.0/WebFilm.Infrastructure.dll
+/WebFilm.Core/obj/Debug/net6.0/WebFilm.Core.pdb
+/WebFilm.Core/obj/Debug/net6.0/WebFilm.Core.csproj.FileListAbsolute.txt
+/WebFilm.Core/obj/Debug/net6.0/WebFilm.Core.csproj.AssemblyReference.cache
+/WebFilm.Core/obj/Debug/net6.0/refint/WebFilm.Core.dll
+/WebFilm.Core/obj/Debug/net6.0/ref/WebFilm.Core.dll
+/WebFilm.Core/bin/Debug/net6.0/WebFilm.Core.pdb
+/WebFilm.Infrastructure/obj/Debug/net6.0/refint/WebFilm.Infrastructure.dll
+/WebFilm/bin/Debug/net6.0/WebFilm.Infrastructure.pdb
+/WebFilm/bin/Debug/net6.0/WebFilm.Infrastructure.dll
+/WebFilm/bin/Debug/net6.0/WebFilm.Core.pdb

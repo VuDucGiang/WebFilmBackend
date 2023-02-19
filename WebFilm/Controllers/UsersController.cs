@@ -7,7 +7,7 @@ namespace WebFilm.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : BaseController<User>
+    public class UsersController : BaseController<Guid, User>
     {
         #region Field
         IUserService _userService;
@@ -61,25 +61,25 @@ namespace WebFilm.Controllers
             }
         }
 
-        /// <summary>
-        /// Lấy thông tin người dùng theo Id
-        /// </summary>
-        /// <param name="userID"></param>
-        /// <returns>IActionResult</returns>
-        /// Author: Vũ Đức Giang
-        [HttpGet("{userID}")]
-        public IActionResult GetUserByID(Guid userID)
-        {
-            try
-            {
-                var user = _userService.GetUserByID(userID);
-                return Ok(user);
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
-        }
+        ///// <summary>
+        ///// Lấy thông tin người dùng theo Id
+        ///// </summary>
+        ///// <param name="userID"></param>
+        ///// <returns>IActionResult</returns>
+        ///// Author: Vũ Đức Giang
+        //[HttpGet("{userID}")]
+        //public IActionResult GetUserByID(Guid userID)
+        //{
+        //    try
+        //    {
+        //        var user = _userService.GetUserByID(userID);
+        //        return Ok(user);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return HandleException(ex);
+        //    }
+        //}
         #endregion
     }
 }

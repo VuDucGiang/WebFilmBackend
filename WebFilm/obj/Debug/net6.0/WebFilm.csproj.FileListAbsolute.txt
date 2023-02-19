@@ -11,6 +11,7 @@ C:\Users\Thinkpad\source\repos\WebFilm\WebFilm\bin\Debug\net6.0\WebFilm.deps.jso
 C:\Users\Thinkpad\source\repos\WebFilm\WebFilm\bin\Debug\net6.0\WebFilm.runtimeconfig.json
 C:\Users\Thinkpad\source\repos\WebFilm\WebFilm\bin\Debug\net6.0\WebFilm.dll
 C:\Users\Thinkpad\source\repos\WebFilm\WebFilm\bin\Debug\net6.0\WebFilm.pdb
+C:\Users\Thinkpad\source\repos\WebFilm\WebFilm\bin\Debug\net6.0\BCrypt.Net-Next.dll
 C:\Users\Thinkpad\source\repos\WebFilm\WebFilm\bin\Debug\net6.0\Dapper.dll
 C:\Users\Thinkpad\source\repos\WebFilm\WebFilm\bin\Debug\net6.0\Microsoft.Extensions.Configuration.dll
 C:\Users\Thinkpad\source\repos\WebFilm\WebFilm\bin\Debug\net6.0\Microsoft.Extensions.Configuration.Abstractions.dll
@@ -38,5 +39,3 @@ C:\Users\Thinkpad\source\repos\WebFilm\WebFilm\obj\Debug\net6.0\refint\WebFilm.d
 C:\Users\Thinkpad\source\repos\WebFilm\WebFilm\obj\Debug\net6.0\WebFilm.pdb
 C:\Users\Thinkpad\source\repos\WebFilm\WebFilm\obj\Debug\net6.0\WebFilm.genruntimeconfig.cache
 C:\Users\Thinkpad\source\repos\WebFilm\WebFilm\obj\Debug\net6.0\ref\WebFilm.dll
-C:\Users\Thinkpad\source\repos\WebFilm\WebFilm\bin\Debug\net6.0\BCrypt.Net-Next.dll
-C:\Users\Thinkpad\source\repos\WebFilm\WebFilm\obj\Debug\net6.0\WebFilm.MvcApplicationPartsAssemblyInfo.cs
