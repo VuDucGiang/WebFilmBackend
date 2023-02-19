@@ -277,3 +277,18 @@ __pycache__/
 
 # Cake - Uncomment if you are using it
 # tools/
+/WebFilm.Core/bin/Debug/net6.0/WebFilm.Core.pdb
+/.vs/ProjectEvaluation/webfilm.metadata.v5.2
+/.vs/ProjectEvaluation/webfilm.projects.v5.2
+/.vs/WebFilm
+/.vs/ProjectEvaluation
+/WebFilm.Core/bin/Debug/net6.0/WebFilm.Core.dll
+/WebFilm/obj/Debug/net6.0/WebFilm.csproj.AssemblyReference.cache
+/WebFilm.Infrastructure/bin/Debug/net6.0/WebFilm.Core.dll
+/WebFilm.Core/obj/Debug/net6.0/WebFilm.Core.Resources.Resource.resources
+/WebFilm.Core/obj/Debug/net6.0/WebFilm.Core.dll
+/WebFilm/bin/Debug/net6.0/WebFilm.Core.dll
+/.vs/WebFilm/v17/.futdcache.v2
+/WebFilm.Infrastructure/obj/Debug/net6.0/WebFilm.Infrastructure.csproj.AssemblyReference.cache
+/.vs/ProjectEvaluation/webfilm.metadata.v5.2
+/.vs/ProjectEvaluation/webfilm.projects.v5.2
