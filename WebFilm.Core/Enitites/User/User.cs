@@ -26,6 +26,12 @@ namespace WebFilm.Core.Enitites.User
         /// </summary>
         public bool IsAdmin { get; set; }
 
+        /// <summary>
+        /// Trạng thái người dùng
+        /// 1: Chờ xác nhận, 2: Đang hoạt động
+        /// </summary>
+        public int Status { get; set; } 
+
 
         #endregion
     }

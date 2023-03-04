@@ -1,3 +1,4 @@
+using WebFilm.Core.Enitites.Mail;
 using WebFilm.Core.Interfaces.Repository;
 using WebFilm.Core.Interfaces.Services;
 using WebFilm.Core.Services;
@@ -18,6 +19,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 
+//Mail
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection(nameof(MailSettings)));
+builder.Services.AddTransient<IMailService, MailService>();
+
+
 //config return JSON PascalCase
 builder.Services.AddControllers()
         .AddJsonOptions(options =>
@@ -31,7 +37,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy =>
                       {
-                          policy.WithOrigins("http://127.0.0.1:5173")
+                          policy.WithOrigins("http://localhost:5173")
                                                   .AllowAnyHeader()
                                                   .AllowAnyMethod();
                       });

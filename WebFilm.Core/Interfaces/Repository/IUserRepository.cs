@@ -32,5 +32,7 @@ namespace WebFilm.Core.Interfaces.Repository
         /// <returns></returns>
         bool CheckDuplicateUserName(string userName);
 
+        bool ActiveUser(string userName);
+
     }
 }

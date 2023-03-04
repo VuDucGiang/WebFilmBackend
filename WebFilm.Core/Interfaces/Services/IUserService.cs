@@ -21,5 +21,7 @@ namespace WebFilm.Core.Interfaces.Services
 
         User Login(string userName, string password);
 
+        bool ActiveUser(string userName);
+
     }
 }

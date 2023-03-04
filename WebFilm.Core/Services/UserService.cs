@@ -1,4 +1,5 @@
-﻿using WebFilm.Core.Enitites.User;
+﻿using WebFilm.Core.Enitites.Mail;
+using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Exceptions;
 using WebFilm.Core.Interfaces.Repository;
 using WebFilm.Core.Interfaces.Services;
@@ -8,10 +9,12 @@ namespace WebFilm.Core.Services
     public class UserService : BaseService<Guid, User>, IUserService
     {
         IUserRepository _userRepository;
+        private readonly IMailService _mail;
 
-        public UserService(IUserRepository userRepository) : base(userRepository)
+        public UserService(IUserRepository userRepository, IMailService mail) : base(userRepository)
         {
             _userRepository = userRepository;
+            _mail = mail;
         }
 
         #region Method
@@ -49,9 +52,25 @@ namespace WebFilm.Core.Services
             {
                 throw new ServiceException(Resources.Resource.Error_Duplicate_UserName);
             }
-
+            //Chờ xác nhận
+            user.Status = 1;
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
             var res = _userRepository.Signup(user);
+
+            // Gửi mail
+            WelcomeMail welcomeMail = new WelcomeMail()
+            {
+                Email = user.Email,
+                Name = user.UserName
+            };
+            MailData mailData = new MailData()
+            {
+                To = new List<string>() { user.Email },
+                Subject = "Thank you for signing up",
+                Body = _mail.GetEmailTemplate("welcome", welcomeMail)
+            };
+            _mail.SendAsync(mailData, new CancellationToken());
+
             return res;
         }
 
@@ -67,6 +86,10 @@ namespace WebFilm.Core.Services
             var user = _userRepository.Login(userName);
             if(user != null)
             {
+                if(user.Status == 1)
+                {
+                    throw new ServiceException("Tài khoản chưa xác nhận email kích hoạt");
+                }
                 var isPasswordCorrect = BCrypt.Net.BCrypt.Verify(password, user.Password);
                 if(isPasswordCorrect)
                 {
@@ -102,6 +125,11 @@ namespace WebFilm.Core.Services
             {
                 return false;
             }
+        }
+
+        public bool ActiveUser(string userName)
+        {
+            return _userRepository.ActiveUser(userName);
         }
 
         #endregion

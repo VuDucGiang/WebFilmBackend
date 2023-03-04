@@ -61,6 +61,25 @@ namespace WebFilm.Controllers
             }
         }
 
+        /// <summary>
+        /// Đăng ký
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        [HttpPost("Active")]
+        public IActionResult ActiveUser(string userName)
+        {
+            try
+            {
+                var res = _userService.ActiveUser(userName);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
         ///// <summary>
         ///// Lấy thông tin người dùng theo Id
         ///// </summary>
