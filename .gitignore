@@ -306,3 +306,14 @@ __pycache__/
 /WebFilm/bin/Debug/net6.0/WebFilm.Infrastructure.pdb
 /WebFilm/bin/Debug/net6.0/WebFilm.Infrastructure.dll
 /WebFilm/bin/Debug/net6.0/WebFilm.Core.pdb
+/.vs/WebFilm/config/applicationhost.config
+/WebFilm/bin/Debug/net6.0/WebFilm.deps.json
+/WebFilm/bin/Debug/net6.0/WebFilm.exe
+/WebFilm/bin/Debug/net6.0/appsettings.json
+/WebFilm.Core/obj/WebFilm.Core.csproj.nuget.g.props
+/WebFilm.Core/obj/WebFilm.Core.csproj.nuget.dgspec.json
+/WebFilm.Core/obj/project.nuget.cache
+/WebFilm.Core/obj/project.assets.json
+/WebFilm.Infrastructure/Repository/UserRepository.cs
+/WebFilm.Infrastructure/obj/project.assets.json
+/WebFilm.Core/bin/Debug/net6.0/WebFilm.Core.deps.json
