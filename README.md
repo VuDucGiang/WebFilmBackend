@@ -7,7 +7,8 @@ CREATE TABLE webfilm.user (
   CreatedBy varchar(255) DEFAULT NULL,
   ModifiedDate datetime DEFAULT NULL,
   ModifiedBy varchar(255) DEFAULT NULL,
-  IsAdmin tinyint DEFAULT NULL
+  IsAdmin tinyint DEFAULT NULL,
+  Status int DEFAULT NULL
 )
 ENGINE = INNODB,
 CHARACTER SET utf8mb4,
