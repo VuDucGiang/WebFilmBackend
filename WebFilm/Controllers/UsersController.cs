@@ -48,11 +48,11 @@ namespace WebFilm.Controllers
         /// <param name="password"></param>
         /// <returns></returns>
         [HttpGet("login")]
-        public IActionResult Login(string userName, string password)
+        public IActionResult Login(string email, string password)
         {
             try
             {
-                var res = _userService.Login(userName, password);
+                var res = _userService.Login(email, password);
                 return Ok(res);
             }
             catch (Exception ex)
@@ -67,11 +67,30 @@ namespace WebFilm.Controllers
         /// <param name="user"></param>
         /// <returns></returns>
         [HttpPost("Active")]
-        public IActionResult ActiveUser(string userName)
+        public IActionResult ActiveUser(string email)
         {
             try
             {
-                var res = _userService.ActiveUser(userName);
+                var res = _userService.ActiveUser(email);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        /// <summary>
+        /// Đổi mật khẩu
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        [HttpPost("ChangePassword")]
+        public IActionResult ChangePassword(string email, string oldPass, string newPass)
+        {
+            try
+            {
+                var res = _userService.ChangePassword(email, oldPass, newPass);
                 return Ok(res);
             }
             catch (Exception ex)

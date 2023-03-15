@@ -46,9 +46,9 @@ namespace WebFilm.Core.Services
                 }
             }
 
-            //UserName không được phép trùng
-            var isDuplicateUserName = _userRepository.CheckDuplicateUserName(user.UserName);
-            if (isDuplicateUserName)
+            //Email không được phép trùng
+            var isDuplicateEmail = _userRepository.CheckDuplicateEmail(user.Email);
+            if (isDuplicateEmail)
             {
                 throw new ServiceException(Resources.Resource.Error_Duplicate_UserName);
             }
@@ -81,9 +81,9 @@ namespace WebFilm.Core.Services
         /// <param name="password"></param>
         /// <returns></returns>
         /// <exception cref="ServiceException"></exception>
-        public User Login(string userName, string password)
+        public User Login(string email, string password)
         {
-            var user = _userRepository.Login(userName);
+            var user = _userRepository.Login(email);
             if(user != null)
             {
                 if(user.Status == 1)
@@ -127,9 +127,28 @@ namespace WebFilm.Core.Services
             }
         }
 
-        public bool ActiveUser(string userName)
+        public bool ActiveUser(string email)
         {
-            return _userRepository.ActiveUser(userName);
+            return _userRepository.ActiveUser(email);
+        }
+
+        public bool ChangePassword(string email, string oldPass, string newPass)
+        {
+            var user = _userRepository.Login(email);
+            if (user != null)
+            {
+                if (user.Status == 1)
+                {
+                    throw new ServiceException("Tài khoản chưa xác nhận email kích hoạt");
+                }
+                var isPasswordCorrect = BCrypt.Net.BCrypt.Verify(oldPass, user.Password);
+                if (isPasswordCorrect)
+                {
+                    newPass = BCrypt.Net.BCrypt.HashPassword(newPass);
+                    return _userRepository.ChangePassword(email, newPass);
+                }
+            }
+            throw new ServiceException("Mật khẩu không chính xác");
         }
 
         #endregion

@@ -314,6 +314,5 @@ __pycache__/
 /WebFilm.Core/obj/WebFilm.Core.csproj.nuget.dgspec.json
 /WebFilm.Core/obj/project.nuget.cache
 /WebFilm.Core/obj/project.assets.json
-/WebFilm.Infrastructure/Repository/UserRepository.cs
 /WebFilm.Infrastructure/obj/project.assets.json
 /WebFilm.Core/bin/Debug/net6.0/WebFilm.Core.deps.json

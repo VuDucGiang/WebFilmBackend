@@ -17,14 +17,20 @@ namespace WebFilm.Core.Enitites.User
         public string UserName { get; set; }
 
         /// <summary>
-        /// Email
+        /// Học và tên 
         /// </summary>
-        public string? Email { get; set; }
+        public string? FullName { get; set; }
+
 
         /// <summary>
-        /// Có phải Admin không
+        /// Email
         /// </summary>
-        public bool IsAdmin { get; set; }
+        public string Email { get; set; }
+
+        /// <summary>
+        /// Học và tên 
+        /// </summary>
+        public DateTime? DateOfBirth { get; set; }
 
         /// <summary>
         /// Trạng thái người dùng
@@ -32,6 +38,15 @@ namespace WebFilm.Core.Enitites.User
         /// </summary>
         public int Status { get; set; } 
 
+        /// <summary>
+        /// Vai trò của người dùng
+        /// </summary>
+        public int RoleType { get; set; }
+
+        /// <summary>
+        /// Danh sách film yêu thích người dùng
+        /// </summary>
+        public string? FavouriteFilmList { get; set; }
 
         #endregion
     }

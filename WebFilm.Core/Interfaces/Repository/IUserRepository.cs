@@ -23,16 +23,18 @@ namespace WebFilm.Core.Interfaces.Repository
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        UserDto Login(string userName);
+        UserDto Login(string email);
 
         /// <summary>
         /// Kiểm tra có trùng tên đăng nhập không
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        bool CheckDuplicateUserName(string userName);
+        bool CheckDuplicateEmail(string email);
 
-        bool ActiveUser(string userName);
+        bool ActiveUser(string email);
+
+        bool ChangePassword(string email, string newPass);
 
     }
 }

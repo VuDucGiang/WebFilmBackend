@@ -103,7 +103,7 @@ namespace WebFilm.Core.Services
 
         public string LoadTemplate(string emailTemplate)
         {
-            string baseDir = AppDomain.CurrentDomain.BaseDirectory; //C: \Users\X1\source\repos\WebFilm.Core\Enitites\Mail\welcome.cshtml
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
             string templateDir = AppDomain.CurrentDomain.BaseDirectory.Substring(0, AppDomain.CurrentDomain.BaseDirectory.IndexOf("\\WebFilm"));
             string templatePath = templateDir + $"\\WebFilm.Core\\Enitites\\Mail\\{emailTemplate}.html";
 
