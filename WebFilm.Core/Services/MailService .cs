@@ -103,8 +103,7 @@ namespace WebFilm.Core.Services
 
         public string LoadTemplate(string emailTemplate)
         {
-            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            string templateDir = AppDomain.CurrentDomain.BaseDirectory.Substring(0, AppDomain.CurrentDomain.BaseDirectory.IndexOf("\\WebFilm"));
+            string templateDir = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
             string templatePath = templateDir + $"\\WebFilm.Core\\Enitites\\Mail\\{emailTemplate}.html";
 
             using FileStream fileStream = new FileStream(templatePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
