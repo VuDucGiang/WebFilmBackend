@@ -25,5 +25,9 @@ namespace WebFilm.Core.Interfaces.Services
 
         bool ChangePassword(string email, string oldPass, string newPass);
 
+        bool ForgotPassword(string email);
+
+        bool ResetPassword(string token, string pass, string confirmPass);
+
     }
 }

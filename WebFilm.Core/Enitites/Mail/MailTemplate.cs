@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace WebFilm.Core.Enitites.Mail
 {
-    public class WelcomeMail
+    public class MailTemplate
     {
         public string? Name { get; set; }
         public string? Email { get; set; }
+        public string? Token { get; set; }
     }
 }

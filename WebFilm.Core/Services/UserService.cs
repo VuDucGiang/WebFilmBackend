@@ -2,6 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using WebFilm.Core.Enitites.Mail;
 using WebFilm.Core.Enitites.User;
@@ -65,7 +66,7 @@ namespace WebFilm.Core.Services
             var res = _userRepository.Signup(user);
 
             // Gửi mail
-            WelcomeMail welcomeMail = new WelcomeMail()
+            MailTemplate welcomeMail = new MailTemplate()
             {
                 Email = user.Email,
                 Name = user.UserName
@@ -203,6 +204,59 @@ namespace WebFilm.Core.Services
                 }
             }
             throw new ServiceException("Mật khẩu không chính xác");
+        }
+
+        public bool ForgotPassword(string email)
+        {
+            var userDto = _userRepository.Login(email);
+            if (userDto == null)
+            {
+                throw new ServiceException("Email không tồn tại");
+            }
+
+            userDto.PasswordResetToken = CreateRandomToken();
+            userDto.ResetTokenExpires = DateTime.Now.AddDays(1);
+
+            var res = _userRepository.AddTokenReset(userDto);
+
+            // Gửi mail
+            if(res)
+            {
+                MailTemplate welcomeMail = new MailTemplate()
+                {
+                    Email = email,
+                    Token = userDto.PasswordResetToken
+                };
+                MailData mailData = new MailData()
+                {
+                    To = new List<string>() { email },
+                    Subject = "Reset your FilmLogger password",
+                    Body = _mail.GetEmailTemplate("resetPassword", welcomeMail)
+                };
+                _mail.SendAsync(mailData, new CancellationToken());
+                return true;
+            }
+            return false;
+        }
+
+        private string CreateRandomToken()
+        {
+            return Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
+        }
+
+        public bool ResetPassword(string token, string pass, string confirmPass)
+        {
+            if(pass != confirmPass)
+            {
+                throw new ServiceException("The passwords you entered were not identical. Please try again.");
+            }
+            var user = _userRepository.GetUserByTokenReset(token);
+            if (user == null || user.ResetTokenExpires < DateTime.Now)
+            {
+                throw new ServiceException("Invalid Token");
+            }
+            pass = BCrypt.Net.BCrypt.HashPassword(pass);
+            return _userRepository.ChangePassword(user.Email, pass);
         }
 
         #endregion

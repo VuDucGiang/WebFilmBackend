@@ -2,7 +2,7 @@
 
 namespace WebFilm.Core.Enitites.User
 {
-    public class User : BaseEntity
+    public class User
     {
         #region Prop
         [Key]
@@ -47,6 +47,16 @@ namespace WebFilm.Core.Enitites.User
         /// Danh sách film yêu thích người dùng
         /// </summary>
         public string? FavouriteFilmList { get; set; }
+
+        /// <summary>
+        /// Ngày sửa
+        /// </summary>
+        public DateTime? ModifiedDate { get; set; }
+
+        /// <summary>
+        /// Người sửa
+        /// </summary>
+        public string? ModifiedBy { get; set; }
 
         #endregion
     }

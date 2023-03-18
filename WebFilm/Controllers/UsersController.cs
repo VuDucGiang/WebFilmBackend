@@ -104,6 +104,41 @@ namespace WebFilm.Controllers
             }
         }
 
+        /// <summary>
+        /// Quên mật khẩu
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        [HttpGet("ForgotPassword")]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword(string email)
+        {
+            try
+            {
+                var res = _userService.ForgotPassword(email);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpGet("ResetPassword")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(string token, string pass, string confirmPass)
+        {
+            try
+            {
+                var res = _userService.ResetPassword(token, pass, confirmPass);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
         ///// <summary>
         ///// Lấy thông tin người dùng theo Id
         ///// </summary>

@@ -133,6 +133,40 @@ namespace WebFilm.Infrastructure.Repository
             }
         }
 
+        public bool AddTokenReset(UserDto user)
+        {
+           
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCheck = "UPDATE user u SET u.PasswordResetToken = @v_PasswordResetToken, u.ResetTokenExpires = @v_ResetTokenExpires WHERE u.UserID = @v_UserID;";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@v_UserID", user.UserID);
+                parameters.Add("@v_PasswordResetToken", user.PasswordResetToken);
+                parameters.Add("@v_ResetTokenExpires", user.ResetTokenExpires);
+
+                var res = SqlConnection.Execute(sql: sqlCheck, param: parameters);
+                if (res > 0)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        public UserDto GetUserByTokenReset(string token)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCommand = "SELECT * FROM User WHERE PasswordResetToken = @v_PasswordResetToken";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("v_PasswordResetToken", token);
+                var user = SqlConnection.QueryFirstOrDefault<UserDto>(sqlCommand, parameters);
+                //Trả dữ liệu về client
+                SqlConnection.Close();
+                return user;
+            }
+        }
+
 
         #endregion
     }

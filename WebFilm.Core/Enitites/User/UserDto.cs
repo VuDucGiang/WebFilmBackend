@@ -12,5 +12,9 @@ namespace WebFilm.Core.Enitites.User
         /// Mật khẩu 
         /// </summary>
         public string Password { get; set; }
+
+        public string? PasswordResetToken { get; set; }
+
+        public DateTime? ResetTokenExpires { get; set; }
     }
 }

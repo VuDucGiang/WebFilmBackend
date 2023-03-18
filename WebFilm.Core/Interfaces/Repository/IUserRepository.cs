@@ -36,5 +36,9 @@ namespace WebFilm.Core.Interfaces.Repository
 
         bool ChangePassword(string email, string newPass);
 
+        bool AddTokenReset(UserDto user);
+
+        UserDto GetUserByTokenReset(string token);
+
     }
 }
