@@ -19,7 +19,7 @@ namespace WebFilm.Core.Interfaces.Services
         /// <returns></returns>
         int Signup(UserDto user);
 
-        User Login(string email, string password);
+        Dictionary<string, object> Login(string email, string password);
 
         bool ActiveUser(string email);
 

@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebFilm.Controllers;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Interfaces.Services;
 
 namespace WebFilm.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : BaseController<Guid, User>
@@ -28,6 +30,7 @@ namespace WebFilm.Controllers
         /// <param name="user"></param>
         /// <returns></returns>
         [HttpPost("signup")]
+        [AllowAnonymous]
         public IActionResult Signup(UserDto user)
         {
             try
@@ -48,6 +51,7 @@ namespace WebFilm.Controllers
         /// <param name="password"></param>
         /// <returns></returns>
         [HttpGet("login")]
+        [AllowAnonymous]
         public IActionResult Login(string email, string password)
         {
             try
@@ -67,6 +71,7 @@ namespace WebFilm.Controllers
         /// <param name="user"></param>
         /// <returns></returns>
         [HttpPost("Active")]
+        [AllowAnonymous]
         public IActionResult ActiveUser(string email)
         {
             try
