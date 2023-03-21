@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.Mail;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Exceptions;
@@ -244,19 +245,24 @@ namespace WebFilm.Core.Services
             return Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
         }
 
-        public bool ResetPassword(string token, string pass, string confirmPass)
+        public async Task<bool> ResetPassword(string token, string pass, string confirmPass)
         {
             if(pass != confirmPass)
             {
                 throw new ServiceException("The passwords you entered were not identical. Please try again.");
             }
-            var user = _userRepository.GetUserByTokenReset(token);
+            var user = await _userRepository.GetUserByTokenReset(token);
             if (user == null || user.ResetTokenExpires < DateTime.Now)
             {
                 throw new ServiceException("Invalid Token");
             }
             pass = BCrypt.Net.BCrypt.HashPassword(pass);
             return _userRepository.ChangePassword(user.Email, pass);
+        }
+
+        public async Task<PagingResult> GetPaging(int? pageSize = 20, int? pageIndex = 1, string? filter = "", string? sort = "UserName", TypeUser? typeUser = TypeUser.All, Guid? userID = null)
+        {
+            return await _userRepository.GetPaging(pageSize, pageIndex, filter, sort, typeUser, userID);
         }
 
         #endregion

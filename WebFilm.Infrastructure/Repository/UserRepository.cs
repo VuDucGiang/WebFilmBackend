@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Configuration;
 using MySqlConnector;
+using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Interfaces.Repository;
 
@@ -153,17 +154,67 @@ namespace WebFilm.Infrastructure.Repository
             }
         }
 
-        public UserDto GetUserByTokenReset(string token)
+        public async Task<UserDto> GetUserByTokenReset(string token)
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 var sqlCommand = "SELECT * FROM User WHERE PasswordResetToken = @v_PasswordResetToken";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("v_PasswordResetToken", token);
-                var user = SqlConnection.QueryFirstOrDefault<UserDto>(sqlCommand, parameters);
+                var user = await SqlConnection.QueryFirstOrDefaultAsync<UserDto>(sqlCommand, parameters);
                 //Trả dữ liệu về client
                 SqlConnection.Close();
                 return user;
+            }
+        }
+
+        public async Task<PagingResult> GetPaging(int? pageSize = 20, int? pageIndex = 1, string? filter = "", string? sort = "UserName", TypeUser? typeUser = TypeUser.All, Guid? userID = null)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                int offset = (pageIndex.Value - 1) * pageSize.Value;
+                var tableJoin = "";
+                var where = "u.UserID != @userID AND";
+                switch (typeUser)
+                {
+                    case TypeUser.All:
+                        where = "";
+                        break;
+                    case TypeUser.Following:
+                        tableJoin = "INNER JOIN follow f ON u.UserID = f.FollowedUserID";
+                        break;
+                    case TypeUser.Followed:
+                        tableJoin = "INNER JOIN follow f ON u.UserID = f.UserID";
+                        break;
+                    case TypeUser.Blocked:
+                        tableJoin = "INNER JOIN block b ON u.UserID = b.BlockedUserID";
+                        break;
+                    default:
+                        break;
+                }
+                var sqlCommand = @$"SELECT u.*,
+                                    IF(f1.FollowID IS NOT NULL, true, FALSE) AS Followed
+                                    FROM user u 
+                                    LEFT JOIN follow f1 ON u.UserID = f1.FollowedUserID 
+                                    {tableJoin}
+                                    WHERE {where} (u.UserName LIKE CONCAT('%', @filter, '%') OR u.Email LIKE CONCAT('%', @filter, '%'))
+                                    ORDER BY {sort} LIMIT @pageSize OFFSET @offset;
+                                    SELECT COUNT(*) FROM user u;";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@filter", filter);
+                parameters.Add("@pageSize", pageSize);
+                parameters.Add("@offset", offset);
+                parameters.Add("@userID", userID);
+                var result = await SqlConnection.QueryMultipleAsync(sqlCommand, parameters);
+                //Trả dữ liệu về client
+                var data = result.Read<object>().ToList();
+                var total = result.Read<int>().Single();
+                SqlConnection.Close();
+                return new PagingResult
+                {
+                    Data = data,
+                    Total = total
+                };
             }
         }
 

@@ -130,7 +130,28 @@ namespace WebFilm.Controllers
         {
             try
             {
-                var res = _userService.ResetPassword(token, pass, confirmPass);
+                var res = await _userService.ResetPassword(token, pass, confirmPass);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+        /// <summary>
+        /// Lấy danh sách người dùng theo tìm kiếm
+        /// </summary>
+        /// <param name="pageSize">Số lượng bán ghi/1 trang</param>
+        /// <param name="pageIndex">Trang thứ mấy</param>
+        /// <param name="filter">tìm kiếm theo userName hoăc email</param>
+        /// <returns></returns>
+        [HttpPost("Paging")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetPaging(int? pageSize = 20, int? pageIndex = 1, string? filter = "", string? sort = "UserName", TypeUser? typeUser = TypeUser.All, Guid? userID = null)
+        {
+            try
+            {
+                var res = await _userService.GetPaging(pageSize, pageIndex, filter, sort, typeUser, userID);
                 return Ok(res);
             }
             catch (Exception ex)

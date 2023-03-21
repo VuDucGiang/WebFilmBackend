@@ -1,4 +1,5 @@
-﻿using WebFilm.Core.Enitites.User;
+﻿using WebFilm.Core.Enitites;
+using WebFilm.Core.Enitites.User;
 
 namespace WebFilm.Core.Interfaces.Services
 {
@@ -27,7 +28,9 @@ namespace WebFilm.Core.Interfaces.Services
 
         bool ForgotPassword(string email);
 
-        bool ResetPassword(string token, string pass, string confirmPass);
+        Task<bool> ResetPassword(string token, string pass, string confirmPass);
+
+        Task<PagingResult> GetPaging(int? pageSize = 20, int? pageIndex = 1, string? filter = "", string? sort = "UserName", TypeUser? typeUser = TypeUser.All, Guid? userID = null);
 
     }
 }
