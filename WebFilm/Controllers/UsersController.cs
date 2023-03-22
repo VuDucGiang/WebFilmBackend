@@ -163,53 +163,53 @@ namespace WebFilm.Controllers
             }
         }
 
-        [HttpPost("{userID}/Avatar")]
-        public IActionResult SaveAvatar(Guid userID, IFormFile avatar)
-        {
-            try
-            {
-                string path = _webHostEnvironment.WebRootPath + "\\Avatars\\";
-                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-                string fileName = "Avatar_" + userID + ".png";
-                if (System.IO.File.Exists(path + fileName))
-                {
-                    System.IO.File.Delete(path + fileName);
-                }
-                using (FileStream fileStream = System.IO.File.Create(path + fileName))
-                {
-                    avatar.CopyTo(fileStream);
-                    fileStream.Flush();
+        //[HttpPost("{userID}/Avatar")]
+        //public IActionResult SaveAvatar(Guid userID, IFormFile avatar)
+        //{
+        //    try
+        //    {
+        //        string path = _webHostEnvironment.WebRootPath + "\\Avatars\\";
+        //        if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+        //        string fileName = "Avatar_" + userID + ".png";
+        //        if (System.IO.File.Exists(path + fileName))
+        //        {
+        //            System.IO.File.Delete(path + fileName);
+        //        }
+        //        using (FileStream fileStream = System.IO.File.Create(path + fileName))
+        //        {
+        //            avatar.CopyTo(fileStream);
+        //            fileStream.Flush();
 
-                }
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
-        }
+        //        }
+        //        return Ok();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return HandleException(ex);
+        //    }
+        //}
 
         
-        [HttpGet("{userID}/Avatar")]
-        public IActionResult GetAvatar(Guid userID)
-        {
-            try
-            {
-                string fileName = "Avatar_" + userID + ".png";
-                var path = Path.Combine(_webHostEnvironment.WebRootPath, "Avatars", fileName);
-                if (System.IO.File.Exists(path))
-                {
-                    return PhysicalFile(path, "image/jpeg"); ;
-                }
-                return PhysicalFile(Path.Combine(_webHostEnvironment.WebRootPath, "Avatars", "Avatar_default.png"), "image/jpeg");
-            }
-            catch (Exception ex)
-            {
+        //[HttpGet("{userID}/Avatar")]
+        //public IActionResult GetAvatar(Guid userID)
+        //{
+        //    try
+        //    {
+        //        string fileName = "Avatar_" + userID + ".png";
+        //        var path = Path.Combine(_webHostEnvironment.WebRootPath, "Avatars", fileName);
+        //        if (System.IO.File.Exists(path))
+        //        {
+        //            return PhysicalFile(path, "image/jpeg"); ;
+        //        }
+        //        return PhysicalFile(Path.Combine(_webHostEnvironment.WebRootPath, "Avatars", "Avatar_default.png"), "image/jpeg");
+        //    }
+        //    catch (Exception ex)
+        //    {
 
-                return HandleException(ex);
-            }
+        //        return HandleException(ex);
+        //    }
 
-        }
+        //}
 
         ///// <summary>
         ///// Lấy thông tin người dùng theo Id

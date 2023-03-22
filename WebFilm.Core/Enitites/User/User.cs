@@ -48,6 +48,8 @@ namespace WebFilm.Core.Enitites.User
         /// </summary>
         public string? FavouriteFilmList { get; set; }
 
+        public string? Avatar { get; set; }
+
         /// <summary>
         /// Ngày sửa
         /// </summary>
