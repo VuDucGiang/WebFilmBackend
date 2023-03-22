@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "8YftGwvd51tn993se/Xxd3CTf4Tl7rliBJa6KV6Ewfc=",
+  "Hash": "ikou1ZaFzuktivq6kCzkVi7DCsq+1XclYoa6xSDZrQE=",
   "Source": "WebFilm",
   "BasePath": "_content/WebFilm",
   "Mode": "Default",
@@ -15,40 +15,5 @@
       "Pattern": "**"
     }
   ],
-  "Assets": [
-    {
-      "Identity": "C:\\Users\\X1\\source\\repos\\WebFilm\\wwwroot\\Avatars\\Avatar_81d153f1-c739-11ed-9587-482ae331cd77.png",
-      "SourceId": "WebFilm",
-      "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\X1\\source\\repos\\WebFilm\\wwwroot\\",
-      "BasePath": "_content/WebFilm",
-      "RelativePath": "Avatars/Avatar_81d153f1-c739-11ed-9587-482ae331cd77.png",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\Avatars\\Avatar_81d153f1-c739-11ed-9587-482ae331cd77.png"
-    },
-    {
-      "Identity": "C:\\Users\\X1\\source\\repos\\WebFilm\\wwwroot\\Avatars\\Avatar_default.png",
-      "SourceId": "WebFilm",
-      "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\X1\\source\\repos\\WebFilm\\wwwroot\\",
-      "BasePath": "_content/WebFilm",
-      "RelativePath": "Avatars/Avatar_default.png",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\Avatars\\Avatar_default.png"
-    }
-  ]
+  "Assets": []
 }
