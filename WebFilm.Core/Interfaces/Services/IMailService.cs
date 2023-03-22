@@ -11,6 +11,6 @@ namespace WebFilm.Core.Interfaces.Services
     {
         Task<bool> SendAsync(MailData mailData, CancellationToken ct);
 
-        string GetEmailTemplate(string emailTemplate, WelcomeMail emailTemplateModel);
+        string GetEmailTemplate(string emailTemplate, MailTemplate emailTemplateModel);
     }
 }

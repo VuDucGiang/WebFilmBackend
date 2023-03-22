@@ -91,7 +91,7 @@ namespace WebFilm.Core.Services
             }
         }
 
-        public string GetEmailTemplate(string emailTemplate, WelcomeMail emailTemplateModel)
+        public string GetEmailTemplate(string emailTemplate, MailTemplate emailTemplateModel)
         {
             string mailTemplate = LoadTemplate(emailTemplate);
 

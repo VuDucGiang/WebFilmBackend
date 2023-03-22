@@ -316,3 +316,4 @@ __pycache__/
 /WebFilm.Core/obj/project.assets.json
 /WebFilm.Infrastructure/obj/project.assets.json
 /WebFilm.Core/bin/Debug/net6.0/WebFilm.Core.deps.json
+/WebFilm/bin/Debug/net6.0/Microsoft.OpenApi.dll

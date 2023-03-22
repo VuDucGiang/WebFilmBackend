@@ -1,4 +1,11 @@
-﻿using WebFilm.Core.Enitites.Mail;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
+using WebFilm.Core.Enitites;
+using WebFilm.Core.Enitites.Mail;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Exceptions;
 using WebFilm.Core.Interfaces.Repository;
@@ -10,11 +17,13 @@ namespace WebFilm.Core.Services
     {
         IUserRepository _userRepository;
         private readonly IMailService _mail;
+        private readonly IConfiguration _configuration;
 
-        public UserService(IUserRepository userRepository, IMailService mail) : base(userRepository)
+        public UserService(IUserRepository userRepository, IMailService mail, IConfiguration configuration) : base(userRepository)
         {
             _userRepository = userRepository;
             _mail = mail;
+            _configuration = configuration;
         }
 
         #region Method
@@ -50,7 +59,7 @@ namespace WebFilm.Core.Services
             var isDuplicateEmail = _userRepository.CheckDuplicateEmail(user.Email);
             if (isDuplicateEmail)
             {
-                throw new ServiceException(Resources.Resource.Error_Duplicate_UserName);
+                throw new ServiceException(Resources.Resource.Error_Duplicate_Email);
             }
             //Chờ xác nhận
             user.Status = 1;
@@ -58,7 +67,7 @@ namespace WebFilm.Core.Services
             var res = _userRepository.Signup(user);
 
             // Gửi mail
-            WelcomeMail welcomeMail = new WelcomeMail()
+            MailTemplate welcomeMail = new MailTemplate()
             {
                 Email = user.Email,
                 Name = user.UserName
@@ -81,22 +90,69 @@ namespace WebFilm.Core.Services
         /// <param name="password"></param>
         /// <returns></returns>
         /// <exception cref="ServiceException"></exception>
-        public User Login(string email, string password)
+        public Dictionary<string, object> Login(string email, string password)
         {
-            var user = _userRepository.Login(email);
-            if(user != null)
+            var userDto = _userRepository.Login(email);
+            if(userDto != null)
             {
-                if(user.Status == 1)
+                if(userDto.Status == 1)
                 {
                     throw new ServiceException("Tài khoản chưa xác nhận email kích hoạt");
                 }
-                var isPasswordCorrect = BCrypt.Net.BCrypt.Verify(password, user.Password);
+                var isPasswordCorrect = BCrypt.Net.BCrypt.Verify(password, userDto.Password);
                 if(isPasswordCorrect)
                 {
-                    return user;
+                    var token = GenarateToken(userDto);
+                    User user = new User();
+                    user.UserID = userDto.UserID;
+                    user.UserName = userDto.UserName;
+                    user.FullName = userDto.FullName;
+                    user.Email = userDto.Email;
+                    user.DateOfBirth = userDto.DateOfBirth;
+                    user.Status = userDto.Status;
+                    user.RoleType = userDto.RoleType;
+                    user.FavouriteFilmList = userDto.FavouriteFilmList;
+                    return new Dictionary<string, object>()
+                    {
+                        { "User", user },
+                        { "Token", token }
+                    };
                 }
             }
             throw new ServiceException("Thông tin tài khoản hoặc mật khẩu không chính xác");
+        }
+
+        private string GenarateToken(UserDto user)
+        {
+            // Authenticate user credentials and get the user's claims
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Name, user.Password)
+                // Add any other user claims as needed
+            };
+
+                    // Generate a symmetric security key using your secret key
+                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
+
+                    // Create a signing credentials object using the key
+                    var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+                    // Set token expiration time
+                    var expires = DateTime.UtcNow.AddDays(30);
+
+                    // Create a JWT token
+                    var token = new JwtSecurityToken(
+                        issuer: _configuration["Jwt:Issuer"],
+                        audience: _configuration["Jwt:Audience"],
+                        claims: claims,
+                        expires: expires,
+                        signingCredentials: credentials
+                    );
+
+            // Serialize the token to a string
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+            return "Bearer " + tokenString;
         }
 
         /// <summary>
@@ -149,6 +205,64 @@ namespace WebFilm.Core.Services
                 }
             }
             throw new ServiceException("Mật khẩu không chính xác");
+        }
+
+        public bool ForgotPassword(string email)
+        {
+            var userDto = _userRepository.Login(email);
+            if (userDto == null)
+            {
+                throw new ServiceException("Email không tồn tại");
+            }
+
+            userDto.PasswordResetToken = CreateRandomToken();
+            userDto.ResetTokenExpires = DateTime.Now.AddDays(1);
+
+            var res = _userRepository.AddTokenReset(userDto);
+
+            // Gửi mail
+            if(res)
+            {
+                MailTemplate welcomeMail = new MailTemplate()
+                {
+                    Email = email,
+                    Token = userDto.PasswordResetToken
+                };
+                MailData mailData = new MailData()
+                {
+                    To = new List<string>() { email },
+                    Subject = "Reset your FilmLogger password",
+                    Body = _mail.GetEmailTemplate("resetPassword", welcomeMail)
+                };
+                _mail.SendAsync(mailData, new CancellationToken());
+                return true;
+            }
+            return false;
+        }
+
+        private string CreateRandomToken()
+        {
+            return Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
+        }
+
+        public async Task<bool> ResetPassword(string token, string pass, string confirmPass)
+        {
+            if(pass != confirmPass)
+            {
+                throw new ServiceException("The passwords you entered were not identical. Please try again.");
+            }
+            var user = await _userRepository.GetUserByTokenReset(token);
+            if (user == null || user.ResetTokenExpires < DateTime.Now)
+            {
+                throw new ServiceException("Invalid Token");
+            }
+            pass = BCrypt.Net.BCrypt.HashPassword(pass);
+            return _userRepository.ChangePassword(user.Email, pass);
+        }
+
+        public async Task<PagingResult> GetPaging(int? pageSize = 20, int? pageIndex = 1, string? filter = "", string? sort = "UserName", TypeUser? typeUser = TypeUser.All, Guid? userID = null)
+        {
+            return await _userRepository.GetPaging(pageSize, pageIndex, filter, sort, typeUser, userID);
         }
 
         #endregion

@@ -1,4 +1,5 @@
-﻿using WebFilm.Core.Enitites.User;
+﻿using WebFilm.Core.Enitites;
+using WebFilm.Core.Enitites.User;
 
 namespace WebFilm.Core.Interfaces.Repository
 {
@@ -35,6 +36,12 @@ namespace WebFilm.Core.Interfaces.Repository
         bool ActiveUser(string email);
 
         bool ChangePassword(string email, string newPass);
+
+        bool AddTokenReset(UserDto user);
+
+        Task<UserDto> GetUserByTokenReset(string token);
+
+        Task<PagingResult> GetPaging(int? pageSize = 20, int? pageIndex = 1, string? filter = "", string? sort = "UserName", TypeUser? typeUser = TypeUser.All, Guid? userID = null);
 
     }
 }
