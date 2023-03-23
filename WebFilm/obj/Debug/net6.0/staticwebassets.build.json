@@ -1,11 +1,19 @@
 {
   "Version": 1,
-  "Hash": "7waST9IXI2UNU434QMtJsVERYMP+zcvvGoNqQsyL2k0=",
+  "Hash": "ikou1ZaFzuktivq6kCzkVi7DCsq+1XclYoa6xSDZrQE=",
   "Source": "WebFilm",
   "BasePath": "_content/WebFilm",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "WebFilm\\wwwroot",
+      "Source": "WebFilm",
+      "ContentRoot": "C:\\Users\\X1\\source\\repos\\WebFilm\\wwwroot\\",
+      "BasePath": "_content/WebFilm",
+      "Pattern": "**"
+    }
+  ],
   "Assets": []
 }
