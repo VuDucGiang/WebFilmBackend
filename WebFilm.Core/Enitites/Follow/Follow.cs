@@ -2,7 +2,7 @@
 
 namespace WebFilm.Core.Enitites.Follow
 {
-    public class Follow
+    public class Follow : BaseEntity
     {
         [Key]
         public int FollowID { get; set; }

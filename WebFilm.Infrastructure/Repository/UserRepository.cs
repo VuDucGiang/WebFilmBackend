@@ -183,7 +183,7 @@ namespace WebFilm.Infrastructure.Repository
                     case TypeUser.Following:
                         tableJoin = "INNER JOIN follow f ON u.UserID = f.FollowedUserID";
                         break;
-                    case TypeUser.Followed:
+                    case TypeUser.Follower:
                         tableJoin = "INNER JOIN follow f ON u.UserID = f.UserID";
                         break;
                     case TypeUser.Blocked:
