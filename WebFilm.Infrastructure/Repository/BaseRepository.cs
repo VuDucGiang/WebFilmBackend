@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Configuration;
 using MySqlConnector;
+using Org.BouncyCastle.Math.Field;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Text;
@@ -72,10 +73,18 @@ namespace WebFilm.Infrastructure.Repository
 
                 foreach (PropertyInfo property in properties)
                 {
-                    if (property.Name != keyName)
+                    if (property.Name != keyName && property.Name != "CreatedDate")
                     {
-                        sql.Append($"{property.Name} = @{property.Name}, ");
-                        parameters.Add(property.Name, property.GetValue(entity));
+                        if(property.Name == "ModifiedDate")
+                        {
+                            sql.Append($"{property.Name} = @{DateTime.Now}, ");
+
+                        } else
+                        {
+                            sql.Append($"{property.Name} = @{property.Name}, ");
+                            parameters.Add(property.Name, property.GetValue(entity));
+
+                        }
                     }
                 }
 
@@ -101,11 +110,19 @@ namespace WebFilm.Infrastructure.Repository
 
                 foreach (var property in properties)
                 {
-                    parameters.Add("@" + property.Name, property.GetValue(entity));
+                    if (property.Name != keyName)
+                    {
+                        if (property.Name == "ModifiedDate" || property.Name == "CreatedDate") {
+                            parameters.Add("@" + property.Name, DateTime.Now);
+                        } else
+                        {
+                            parameters.Add("@" + property.Name, property.GetValue(entity));
+                        }
+                    }
                 }
 
-                var columns = string.Join(", ", properties.Select(p => p.Name));
-                var values = string.Join(", ", properties.Select(p => "@" + p.Name));
+                var columns = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => p.Name));
+                var values = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => "@" + p.Name));
                 var query = $"INSERT INTO {className} ({columns}) VALUES ({values})";
 
                 //Trả dữ liệu về client

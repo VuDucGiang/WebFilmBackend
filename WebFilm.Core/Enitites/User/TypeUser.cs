@@ -12,7 +12,7 @@ namespace WebFilm.Core.Enitites.User
         // Người mình đang theo dõi
         Following = 1, 
         // Người đang theo dõi mình
-        Followed = 2,
+        Follower = 2,
         // Người bị block
         Blocked = 3,
     }
