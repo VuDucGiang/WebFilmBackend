@@ -43,8 +43,8 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCommand = $@"INSERT INTO user (UserID, UserName, FullName, Password, Email, DateOfBirth, ModifiedBy, Status, RoleType, ModifiedDate)
-                                              VALUES (UUID(), @v_UserName, @v_FullName, @v_Password, @v_Email, @v_DateOfBirth, '', @v_Status, @v_RoleType, NOW());";
+                var sqlCommand = $@"INSERT INTO user (UserID, UserName, FullName, Password, Email, DateOfBirth, Status, RoleType, ModifiedDate)
+                                              VALUES (UUID(), @v_UserName, @v_FullName, @v_Password, @v_Email, @v_DateOfBirth, @v_Status, @v_RoleType, NOW());";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("v_UserName", user.UserName);
                 parameters.Add("v_FullName", user.FullName);

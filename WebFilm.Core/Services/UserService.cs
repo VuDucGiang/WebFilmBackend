@@ -1,9 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Xml.Linq;
 using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.Mail;
 using WebFilm.Core.Enitites.User;
@@ -263,6 +266,33 @@ namespace WebFilm.Core.Services
         public async Task<PagingResult> GetPaging(int? pageSize = 20, int? pageIndex = 1, string? filter = "", string? sort = "UserName", TypeUser? typeUser = TypeUser.All, Guid? userID = null)
         {
             return await _userRepository.GetPaging(pageSize, pageIndex, filter, sort, typeUser, userID);
+        }
+
+        public ProfileDTO getProfile(Guid userID)
+        {
+            User user = _userRepository.GetByID(userID);
+            ProfileDTO profile= new ProfileDTO();
+            List<FavouriteFilmDTO> dtos = new List<FavouriteFilmDTO>();
+            if (user.FavouriteFilmList != null)
+            {
+                JArray favouriteFilms = JArray.Parse(user.FavouriteFilmList);
+                foreach (JObject obj in favouriteFilms.ToArray())
+                {
+                    string id = (string)obj.GetValue("id");
+                    string posterPath = (string)obj.GetValue("poster_path");
+                    string title = (string)obj.GetValue("title");
+                    FavouriteFilmDTO dto = new FavouriteFilmDTO();
+                    dto.id = id;
+                    dto.posterPath = posterPath;
+                    dto.title = title;
+                    dtos.Add(dto);
+                }
+            }
+
+            profile.UserName = user.UserName;
+            profile.FavouriteFilms = dtos;
+
+            return profile;
         }
 
         #endregion

@@ -55,11 +55,6 @@ namespace WebFilm.Core.Enitites.User
         /// </summary>
         public DateTime? ModifiedDate { get; set; }
 
-        /// <summary>
-        /// Người sửa
-        /// </summary>
-        public string? ModifiedBy { get; set; }
-
         #endregion
     }
 }

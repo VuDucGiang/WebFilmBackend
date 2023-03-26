@@ -36,5 +36,6 @@ namespace WebFilm.Core.Enitites.Film
         public float Vote_average { get; set; }
         public int Vote_count { get; set; }
         public int LikesCount { get; set; }
+        public int ReviewsCount { get; set; }
     }
 }
