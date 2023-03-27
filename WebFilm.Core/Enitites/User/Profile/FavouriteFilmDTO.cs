@@ -4,14 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WebFilm.Core.Enitites.User
+namespace WebFilm.Core.Enitites.User.Profile
 {
     public class FavouriteFilmDTO
     {
-        public string id { get; set; }
-
-        public string posterPath { get; set; }
-
-        public string title { get; set; }
+        public List<BaseFilmDTO> films { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.User;
+using WebFilm.Core.Enitites.User.Profile;
 
 namespace WebFilm.Core.Interfaces.Services
 {

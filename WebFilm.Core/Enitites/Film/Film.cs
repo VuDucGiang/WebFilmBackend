@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,7 +27,7 @@ namespace WebFilm.Core.Enitites.Film
         public string Poster_path { get; set; }
         public string Production_companies { get; set; }
         public string Production_countries { get; set; }
-        public DateOnly Release_date { get; set; }
+        public string Release_date { get; set; }
         public string Revenue { get; set; }
         public int Runtime { get; set; }
         public string Spoken_languages { get; set; }

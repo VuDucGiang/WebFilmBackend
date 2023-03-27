@@ -4,14 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebFilm.Core.Enitites.Follow;
-using WebFilm.Core.Enitites.User;
+using WebFilm.Core.Enitites.List;
 
 namespace WebFilm.Core.Interfaces.Repository
 {
-    public interface IFollowRepository : IBaseRepository<int, Follow>
+    public interface IListRepository : IBaseRepository<int, List>
     {
-        List<Follow> getFollowByUserID(Guid userId);
-
-        List<Follow> getFollowingByUserID(Guid userId);
     }
 }
