@@ -10,6 +10,6 @@ namespace WebFilm.Core.Enitites.User.Profile
     {
         public Guid UserID { get; set; }
 
-        public string avatar { get; set; }
+        public string Avatar { get; set; }
     }
 }

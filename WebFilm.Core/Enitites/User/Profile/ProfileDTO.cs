@@ -25,5 +25,9 @@ namespace WebFilm.Core.Enitites.User.Profile
         public RecentListDTO RecentList { get; set; }
 
         public List<RecentLikeDTO> RecentLikes { get; set; }
+
+        public List<ReviewBase> RecentReview { get; set; }
+
+        public List<ReviewBase> PopularReview { get; set; }
     }
 }

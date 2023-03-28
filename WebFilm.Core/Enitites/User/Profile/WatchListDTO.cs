@@ -8,9 +8,9 @@ namespace WebFilm.Core.Enitites.User.Profile
 {
     public class WatchListDTO
     {
-        public int filmsCount { get; set; }
+        public int FilmsCount { get; set; }
 
-        public List<BaseFilmDTO> films { get; set; }
+        public List<BaseFilmDTO> Films { get; set; }
 
     }
 }

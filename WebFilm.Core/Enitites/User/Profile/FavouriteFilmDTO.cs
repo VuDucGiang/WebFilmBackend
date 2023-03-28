@@ -8,6 +8,6 @@ namespace WebFilm.Core.Enitites.User.Profile
 {
     public class FavouriteFilmDTO
     {
-        public List<BaseFilmDTO> films { get; set; }
+        public List<BaseFilmDTO> Films { get; set; }
     }
 }
