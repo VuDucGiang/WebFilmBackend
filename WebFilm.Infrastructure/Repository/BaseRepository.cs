@@ -36,7 +36,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 //Thực thi lấy dữ liệu
-                var sqlCommand = $"SELECT * FROM {className}";
+                var sqlCommand = $"SELECT * FROM `{className}`";
                 //Trả dữ liệu về client
                 var entities = SqlConnection.Query<TEntity>(sqlCommand);
                 SqlConnection.Close();

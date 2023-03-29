@@ -163,6 +163,21 @@ namespace WebFilm.Controllers
             }
         }
 
+        [HttpGet("{userID}/Profile")]
+        public IActionResult getProfile(Guid userID)
+        {
+            try
+            {
+                return Ok(_userService.getProfile(userID)) ;
+            }
+            catch (Exception ex)
+            {
+
+                return HandleException(ex);
+            }
+
+        }
+
         //[HttpPost("{userID}/Avatar")]
         //public IActionResult SaveAvatar(Guid userID, IFormFile avatar)
         //{
