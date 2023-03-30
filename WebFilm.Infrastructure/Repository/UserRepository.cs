@@ -218,6 +218,21 @@ namespace WebFilm.Infrastructure.Repository
             }
         }
 
+        public User getUserByUsername(string username)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCommand = "SELECT * FROM UserName WHERE  = @v_UserName";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("v_UserName", username);
+                var user = SqlConnection.QueryFirstOrDefault<User>(sqlCommand, parameters);
+
+                //Trả dữ liệu về client
+                SqlConnection.Close();
+                return user;
+            }
+        }
+
 
         #endregion
     }

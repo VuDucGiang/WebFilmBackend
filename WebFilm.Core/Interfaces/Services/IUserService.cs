@@ -33,7 +33,7 @@ namespace WebFilm.Core.Interfaces.Services
 
         Task<PagingResult> GetPaging(int? pageSize = 20, int? pageIndex = 1, string? filter = "", string? sort = "UserName", TypeUser? typeUser = TypeUser.All, Guid? userID = null);
 
-        ProfileDTO getProfile(Guid userID);
+        ProfileDTO getProfile(string userName);
 
     }
 }
