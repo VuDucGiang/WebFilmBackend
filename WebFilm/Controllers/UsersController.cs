@@ -163,12 +163,12 @@ namespace WebFilm.Controllers
             }
         }
 
-        [HttpGet("{userID}/Profile")]
-        public IActionResult getProfile(Guid userID)
+        [HttpGet("{userName}/Profile")]
+        public IActionResult getProfile(string userName)
         {
             try
             {
-                return Ok(_userService.getProfile(userID)) ;
+                return Ok(_userService.getProfile(userName)) ;
             }
             catch (Exception ex)
             {
