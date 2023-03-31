@@ -165,8 +165,13 @@ namespace WebFilm.Core.Services
             // Authenticate user credentials and get the user's claims
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Name, user.Password)
+                new Claim("ID", user.UserID.ToString()),
+                new Claim("Username", user.UserName),
+                new Claim("Email", user.Email),
+                new Claim("Role", user.RoleType.ToString()),
+                new Claim("Fullname", user.FullName ?? ""),
+                new Claim("Avatar", user.Avatar ?? "")
+
                 // Add any other user claims as needed
             };
 
