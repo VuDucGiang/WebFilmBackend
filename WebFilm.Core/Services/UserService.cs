@@ -308,9 +308,14 @@ namespace WebFilm.Core.Services
             return await _userRepository.GetPaging(pageSize, pageIndex, filter, sort, typeUser, userID);
         }
 
-        public ProfileDTO getProfile(Guid userID)
+        public ProfileDTO getProfile(string userName)
         {
-            User user = _userRepository.GetByID(userID);
+            User user = _userRepository.getUserByUsername(userName);
+            if (user == null)
+            {
+                return null;
+            }
+            Guid userID = user.UserID;
             ProfileDTO profile= new ProfileDTO();
             FavouriteFilmDTO filmFavourite = new FavouriteFilmDTO();
             List<BaseFilmDTO> dtos = new List<BaseFilmDTO>();

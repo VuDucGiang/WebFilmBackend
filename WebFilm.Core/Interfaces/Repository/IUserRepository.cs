@@ -43,5 +43,7 @@ namespace WebFilm.Core.Interfaces.Repository
 
         Task<PagingResult> GetPaging(int? pageSize = 20, int? pageIndex = 1, string? filter = "", string? sort = "UserName", TypeUser? typeUser = TypeUser.All, Guid? userID = null);
 
+        User getUserByUsername(string username);
+
     }
 }
