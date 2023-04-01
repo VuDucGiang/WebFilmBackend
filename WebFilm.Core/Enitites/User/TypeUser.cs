@@ -8,6 +8,7 @@ namespace WebFilm.Core.Enitites.User
 {
     public enum TypeUser
     {
+        //All
         All = 0,
         // Người mình đang theo dõi
         Following = 1, 

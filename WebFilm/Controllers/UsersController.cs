@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using WebFilm.Controllers;
+using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Interfaces.Services;
 
@@ -150,11 +151,11 @@ namespace WebFilm.Controllers
         /// <returns></returns>
         [HttpPost("Paging")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetPaging(int? pageSize = 20, int? pageIndex = 1, string? filter = "", string? sort = "UserName", TypeUser? typeUser = TypeUser.All, Guid? userID = null)
+        public async Task<IActionResult> GetPaging([FromBody]PagingParameter parameter)
         {
             try
             {
-                var res = await _userService.GetPaging(pageSize, pageIndex, filter, sort, typeUser, userID);
+                var res = await _userService.GetPaging(parameter.pageSize, parameter.pageIndex, parameter.filter, parameter.sort, parameter.typeUser, parameter.userName);
                 return Ok(res);
             }
             catch (Exception ex)
