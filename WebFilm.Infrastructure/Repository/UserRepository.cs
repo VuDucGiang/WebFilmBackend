@@ -168,43 +168,52 @@ namespace WebFilm.Infrastructure.Repository
             }
         }
 
-        public async Task<PagingResult> GetPaging(int? pageSize = 20, int? pageIndex = 1, string? filter = "", string? sort = "UserName", TypeUser? typeUser = TypeUser.All, Guid? userID = null)
+        public async Task<PagingResult> GetPaging(int pageSize, int pageIndex, string filter, string sort, TypeUser typeUser, string userName)
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                int offset = (pageIndex.Value - 1) * pageSize.Value;
+                int offset = (pageIndex - 1) * pageSize;
                 var tableJoin = "";
-                var where = "u.UserID != @userID AND";
+                var where = "1 = 1";
                 switch (typeUser)
                 {
                     case TypeUser.All:
-                        where = "";
                         break;
                     case TypeUser.Following:
                         tableJoin = "INNER JOIN follow f ON u.UserID = f.FollowedUserID";
+                        where = "f.UserName = @userName";
                         break;
                     case TypeUser.Follower:
                         tableJoin = "INNER JOIN follow f ON u.UserID = f.UserID";
+                        where = "f.FollowedUserName = @userName";
                         break;
                     case TypeUser.Blocked:
                         tableJoin = "INNER JOIN block b ON u.UserID = b.BlockedUserID";
+                        where = "b.UserName = @userName";
                         break;
                     default:
                         break;
                 }
-                var sqlCommand = @$"SELECT u.*,
+                var sqlCommand = @$"SELECT DISTINCT u.*,
+                                    COUNT(DISTINCT l.ListID) AS Lists,
+                                    COUNT(DISTINCT l1.LikeID) AS Likes,
+                                    COUNT(DISTINCT r.ReviewID) AS Reviews,
                                     IF(f1.FollowID IS NOT NULL, true, FALSE) AS Followed
                                     FROM user u 
-                                    LEFT JOIN follow f1 ON u.UserID = f1.FollowedUserID 
+                                    LEFT JOIN follow f1 ON u.UserID = f1.FollowedUserID
+                                    LEFT JOIN list l ON u.UserID = l.UserID
+                                    LEFT JOIN `like` l1 ON u.UserID = l1.UserID
+                                    LEFT JOIN review r ON u.UserID = r.UserID
                                     {tableJoin}
-                                    WHERE {where} (u.UserName LIKE CONCAT('%', @filter, '%') OR u.Email LIKE CONCAT('%', @filter, '%'))
+                                    WHERE {where} AND (u.UserName LIKE CONCAT('%', @filter, '%') OR u.Email LIKE CONCAT('%', @filter, '%'))
+                                    GROUP BY u.UserID
                                     ORDER BY {sort} LIMIT @pageSize OFFSET @offset;
-                                    SELECT COUNT(*) FROM user u;";
+                                    SELECT COUNT(*) FROM user u {tableJoin} WHERE {where};";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@filter", filter);
                 parameters.Add("@pageSize", pageSize);
                 parameters.Add("@offset", offset);
-                parameters.Add("@userID", userID);
+                parameters.Add("@userName", userName);
                 var result = await SqlConnection.QueryMultipleAsync(sqlCommand, parameters);
                 //Trả dữ liệu về client
                 var data = result.Read<object>().ToList();

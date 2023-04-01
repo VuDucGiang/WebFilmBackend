@@ -1,12 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
-using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using System.Xml.Linq;
 using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.Film;
 using WebFilm.Core.Enitites.FilmList;
@@ -131,14 +129,14 @@ namespace WebFilm.Core.Services
         public Dictionary<string, object> Login(string email, string password)
         {
             var userDto = _userRepository.Login(email);
-            if(userDto != null)
+            if (userDto != null)
             {
-                if(userDto.Status == 1)
+                if (userDto.Status == 1)
                 {
                     throw new ServiceException("Tài khoản chưa xác nhận email kích hoạt");
                 }
                 var isPasswordCorrect = BCrypt.Net.BCrypt.Verify(password, userDto.Password);
-                if(isPasswordCorrect)
+                if (isPasswordCorrect)
                 {
                     var token = GenarateToken(userDto);
                     User user = new User();
@@ -175,23 +173,23 @@ namespace WebFilm.Core.Services
                 // Add any other user claims as needed
             };
 
-                    // Generate a symmetric security key using your secret key
-                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
+            // Generate a symmetric security key using your secret key
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
 
-                    // Create a signing credentials object using the key
-                    var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            // Create a signing credentials object using the key
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-                    // Set token expiration time
-                    var expires = DateTime.UtcNow.AddDays(30);
+            // Set token expiration time
+            var expires = DateTime.UtcNow.AddDays(30);
 
-                    // Create a JWT token
-                    var token = new JwtSecurityToken(
-                        issuer: _configuration["Jwt:Issuer"],
-                        audience: _configuration["Jwt:Audience"],
-                        claims: claims,
-                        expires: expires,
-                        signingCredentials: credentials
-                    );
+            // Create a JWT token
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: expires,
+                signingCredentials: credentials
+            );
 
             // Serialize the token to a string
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
@@ -213,7 +211,7 @@ namespace WebFilm.Core.Services
 
             if (trimmedEmail.EndsWith("."))
             {
-                return false; 
+                return false;
             }
             try
             {
@@ -264,7 +262,7 @@ namespace WebFilm.Core.Services
             var res = _userRepository.AddTokenReset(userDto);
 
             // Gửi mail
-            if(res)
+            if (res)
             {
                 MailTemplate welcomeMail = new MailTemplate()
                 {
@@ -290,7 +288,7 @@ namespace WebFilm.Core.Services
 
         public async Task<bool> ResetPassword(string token, string pass, string confirmPass)
         {
-            if(pass != confirmPass)
+            if (pass != confirmPass)
             {
                 throw new ServiceException("The passwords you entered were not identical. Please try again.");
             }
@@ -303,9 +301,9 @@ namespace WebFilm.Core.Services
             return _userRepository.ChangePassword(user.Email, pass);
         }
 
-        public async Task<PagingResult> GetPaging(int? pageSize = 20, int? pageIndex = 1, string? filter = "", string? sort = "UserName", TypeUser? typeUser = TypeUser.All, Guid? userID = null)
+        public async Task<PagingResult> GetPaging(int pageSize, int pageIndex, string filter, string sort, TypeUser typeUser, string userName)
         {
-            return await _userRepository.GetPaging(pageSize, pageIndex, filter, sort, typeUser, userID);
+            return await _userRepository.GetPaging(pageSize, pageIndex, filter, sort, typeUser, userName);
         }
 
         public ProfileDTO getProfile(string userName)
@@ -316,7 +314,7 @@ namespace WebFilm.Core.Services
                 return null;
             }
             Guid userID = user.UserID;
-            ProfileDTO profile= new ProfileDTO();
+            ProfileDTO profile = new ProfileDTO();
             FavouriteFilmDTO filmFavourite = new FavouriteFilmDTO();
             List<BaseFilmDTO> dtos = new List<BaseFilmDTO>();
             if (user.FavouriteFilmList != null)
@@ -346,7 +344,7 @@ namespace WebFilm.Core.Services
             List<Guid> userIds = followings.Select(p => p.UserID).ToList();
             List<User> users = _userRepository.GetAll().Where(p => userIds.Contains(p.UserID)).ToList();
             List<FollowingDTO> userDtos = new List<FollowingDTO>();
-            foreach(User u in users)
+            foreach (User u in users)
             {
                 FollowingDTO dto = new FollowingDTO();
                 dto.UserID = u.UserID;
@@ -374,7 +372,7 @@ namespace WebFilm.Core.Services
             watchListDTO.FilmsCount = watchList.Count;
 
             //recent list
-            RecentListDTO recentListDTO= new RecentListDTO();
+            RecentListDTO recentListDTO = new RecentListDTO();
             List list = _listRepository.GetAll().OrderByDescending(p => p.ModifiedDate).First();
             List<FilmList> filmLists = _filmListRepository.GetAll().Where(p => p.ListID == list.ListID).Take(5).ToList();
             List<int> filmListIDS = filmLists.Select(p => p.FilmID).ToList();
@@ -393,8 +391,8 @@ namespace WebFilm.Core.Services
             recentListDTO.Description = list.Description;
 
             //recent like
-            List<RecentLikeDTO> recentLikeDTOs= new List<RecentLikeDTO>();
-            List<Like> likes= _likeRepository.GetAll()
+            List<RecentLikeDTO> recentLikeDTOs = new List<RecentLikeDTO>();
+            List<Like> likes = _likeRepository.GetAll()
                 .Where(p => (p.UserID == userID && p.Type.Equals(TypeLike.Film)))
                 .OrderByDescending(p => p.Date).Take(4).ToList();
             List<int> recentLikeIds = likes.Select(p => p.ParentID).ToList();
@@ -433,10 +431,10 @@ namespace WebFilm.Core.Services
             profile.Followers = followers.Count;
             profile.Following = following;
             profile.WatchList = watchListDTO;
-            profile.RecentList= recentListDTO;
+            profile.RecentList = recentListDTO;
             profile.RecentLikes = recentLikeDTOs;
             profile.RecentReview = baseRecentReviews;
-            profile.PopularReview= popularReviews;
+            profile.PopularReview = popularReviews;
 
             return profile;
         }

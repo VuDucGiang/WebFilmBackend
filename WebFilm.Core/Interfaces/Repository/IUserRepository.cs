@@ -41,7 +41,7 @@ namespace WebFilm.Core.Interfaces.Repository
 
         Task<UserDto> GetUserByTokenReset(string token);
 
-        Task<PagingResult> GetPaging(int? pageSize = 20, int? pageIndex = 1, string? filter = "", string? sort = "UserName", TypeUser? typeUser = TypeUser.All, Guid? userID = null);
+        Task<PagingResult> GetPaging(int pageSize, int pageIndex, string filter, string sort, TypeUser typeUser, string userName);
 
         User getUserByUsername(string username);
 
