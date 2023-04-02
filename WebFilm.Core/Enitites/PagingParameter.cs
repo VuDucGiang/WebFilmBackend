@@ -12,8 +12,5 @@ namespace WebFilm.Core.Enitites
         public int pageSize { get; set; } = 20;
         public int pageIndex { get; set; } = 1;
         public string filter { get; set; } = "";
-        public string sort { get; set; } = "UserName";
-        public TypeUser typeUser { get; set; } = TypeUser.All;
-        public string userName { get; set; } = "";
     }
 }

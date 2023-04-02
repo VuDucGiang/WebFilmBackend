@@ -5,6 +5,7 @@ using WebFilm.Controllers;
 using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Interfaces.Services;
+using WebFilm.Core.Services;
 
 namespace WebFilm.Controllers
 {
@@ -16,13 +17,16 @@ namespace WebFilm.Controllers
         #region Field
         IUserService _userService;
         public static IWebHostEnvironment _webHostEnvironment;
+        IUserContext _userContext;
+
         #endregion
 
         #region Contructor
-        public UsersController(IUserService userService, IWebHostEnvironment webHostEnvironment) : base(userService)
+        public UsersController(IUserService userService, IWebHostEnvironment webHostEnvironment, IUserContext userContext) : base(userService)
         {
             _userService = userService;
             _webHostEnvironment = webHostEnvironment;
+            _userContext = userContext;
         }
         #endregion
 
@@ -151,11 +155,37 @@ namespace WebFilm.Controllers
         /// <returns></returns>
         [HttpPost("Paging")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetPaging([FromBody]PagingParameter parameter)
+        public async Task<IActionResult> GetPaging([FromBody] PagingParameterMember parameter)
         {
             try
             {
+                if(parameter.userName == "")
+                {
+                    parameter.userName = _userContext.UserName != null ? _userContext.UserName : parameter.userName;
+                }
                 var res = await _userService.GetPaging(parameter.pageSize, parameter.pageIndex, parameter.filter, parameter.sort, parameter.typeUser, parameter.userName);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        /// <summary>
+        /// Lấy danh sách member popular this week
+        /// </summary>
+        /// <param name="pageSize">Số lượng bán ghi/1 trang</param>
+        /// <param name="pageIndex">Trang thứ mấy</param>
+        /// <param name="filter">tìm kiếm theo userName hoăc email</param>
+        /// <returns></returns>
+        [HttpPost("GetPopularThisWeek")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetPopularThisWeek([FromBody] PagingParameter parameter)
+        {
+            try
+            {
+                var res = await _userService.GetPopularThisWeek(parameter.pageSize, parameter.pageIndex, parameter.filter);
                 return Ok(res);
             }
             catch (Exception ex)

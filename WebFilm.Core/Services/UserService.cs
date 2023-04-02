@@ -306,6 +306,11 @@ namespace WebFilm.Core.Services
             return await _userRepository.GetPaging(pageSize, pageIndex, filter, sort, typeUser, userName);
         }
 
+        public async Task<object> GetPopularThisWeek(int pageSize, int pageIndex, string filter)
+        {
+            return await _userRepository.GetPopularThisWeek(pageSize, pageIndex, filter);
+        }
+
         public ProfileDTO getProfile(string userName)
         {
             User user = _userRepository.getUserByUsername(userName);
@@ -322,12 +327,12 @@ namespace WebFilm.Core.Services
                 JArray favouriteFilms = JArray.Parse(user.FavouriteFilmList);
                 foreach (JObject obj in favouriteFilms.ToArray())
                 {
-                    int id = (int)obj.GetValue("id");
+                    int id = (int)obj.GetValue("FilmID");
                     string posterPath = (string)obj.GetValue("poster_path");
                     string title = (string)obj.GetValue("title");
                     BaseFilmDTO dto = new BaseFilmDTO();
-                    dto.ID = id;
-                    dto.PosterPath = posterPath;
+                    dto.FilmID = id;
+                    dto.Poster_path = posterPath;
                     dto.Title = title;
                     dtos.Add(dto);
                 }
@@ -363,9 +368,9 @@ namespace WebFilm.Core.Services
             foreach (Film film in films)
             {
                 BaseFilmDTO dto = new BaseFilmDTO();
-                dto.ID = film.FilmID;
+                dto.FilmID = film.FilmID;
                 dto.Title = film.Title;
-                dto.PosterPath = film.Poster_path;
+                dto.Poster_path = film.Poster_path;
                 watchListBase.Add(dto);
             }
             watchListDTO.Films = watchListBase;
@@ -381,9 +386,9 @@ namespace WebFilm.Core.Services
             foreach (Film film in filmRecent)
             {
                 BaseFilmDTO dto = new BaseFilmDTO();
-                dto.ID = film.FilmID;
+                dto.FilmID = film.FilmID;
                 dto.Title = film.Title;
-                dto.PosterPath = film.Poster_path;
+                dto.Poster_path = film.Poster_path;
                 filmRecentBase.Add(dto);
             }
             recentListDTO.ListCount = filmRecent.Count;

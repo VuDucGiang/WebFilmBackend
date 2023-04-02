@@ -8,10 +8,12 @@ namespace WebFilm.Core.Enitites.User.Profile
 {
     public class BaseFilmDTO
     {
-        public int ID { get; set; }
+        public int FilmID { get; set; }
 
-        public string PosterPath { get; set; }
+        public string Poster_path { get; set; }
 
         public string Title { get; set; }
+
+        public string Release_date { get; set; }
     }
 }

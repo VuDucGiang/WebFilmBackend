@@ -36,6 +36,9 @@ builder.Services.AddScoped<IFilmListRepository, FilmListRepository>();
 builder.Services.AddScoped<ILikeRepository, LikeRepository>();
 builder.Services.AddScoped<IRatingRepository, RatingRepository>();
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUserContext, UserContext>();
+
 
 //Mail
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection(nameof(MailSettings)));

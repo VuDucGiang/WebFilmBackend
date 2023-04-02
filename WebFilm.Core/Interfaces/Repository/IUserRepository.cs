@@ -43,6 +43,8 @@ namespace WebFilm.Core.Interfaces.Repository
 
         Task<PagingResult> GetPaging(int pageSize, int pageIndex, string filter, string sort, TypeUser typeUser, string userName);
 
+        Task<object> GetPopularThisWeek(int pageSize, int pageIndex, string filter);
+
         User getUserByUsername(string username);
 
     }
