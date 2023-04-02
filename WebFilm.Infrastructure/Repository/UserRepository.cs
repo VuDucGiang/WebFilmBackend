@@ -293,7 +293,7 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCommand = "SELECT * FROM UserName WHERE  = @v_UserName";
+                var sqlCommand = "SELECT * FROM User WHERE  UserName = @v_UserName";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("v_UserName", username);
                 var user = SqlConnection.QueryFirstOrDefault<User>(sqlCommand, parameters);
