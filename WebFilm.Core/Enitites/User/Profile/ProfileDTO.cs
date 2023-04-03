@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebFilm.Core.Enitites.Review.dto;
 
 namespace WebFilm.Core.Enitites.User.Profile
 {
@@ -10,11 +11,17 @@ namespace WebFilm.Core.Enitites.User.Profile
     {
         public string UserName { get; set; }
 
-        public int ReviewCount { get; set; }
+        public string FullName { get; set; }
 
-        public int ListCount { get; set; }
+        public string Bio { get; set; }
 
-        public int Followers { get; set; }
+        public string Avatar { get; set; }
+
+        public int TotalReview { get; set; }
+
+        public int TotalLists { get; set; }
+
+        public Following Followers { get; set; }
 
         public Following Following { get; set; }
 
@@ -22,12 +29,14 @@ namespace WebFilm.Core.Enitites.User.Profile
 
         public WatchListDTO WatchList { get; set; }
 
-        public RecentListDTO RecentList { get; set; }
+        public List<RecentListDTO> ListRecentList { get; set; }
 
         public List<RecentLikeDTO> RecentLikes { get; set; }
 
-        public List<ReviewBase> RecentReview { get; set; }
+        public List<BaseReviewDTO> ListRecentReview { get; set; }
 
-        public List<ReviewBase> PopularReview { get; set; }
+        public List<BaseReviewDTO> ListPopularReview { get; set; }
+
+        public RateStat RateStats { get; set; }
     }
 }

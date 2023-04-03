@@ -8,12 +8,11 @@ namespace WebFilm.Core.Enitites.User.Profile
 {
     public class RecentLikeDTO
     {
-        public int ID { get; set; }
+        public int FilmID { get; set; }
 
         public string PosterPath { get; set; }
 
         public string Title { get; set; }
 
-        public float CountRate { get; set; }
     }
 }

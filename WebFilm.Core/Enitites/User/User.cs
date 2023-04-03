@@ -50,6 +50,8 @@ namespace WebFilm.Core.Enitites.User
 
         public string? Avatar { get; set; }
 
+        public string? Bio { get; set; }
+
         /// <summary>
         /// Ngày sửa
         /// </summary>

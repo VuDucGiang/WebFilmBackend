@@ -32,4 +32,9 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Enitites\Review\NewFolder1\" />
+    <Folder Include="Enitites\Review\NewFolder\" />
+  </ItemGroup>
+
 </Project>

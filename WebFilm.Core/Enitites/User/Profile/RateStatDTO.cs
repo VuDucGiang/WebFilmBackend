@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace WebFilm.Core.Enitites.User.Profile
 {
-    public class FollowingDTO
+    public class RateStatDTO
     {
-        public Guid UserID { get; set; }
+        public float Value { get; set; }
 
-        public string UserName { get; set; }
+        public int Total { get; set; }
 
-        public string Avatar { get; set; }
+        public float Percent { get; set; }
     }
 }

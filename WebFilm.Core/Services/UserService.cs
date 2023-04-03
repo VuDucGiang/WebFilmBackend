@@ -2,6 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -14,6 +15,7 @@ using WebFilm.Core.Enitites.List;
 using WebFilm.Core.Enitites.Mail;
 using WebFilm.Core.Enitites.Rating;
 using WebFilm.Core.Enitites.Review;
+using WebFilm.Core.Enitites.Review.dto;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Enitites.User.Profile;
 using WebFilm.Core.Enitites.WatchList;
@@ -34,6 +36,7 @@ namespace WebFilm.Core.Services
         IFilmListRepository _filmListRepository;
         ILikeRepository _likeRepository;
         IRatingRepository _ratingRepository;
+        IUserContext _userContext;
         private readonly IMailService _mail;
         private readonly IConfiguration _configuration;
 
@@ -47,7 +50,8 @@ namespace WebFilm.Core.Services
             IFilmRepository filmRepository,
             IFilmListRepository filmListRepository,
             ILikeRepository likeRepository,
-            IRatingRepository ratingRepository) : base(userRepository)
+            IRatingRepository ratingRepository,
+            IUserContext userContext) : base(userRepository)
         {
             _userRepository = userRepository;
             _reviewRepository = reviewRepository;
@@ -60,6 +64,7 @@ namespace WebFilm.Core.Services
             _filmListRepository = filmListRepository;
             _likeRepository = likeRepository;
             _ratingRepository = ratingRepository;
+            _userContext = userContext;
         }
 
         #region Method
@@ -332,7 +337,7 @@ namespace WebFilm.Core.Services
                     string title = (string)obj.GetValue("title");
                     BaseFilmDTO dto = new BaseFilmDTO();
                     dto.FilmID = id;
-                    dto.Poster_path = posterPath;
+                    dto.PosterPath = posterPath;
                     dto.Title = title;
                     dtos.Add(dto);
                 }
@@ -341,23 +346,39 @@ namespace WebFilm.Core.Services
 
             List<Review> reviews = _reviewRepository.GetReviewByUserID(userID);
             List<List> lists = _listRepository.GetAll().ToList();
+            //followers
             List<Follow> followers = _followRepository.getFollowByUserID(userID);
+            Following follower = new Following();
+            List<Guid> userIdsFollower = followers.Select(p => p.FollowedUserID).ToList();
+            List<User> usersFollower = _userRepository.GetAll().Where(p => userIdsFollower.Contains(p.UserID)).Take(20).ToList();
+            List<FollowingDTO> userDtosFollower = new List<FollowingDTO>();
+            foreach (User u in usersFollower)
+            {
+                FollowingDTO dto = new FollowingDTO();
+                dto.UserID = u.UserID;
+                dto.Avatar = u.Avatar;
+                dto.UserName = u.UserName;
+                userDtosFollower.Add(dto);
+            }
+            follower.Total = followers.Count;
+            follower.List = userDtosFollower;
 
             //following
             List<Follow> followings = _followRepository.getFollowingByUserID(userID);
             Following following = new Following();
             List<Guid> userIds = followings.Select(p => p.UserID).ToList();
-            List<User> users = _userRepository.GetAll().Where(p => userIds.Contains(p.UserID)).ToList();
+            List<User> users = _userRepository.GetAll().Where(p => userIds.Contains(p.UserID)).Take(20).ToList();
             List<FollowingDTO> userDtos = new List<FollowingDTO>();
             foreach (User u in users)
             {
                 FollowingDTO dto = new FollowingDTO();
                 dto.UserID = u.UserID;
                 dto.Avatar = u.Avatar;
+                dto.UserName = u.UserName;
                 userDtos.Add(dto);
             }
-            following.FollowingCount = followings.Count;
-            following.Followings = userDtos;
+            following.Total = followings.Count;
+            following.List = userDtos;
 
             //handle watchlist
             WatchListDTO watchListDTO = new WatchListDTO();
@@ -370,30 +391,36 @@ namespace WebFilm.Core.Services
                 BaseFilmDTO dto = new BaseFilmDTO();
                 dto.FilmID = film.FilmID;
                 dto.Title = film.Title;
-                dto.Poster_path = film.Poster_path;
+                dto.PosterPath = film.Poster_path;
                 watchListBase.Add(dto);
             }
-            watchListDTO.Films = watchListBase;
-            watchListDTO.FilmsCount = watchList.Count;
+            watchListDTO.List = watchListBase;
+            watchListDTO.Total = watchList.Count;
 
             //recent list
-            RecentListDTO recentListDTO = new RecentListDTO();
-            List list = _listRepository.GetAll().OrderByDescending(p => p.ModifiedDate).First();
-            List<FilmList> filmLists = _filmListRepository.GetAll().Where(p => p.ListID == list.ListID).Take(5).ToList();
-            List<int> filmListIDS = filmLists.Select(p => p.FilmID).ToList();
-            List<Film> filmRecent = _filmRepository.GetAll().Where(p => filmListIDS.Contains(p.FilmID)).ToList();
-            List<BaseFilmDTO> filmRecentBase = new List<BaseFilmDTO>();
-            foreach (Film film in filmRecent)
+            List<RecentListDTO> recentListDTO = new List<RecentListDTO>();
+            List<List> listRecents = _listRepository.GetAll().OrderByDescending(p => p.ModifiedDate).Take(3).ToList();
+            foreach (List list in listRecents)
             {
-                BaseFilmDTO dto = new BaseFilmDTO();
-                dto.FilmID = film.FilmID;
-                dto.Title = film.Title;
-                dto.Poster_path = film.Poster_path;
-                filmRecentBase.Add(dto);
+                RecentListDTO dto = new RecentListDTO();
+                List<FilmList> filmLists = _filmListRepository.GetAll().Where(p => p.ListID == list.ListID).Take(5).ToList();
+                List<int> filmListIDS = filmLists.Select(p => p.FilmID).ToList();
+                List<Film> filmRecent = _filmRepository.GetAll().Where(p => filmListIDS.Contains(p.FilmID)).ToList();
+                List<BaseFilmDTO> filmRecentBase = new List<BaseFilmDTO>();
+                foreach (Film film in filmRecent)
+                {
+                    BaseFilmDTO dto2 = new BaseFilmDTO();
+                    dto2.FilmID = film.FilmID;
+                    dto2.Title = film.Title;
+                    dto2.PosterPath = film.Poster_path;
+                    filmRecentBase.Add(dto2);
+                }
+                dto.Total = filmRecent.Count;
+                dto.List = filmRecentBase;
+                dto.Description = list.Description;
+                recentListDTO.Add(dto);
             }
-            recentListDTO.ListCount = filmRecent.Count;
-            recentListDTO.Films = filmRecentBase;
-            recentListDTO.Description = list.Description;
+           
 
             //recent like
             List<RecentLikeDTO> recentLikeDTOs = new List<RecentLikeDTO>();
@@ -406,65 +433,96 @@ namespace WebFilm.Core.Services
             {
                 RecentLikeDTO dto = new RecentLikeDTO();
                 Rating rating = _ratingRepository.GetAll().Where(p => (p.FilmID == film.FilmID && p.UserID.Equals(userID))).First();
-                dto.ID = film.FilmID;
+                dto.FilmID = film.FilmID;
                 dto.Title = film.Title;
                 dto.PosterPath = film.Poster_path;
-                if (rating != null)
-                {
-                    dto.CountRate = rating.Score;
-
-                }
                 recentLikeDTOs.Add(dto);
             }
 
             //recent review
-            List<ReviewBase> baseRecentReviews = new List<ReviewBase>();
+            List<BaseReviewDTO> baseRecentReviews = new List<BaseReviewDTO>();
             List<Review> recentReviews = _reviewRepository.GetReviewByUserID(userID).OrderByDescending(p => p.CreatedDate)
                 .Take(2).ToList();
             baseRecentReviews = this.enRichReviews(baseRecentReviews, recentReviews, userID);
 
             //popular review
-            List<ReviewBase> popularReviews = new List<ReviewBase>();
+            List<BaseReviewDTO> popularReviews = new List<BaseReviewDTO>();
             List<Review> recentReviewsPopular = _reviewRepository.GetReviewByUserID(userID).OrderByDescending(p => p.LikesCount)
                 .Take(2).ToList();
             popularReviews = this.enRichReviews(popularReviews, recentReviewsPopular, userID);
 
             profile.UserName = user.UserName;
+            if (user.FullName!= null)
+            {
+                profile.FullName = user.FullName;
+            }
+            if (user.Bio != null)
+            {
+                profile.Bio = user.Bio;
+            }
+            if (user.Avatar!= null)
+            {
+                profile.Avatar = user.Avatar;
+            }
+
+            //rate stat
+            RateStat rateStats= new RateStat();
+            List<RateStatDTO> rateStatsPopular = _ratingRepository.GetRatesByUserID(userID).ToList();
+            rateStats.List = rateStatsPopular;
+            rateStats.Total = rateStatsPopular.Select(p => p.Total).Sum();
+
             profile.FavouriteFilms = filmFavourite;
-            profile.ReviewCount = reviews.Count;
-            profile.ListCount = lists.Count;
-            profile.Followers = followers.Count;
+            profile.TotalReview = reviews.Count;
+            profile.TotalLists = lists.Count;
+            profile.Followers = follower;
             profile.Following = following;
             profile.WatchList = watchListDTO;
-            profile.RecentList = recentListDTO;
+            profile.ListRecentList = recentListDTO;
             profile.RecentLikes = recentLikeDTOs;
-            profile.RecentReview = baseRecentReviews;
-            profile.PopularReview = popularReviews;
+            profile.ListRecentReview = baseRecentReviews;
+            profile.ListPopularReview = popularReviews;
+            profile.RateStats = rateStats;
 
             return profile;
         }
 
-        private List<ReviewBase> enRichReviews(List<ReviewBase> reviewsRecent, List<Review> reviews, Guid userID)
+        private List<BaseReviewDTO> enRichReviews(List<BaseReviewDTO> reviewsRecent, List<Review> reviews, Guid userID)
         {
+            String userName = _userContext.UserName;
+            User user = _userRepository.getUserByUsername(userName);
             foreach (Review review in reviews)
             {
-                ReviewBase dto = new ReviewBase();
+                BaseReviewDTO dto = new BaseReviewDTO();
                 Film film = _filmRepository.GetByID(review.FilmID);
+                FilmReviewDTO filmReview = new FilmReviewDTO();
                 List<Rating> rates = _ratingRepository.GetAll()
                     .Where(p => (p.FilmID == film.FilmID && p.UserID.Equals(userID))).ToList();
                 if (rates.Count > 0)
                 {
                     Rating rate = rates[0];
-                    dto.Rating = rate.Score;
+                    dto.Rate = rate.Score;
                     dto.RatingCreatedAt = rate.CreatedDate.ToString().Substring(0, 10);
                 }
                 if (film != null)
                 {
-                    dto.Title = film.Title;
-                    dto.ReleaseYear = film.Release_date.Substring(0, 4);
+                    filmReview.FilmID = film.FilmID;
+                    filmReview.PosterPath = film.Poster_path;
+                    filmReview.Title = film.Title;
+                    filmReview.ReleaseDate = film.Release_date.Substring(0, 4);
                 }
-                dto.LikeCount = review.LikesCount;
+                if (user != null)
+                {
+                    Like like = _likeRepository.getlikeByUserIDAndTypeAndParentID(user.UserID, TypeLike.Review.ToString(), review.ReviewID);
+                    if (like != null)
+                    {
+                        dto.IsLiked = true;
+                    }
+                }
+                dto.ReviewID = review.ReviewID;
+                dto.Film = filmReview;
+                dto.TotalLike = review.LikesCount;
                 dto.Content = review.Content;
+                
 
                 reviewsRecent.Add(dto);
             }

@@ -8,8 +8,8 @@ namespace WebFilm.Core.Enitites.User.Profile
 {
     public class Following
     {
-        public int FollowingCount { get; set; }
+        public int Total { get; set; }
 
-        public List<FollowingDTO> Followings { get; set; }
+        public List<FollowingDTO> List { get; set; }
     }
 }
