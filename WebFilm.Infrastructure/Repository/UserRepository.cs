@@ -227,6 +227,8 @@ namespace WebFilm.Infrastructure.Repository
                 {
                     Data = data,
                     Total = total,
+                    PageSize = pageSize,
+                    PageIndex = pageIndex,
                     TotalPage = totalPage,
                 };
             }
@@ -284,6 +286,8 @@ namespace WebFilm.Infrastructure.Repository
                 {
                     Data = data,
                     Total = total,
+                    PageSize = pageSize,
+                    PageIndex = pageIndex,
                     TotalPage = totalPage
                 };
             }
