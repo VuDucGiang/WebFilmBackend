@@ -14,6 +14,6 @@ namespace WebFilm.Core.Enitites.User.Profile
 
         public string? Title { get; set; }
 
-        public DateTime Release_date { get; set; }
+        public DateTime? Release_date { get; set; }
     }
 }
