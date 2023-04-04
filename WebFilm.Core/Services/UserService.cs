@@ -522,7 +522,7 @@ namespace WebFilm.Core.Services
                 dto.Film = filmReview;
                 dto.TotalLike = review.LikesCount;
                 dto.Content = review.Content;
-                
+                dto.ReviewDate = review.CreatedDate;
 
                 reviewsRecent.Add(dto);
             }
