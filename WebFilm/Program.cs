@@ -31,6 +31,7 @@ builder.Services.AddScoped<IFollowService, FollowService>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IListRepository, ListRepository>();
 builder.Services.AddScoped<IWatchListRepository, WatchListRepository>();
+builder.Services.AddScoped<IFilmService, FilmService>();
 builder.Services.AddScoped<IFilmRepository, FilmRepository>();
 builder.Services.AddScoped<IFilmListRepository, FilmListRepository>();
 builder.Services.AddScoped<ILikeRepository, LikeRepository>();

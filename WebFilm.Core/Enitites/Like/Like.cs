@@ -9,7 +9,7 @@ namespace WebFilm.Core.Enitites.Like
 
         public Guid UserID { get; set; }
 
-        public TypeLike Type { get; set; }
+        public string Type { get; set; }
 
         public DateTime Date { get; set; }
 

@@ -195,6 +195,7 @@ namespace WebFilm.Controllers
         }
 
         [HttpGet("{userName}/Profile")]
+        [AllowAnonymous]
         public IActionResult getProfile(string userName)
         {
             try

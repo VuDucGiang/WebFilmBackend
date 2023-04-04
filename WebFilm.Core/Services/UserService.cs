@@ -337,7 +337,7 @@ namespace WebFilm.Core.Services
                     string title = (string)obj.GetValue("title");
                     BaseFilmDTO dto = new BaseFilmDTO();
                     dto.FilmID = id;
-                    dto.PosterPath = posterPath;
+                    dto.Poster_path = posterPath;
                     dto.Title = title;
                     dtos.Add(dto);
                 }
@@ -391,7 +391,7 @@ namespace WebFilm.Core.Services
                 BaseFilmDTO dto = new BaseFilmDTO();
                 dto.FilmID = film.FilmID;
                 dto.Title = film.Title;
-                dto.PosterPath = film.Poster_path;
+                dto.Poster_path = film.Poster_path;
                 watchListBase.Add(dto);
             }
             watchListDTO.List = watchListBase;
@@ -412,7 +412,7 @@ namespace WebFilm.Core.Services
                     BaseFilmDTO dto2 = new BaseFilmDTO();
                     dto2.FilmID = film.FilmID;
                     dto2.Title = film.Title;
-                    dto2.PosterPath = film.Poster_path;
+                    dto2.Poster_path = film.Poster_path;
                     filmRecentBase.Add(dto2);
                 }
                 dto.Total = filmRecent.Count;
@@ -506,9 +506,9 @@ namespace WebFilm.Core.Services
                 if (film != null)
                 {
                     filmReview.FilmID = film.FilmID;
-                    filmReview.PosterPath = film.Poster_path;
+                    filmReview.Poster_path = film.Poster_path;
                     filmReview.Title = film.Title;
-                    filmReview.ReleaseDate = film.Release_date.Substring(0, 4);
+                    filmReview.Release_date = film.Release_date;
                 }
                 if (user != null)
                 {
