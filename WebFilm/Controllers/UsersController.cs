@@ -179,13 +179,13 @@ namespace WebFilm.Controllers
         /// <param name="pageIndex">Trang thứ mấy</param>
         /// <param name="filter">tìm kiếm theo userName hoăc email</param>
         /// <returns></returns>
-        [HttpPost("GetPopularThisWeek")]
+        [HttpPost("Popular")]
         [AllowAnonymous]
         public async Task<IActionResult> GetPopularThisWeek([FromBody] PagingParameter parameter)
         {
             try
             {
-                var res = await _userService.GetPopularThisWeek(parameter.pageSize, parameter.pageIndex, parameter.filter);
+                var res = await _userService.GetPopularThisWeek(parameter.pageSize, parameter.pageIndex, parameter.filter, parameter.sort);
                 return Ok(res);
             }
             catch (Exception ex)

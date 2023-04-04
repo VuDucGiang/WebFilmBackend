@@ -234,11 +234,32 @@ namespace WebFilm.Infrastructure.Repository
             }
         }
 
-        public async Task<object> GetPopularThisWeek(int pageSize, int pageIndex, string filter)
+        public async Task<object> GetPopularThisWeek(int pageSize, int pageIndex, string filter, string sort)
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 int offset = (pageIndex - 1) * pageSize;
+                string where = "";
+                string where1 = "";
+                switch (sort)
+                {
+                    case "All":
+                        break;
+                    case "Week":
+                        where = "AND WEEK(r.CreatedDate) = WEEK(CURDATE()) AND YEAR(r.CreatedDate) = YEAR(CURDATE())";
+                        where1 = "AND WEEK(r1.CreatedDate) = WEEK(CURDATE()) AND YEAR(r1.CreatedDate) = YEAR(CURDATE())";
+                        break;
+                    case "Month":
+                        where = "AND MONTH(r.CreatedDate) = MONTH(CURDATE()) AND YEAR(r.CreatedDate) = YEAR(CURDATE())";
+                        where1 = "AND MONTH(r1.CreatedDate) = MONTH(CURDATE()) AND YEAR(r1.CreatedDate) = YEAR(CURDATE())";
+                        break;
+                    case "Year":
+                        where = "AND YEAR(r.CreatedDate) = YEAR(CURDATE())";
+                        where1 = "AND YEAR(r1.CreatedDate) = YEAR(CURDATE())";
+                        break;
+                    default:
+                        break;
+                }
                 var sqlCommand = @$"SELECT u.UserID, u.UserName, u.FullName, u.Email, u.DateOfBirth, u.RoleType, u.FavouriteFilmList, u.Avatar, u.Bio, u.Banner,
                                     IF(f1.FollowID IS NOT NULL, true, FALSE) AS Followed,
                                     r.LikesCount,
@@ -248,7 +269,7 @@ namespace WebFilm.Infrastructure.Repository
                                     FROM (
                                         SELECT r1.FilmID, r1.CreatedDate
                                         FROM review r1
-                                        WHERE r1.UserID = u.UserID AND WEEK(r1.CreatedDate) = WEEK(CURDATE())
+                                        WHERE r1.UserID = u.UserID {where1}
                                         ORDER BY r1.LikesCount DESC
                                         LIMIT 3
                                     ) r2
@@ -256,7 +277,7 @@ namespace WebFilm.Infrastructure.Repository
                                     ) AS TopReviewFilms   
                                     FROM user u
                                     LEFT JOIN follow f1 ON u.UserID = f1.FollowedUserID
-                                    LEFT JOIN review r ON u.UserID = r.UserID AND WEEK(r.CreatedDate) = WEEK(CURDATE())
+                                    LEFT JOIN review r ON u.UserID = r.UserID {where}
                                     WHERE (u.UserName LIKE CONCAT('%', @filter, '%') OR u.Email LIKE CONCAT('%', @filter, '%'))
                                     GROUP BY u.UserID
                                     ORDER BY Reviews DESC 
