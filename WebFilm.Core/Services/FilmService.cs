@@ -21,5 +21,10 @@ namespace WebFilm.Core.Services
         {
             return await _filmRepository.GetPaging(parameter);
         }
+
+        public async Task<object> GetPopular(int pageSize, int pageIndex, string filter, string sort)
+        {
+            return await _filmRepository.GetPopular(pageSize, pageIndex, filter, sort);
+        }
     }
 }

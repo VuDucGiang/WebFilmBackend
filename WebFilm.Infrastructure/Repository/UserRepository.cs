@@ -233,7 +233,7 @@ namespace WebFilm.Infrastructure.Repository
             }
         }
 
-        public async Task<object> GetPopularThisWeek(int pageSize, int pageIndex, string filter, string sort)
+        public async Task<object> GetPopular(int pageSize, int pageIndex, string filter, string sort)
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {

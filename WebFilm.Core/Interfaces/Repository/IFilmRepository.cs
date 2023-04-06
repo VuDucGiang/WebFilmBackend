@@ -12,5 +12,6 @@ namespace WebFilm.Core.Interfaces.Repository
     public interface IFilmRepository : IBaseRepository<int, Film>
     {
         public Task<object> GetPaging(PagingParameterFilm parameter);
+        Task<object> GetPopular(int pageSize, int pageIndex, string filter, string sort);
     }
 }

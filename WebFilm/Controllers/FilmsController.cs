@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.Film;
 using WebFilm.Core.Interfaces.Services;
+using WebFilm.Core.Services;
 
 namespace WebFilm.Controllers
 {
@@ -27,6 +28,20 @@ namespace WebFilm.Controllers
             try
             {
                 var res = await _filmService.GetPaging(parameter);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpPost("Popular")]
+        public async Task<IActionResult> GetPopular([FromBody] PagingParameter parameter)
+        {
+            try
+            {
+                var res = await _filmService.GetPopular(parameter.pageSize, parameter.pageIndex, parameter.filter, parameter.sort);
                 return Ok(res);
             }
             catch (Exception ex)

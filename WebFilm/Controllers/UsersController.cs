@@ -181,11 +181,11 @@ namespace WebFilm.Controllers
         /// <returns></returns>
         [HttpPost("Popular")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetPopularThisWeek([FromBody] PagingParameter parameter)
+        public async Task<IActionResult> GetPopular([FromBody] PagingParameter parameter)
         {
             try
             {
-                var res = await _userService.GetPopularThisWeek(parameter.pageSize, parameter.pageIndex, parameter.filter, parameter.sort);
+                var res = await _userService.GetPopular(parameter.pageSize, parameter.pageIndex, parameter.filter, parameter.sort);
                 return Ok(res);
             }
             catch (Exception ex)

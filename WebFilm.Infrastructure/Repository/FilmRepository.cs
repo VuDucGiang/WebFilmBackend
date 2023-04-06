@@ -35,7 +35,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 int offset = (parameter.pageIndex - 1) * parameter.pageSize;
-                var sql = "SELECT f.*, IF(l.LikeID IS NOT NULL, True, False) AS Liked FROM Film f LEFT JOIN `like` l ON f.FilmID = l.ParentID AND l.UserID = @userID "; 
+                var sql = "SELECT f.*, COUNT(f1.ListID) AS Appears, IF(l.LikeID IS NOT NULL, True, False) AS Liked FROM Film f LEFT JOIN `like` l ON f.FilmID = l.ParentID AND l.UserID = @userID AND l.Type = 'Film' LEFT JOIN filmlist f1 ON f.FilmID = f1.FilmID "; 
                 var where = "WHERE 1=1";
                 DynamicParameters parameters = new DynamicParameters();
 
@@ -63,7 +63,7 @@ namespace WebFilm.Infrastructure.Repository
                     where += @" AND title LIKE CONCAT('%', @title, '%')";
                 }
 
-                sql += where + @$" LIMIT @pageSize OFFSET @offset;
+                sql += where + @$" GROUP BY f.FilmID LIMIT @pageSize OFFSET @offset;
                                 SELECT COUNT(FilmID) FROM Film " + where;
                
                 parameters.Add("@userID", _userContext.UserId);
@@ -87,5 +87,58 @@ namespace WebFilm.Infrastructure.Repository
                 };
             }
         }
+
+        public async Task<object> GetPopular(int pageSize, int pageIndex, string filter, string sort)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                int offset = (pageIndex - 1) * pageSize;
+                string where = "";
+                switch (sort)
+                {
+                    case "All":
+                        break;
+                    case "Week":
+                        where = "AND WEEK(l1.CreatedDate) = WEEK(CURDATE()) AND YEAR(l1.CreatedDate) = YEAR(CURDATE())";
+                        break;
+                    case "Month":
+                        where = "AND MONTH(l1.CreatedDate) = MONTH(CURDATE()) AND YEAR(l1.CreatedDate) = YEAR(CURDATE())";
+                        break;
+                    case "Year":
+                        where = "AND YEAR(l1.CreatedDate) = YEAR(CURDATE())";
+                        break;
+                    default:
+                        break;
+                }
+                var sqlCommand = @$"SELECT f.*, COUNT(f1.ListID) AS Appears, IF(l.LikeID IS NOT NULL, True, False) AS Liked, COUNT(l1.LikeID) AS LikeInSort FROM film f
+                                    LEFT JOIN `like` l ON f.FilmID = l.ParentID AND l.UserID = @userID AND l.Type = 'Film'
+                                    LEFT JOIN filmlist f1 ON f.FilmID = f1.FilmID
+                                    LEFT JOIN `like` l1 ON f.FilmID = l1.ParentID AND l1.Type = 'Film' {where}
+                                    GROUP BY f.FilmID
+                                    ORDER BY LikeInSort DESC
+                                    LIMIT @pageSize OFFSET @offset;
+
+                                    SELECT COUNT(*) FROM film f;";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@filter", filter);
+                parameters.Add("@pageSize", pageSize);
+                parameters.Add("@offset", offset);
+                parameters.Add("@userID", _userContext.UserId);
+                var result = await SqlConnection.QueryMultipleAsync(sqlCommand, parameters);
+                //Trả dữ liệu về client
+                var data = result.Read<object>().ToList();
+                var total = result.Read<int>().Single();
+                int totalPage = (int)Math.Ceiling((double)total / pageSize);
+                return new
+                {
+                    Data = data,
+                    Total = total,
+                    PageSize = pageSize,
+                    PageIndex = pageIndex,
+                    TotalPage = totalPage
+                };
+            }
+        }
+
     }
 }

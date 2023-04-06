@@ -33,7 +33,7 @@ namespace WebFilm.Core.Interfaces.Services
 
         Task<PagingResult> GetPaging(int pageSize, int pageIndex, string filter, string sort, TypeUser typeUser, string userName);
 
-        Task<object> GetPopularThisWeek(int pageSize, int pageIndex, string filter, string sort);
+        Task<object> GetPopular(int pageSize, int pageIndex, string filter, string sort);
 
         ProfileDTO getProfile(string userName);
 

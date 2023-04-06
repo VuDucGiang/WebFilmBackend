@@ -311,9 +311,9 @@ namespace WebFilm.Core.Services
             return await _userRepository.GetPaging(pageSize, pageIndex, filter, sort, typeUser, userName);
         }
 
-        public async Task<object> GetPopularThisWeek(int pageSize, int pageIndex, string filter, string sort)
+        public async Task<object> GetPopular(int pageSize, int pageIndex, string filter, string sort)
         {
-            return await _userRepository.GetPopularThisWeek(pageSize, pageIndex, filter, sort);
+            return await _userRepository.GetPopular(pageSize, pageIndex, filter, sort);
         }
 
         public ProfileDTO getProfile(string userName)
