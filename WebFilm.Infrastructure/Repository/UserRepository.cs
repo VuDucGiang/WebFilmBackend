@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using MySqlConnector;
 using Newtonsoft.Json;
 using WebFilm.Core.Enitites;
-using WebFilm.Core.Enitites.Film;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Enitites.User.Profile;
 using WebFilm.Core.Interfaces.Repository;
