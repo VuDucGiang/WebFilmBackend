@@ -11,5 +11,7 @@ namespace WebFilm.Core.Interfaces.Repository
     {
         List<Review> GetReviewByUserID(Guid userID);
 
+        Task<object> GetPopular(int pageSize, int pageIndex, string filter, string sort);
+
     }
 }
