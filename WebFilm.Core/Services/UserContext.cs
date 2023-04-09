@@ -18,19 +18,28 @@ namespace WebFilm.Core.Services
             _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         }
 
-        public Guid UserId
+        public Guid? UserId
         {
             get
             {
-                return Guid.Parse(GetClaimValue("ID"));
+                if (GetClaimValue("ID") != null)
+                {
+                    return Guid.Parse(GetClaimValue("ID"));
+                }
+                return null;
             }
         }
 
-        public string UserName
+        public string? UserName
         {
             get
             {
-                return GetClaimValue("Username");
+                if(GetClaimValue("Name") != null)
+                {
+                    return GetClaimValue("Username");
+                }
+                return null;
+                
             }
         }
 

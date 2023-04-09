@@ -9,8 +9,8 @@ namespace WebFilm.Core.Interfaces.Services
 {
     public interface IUserContext
     {
-        Guid UserId { get; }
-        string UserName { get; }
+        Guid? UserId { get; }
+        string? UserName { get; }
         string Email { get; }
         int RoleType { get; }
     }
