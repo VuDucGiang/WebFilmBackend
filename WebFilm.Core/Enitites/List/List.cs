@@ -16,6 +16,8 @@ namespace WebFilm.Core.Enitites.List
         public string Description { get; set; }
         public int LikesCount { get; set; }
         public int Private { get; set; }
+        public int CommentsCount { get; set; }
+
 
     }
 }

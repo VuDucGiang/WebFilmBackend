@@ -1,56 +1,57 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebFilm.Core.Enitites;
-using WebFilm.Core.Enitites.Review;
+using WebFilm.Core.Enitites.Film;
+using WebFilm.Core.Enitites.Journal;
 using WebFilm.Core.Interfaces.Services;
 using WebFilm.Core.Services;
 
 namespace WebFilm.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class ReviewsController : BaseController<int, Review>
+    [AllowAnonymous]
+    public class JournalsController : BaseController<int, Journal>
     {
         #region Field
-        IReviewService _reviewService;
+        IJournalService _journalService;
         #endregion
 
         #region Contructor
-        public ReviewsController(IReviewService reviewService) : base(reviewService)
+        public JournalsController(IJournalService journalService) : base(journalService)
         {
-            _reviewService = reviewService;
+            _journalService = journalService;
+        }
+
+        [AllowAnonymous]
+        [HttpGet("Lastest")]
+        public IActionResult GetLastest()
+        {
+            try
+            {
+                var res = _journalService.GetLastestJournal();
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpGet("New")]
+        public IActionResult GetNewJournal()
+        {
+            try
+            {
+                var res = _journalService.GetListNewJournal();
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
         }
         #endregion
-
-        [AllowAnonymous]
-        [HttpPost("Popular")]
-        public async Task<IActionResult> GetPopular([FromBody] PagingParameter parameter)
-        {
-            try
-            {
-                var res = await _reviewService.GetPopular(parameter.pageSize, parameter.pageIndex, parameter.filter, parameter.sort);
-                return Ok(res);
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
-        }
-
-        [AllowAnonymous]
-        [HttpGet("Recent")]
-        public IActionResult GetRecent()
-        {
-            try
-            {
-                var res = _reviewService.GetRecent();
-                return Ok(res);
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
-        }
     }
 }
