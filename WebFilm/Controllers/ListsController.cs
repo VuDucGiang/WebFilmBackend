@@ -37,6 +37,81 @@ namespace WebFilm.Controllers
                 return HandleException(ex);
             }
         }
+
+        [AllowAnonymous]
+        [HttpGet("Popular/Week")]
+        public IActionResult GetPopularInWeek()
+        {
+            try
+            {
+                var res = _listService.GetListPopularWeek();
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpGet("RecentLike")]
+        public IActionResult GetRecentLikeList()
+        {
+            try
+            {
+                var res = _listService.GetListRecentLikes();
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpGet("Popular/Month")]
+        public IActionResult GetPopularInMonth()
+        {
+            try
+            {
+                var res = _listService.GetListPopularMonth();
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpGet("CrewList")]
+        public IActionResult GetCrewList()
+        {
+            try
+            {
+                var res = _listService.GetCrewList();
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpGet("TopLike")]
+        public IActionResult GetListTop()
+        {
+            try
+            {
+                var res = _listService.ListTop();
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
         #endregion
     }
 }

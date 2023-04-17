@@ -11,5 +11,15 @@ namespace WebFilm.Core.Interfaces.Services
     public interface IListService : IBaseService<int, List>
     {
         List<ListPopularDTO> GetListPopular();
+
+        List<ListPopularDTO> GetListPopularWeek();
+
+        List<ListPopularDTO> GetListRecentLikes();
+
+        List<ListPopularDTO> GetListPopularMonth();
+
+        List<ListPopularDTO> GetCrewList();
+
+        List<ListPopularDTO> ListTop();
     }
 }

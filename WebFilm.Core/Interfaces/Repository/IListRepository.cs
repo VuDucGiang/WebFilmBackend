@@ -10,5 +10,11 @@ namespace WebFilm.Core.Interfaces.Repository
 {
     public interface IListRepository : IBaseRepository<int, List>
     {
+        List<ListPopularWeekDTO> PopularWeekList();
+        List<ListRecentLikeDTO> RecentLikeList();
+        List<ListPopularWeekDTO> PopularMonthList();
+        List<ListPopularWeekDTO> ListCrew();
+        List<ListPopularWeekDTO> ListTopLike();
+
     }
 }
