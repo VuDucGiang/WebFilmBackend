@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Mvc;
 using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.Film;
@@ -20,6 +21,20 @@ namespace WebFilm.Controllers
         public FilmsController(IFilmService filmService) : base(filmService)
         {
             _filmService = filmService;
+        }
+
+        [HttpGet("{id}/Detail")]
+        public async Task<IActionResult> GetDetailByID(int id)
+        {
+            try
+            {
+                var entity = await _filmService.GetDetailByID(id);
+                return Ok(entity);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
         }
 
         [HttpPost("Paging")]

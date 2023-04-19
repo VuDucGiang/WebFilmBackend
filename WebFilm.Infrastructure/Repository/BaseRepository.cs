@@ -9,7 +9,7 @@ using WebFilm.Core.Enitites.User;
 
 namespace WebFilm.Infrastructure.Repository
 {
-    public class BaseRepository<TKey, TEntity>
+    public abstract class BaseRepository<TKey, TEntity>
     {
         #region Field
         protected MySqlConnection SqlConnection;
@@ -44,7 +44,7 @@ namespace WebFilm.Infrastructure.Repository
             }
         }
 
-        public TEntity GetByID(TKey id)
+        public virtual TEntity GetByID(TKey id)
         {
             var keyName = GetKeyName<TEntity>();
             using (SqlConnection = new MySqlConnection(_connectionString))
