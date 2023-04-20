@@ -34,7 +34,7 @@ namespace WebFilm.Core.Services
         {
             get
             {
-                if(GetClaimValue("Name") != null)
+                if(GetClaimValue("Username") != null)
                 {
                     return GetClaimValue("Username");
                 }

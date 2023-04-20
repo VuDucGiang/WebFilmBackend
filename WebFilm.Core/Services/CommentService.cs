@@ -52,7 +52,6 @@ namespace WebFilm.Core.Services
                 Comment newComment = new Comment();
                 newComment.Content = dto.Content;
                 newComment.ParentID = ListID;
-                Guid? id = _userContext.UserId;
                 newComment.UserID = (Guid)_userContext.UserId;
                 newComment.CreatedDate = DateTime.Now;
                 newComment.ModifiedDate = DateTime.Now;

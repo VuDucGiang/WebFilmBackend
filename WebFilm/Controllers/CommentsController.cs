@@ -9,9 +9,9 @@ using WebFilm.Core.Services;
 
 namespace WebFilm.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    [AllowAnonymous]
     public class CommentsController : BaseController<int, Comment>
     {
         #region Field
