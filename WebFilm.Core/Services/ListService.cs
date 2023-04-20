@@ -1,10 +1,13 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebFilm.Core.Enitites;
+using WebFilm.Core.Enitites.Comment;
 using WebFilm.Core.Enitites.Film;
 using WebFilm.Core.Enitites.FilmList;
 using WebFilm.Core.Enitites.Journal;
@@ -13,6 +16,7 @@ using WebFilm.Core.Enitites.List;
 using WebFilm.Core.Enitites.Review.dto;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Enitites.User.Profile;
+using WebFilm.Core.Exceptions;
 using WebFilm.Core.Interfaces.Repository;
 using WebFilm.Core.Interfaces.Services;
 
@@ -25,6 +29,7 @@ namespace WebFilm.Core.Services
         IFilmListRepository _filmListRepository;
         IFilmRepository _filmRepository;
         ILikeRepository _likeRepository;
+        ICommentRepository _commentRepository;
         private readonly IConfiguration _configuration;
 
         public ListService(IListRepository listRepository,
@@ -32,7 +37,8 @@ namespace WebFilm.Core.Services
             IUserRepository userRepository,
             IFilmListRepository filmListRepository,
             IFilmRepository filmRepository,
-            ILikeRepository likeRepository) : base(listRepository)
+            ILikeRepository likeRepository,
+            ICommentRepository commentRepository) : base(listRepository)
         {
             _listRepository = listRepository;
             _configuration = configuration;
@@ -40,6 +46,7 @@ namespace WebFilm.Core.Services
             _filmListRepository = filmListRepository;
             _filmRepository = filmRepository;
             _likeRepository = likeRepository;
+            _commentRepository = commentRepository;
         }
 
         public List<ListPopularDTO> GetListPopular()
@@ -142,6 +149,122 @@ namespace WebFilm.Core.Services
             List<List> crewList = _listRepository.GetAll().Where(p => ids.Contains(p.ListID)).ToList();
             this.enrichListPopular(dtos, crewList, 10);
             return dtos;
+        }
+
+        public PagingFilmResult DetailList(int id, PagingDetailList paging)
+        {
+            PagingFilmResult res = new PagingFilmResult();
+            List listDetail = _listRepository.GetByID(id);
+            if (listDetail == null) {
+                throw new ServiceException("Không tìm thấy list phù hợp");
+            }
+            List<FilmList> filmList = _filmListRepository.GetAll().Where(p => p.ListID == id).ToList();
+            List<int> ids = filmList.Select(t => t.FilmID).ToList();
+            var films = _filmRepository.GetAll().Where(p => ids.Contains(p.FilmID));
+            //var films = _filmRepository.GetAll();
+            if (paging.genre != null && !"".Equals(paging.genre)) {
+                films = films.Where(f => JArray.Parse(f.Genres).Select(g => g["name"].ToString()).ToList().Contains(paging.genre));
+            }
+
+            if (paging.year != null)
+            {
+                if (paging.year > 0)
+                {
+                    films = films.Where(p => (p.Release_date.Year >= paging.year && p.Release_date.Year <= (paging.year + 9)));
+                }
+                if (paging.year == -1)
+                {
+                    films = films.Where(p => p.Release_date > DateTime.Now);
+                }
+               
+            }
+
+            if (paging.filmName != null && !"".Equals(paging.filmName))
+            {
+                films = films.Where(p => (p.Title.Contains(paging.filmName)));
+            }
+
+            if (paging.rating != null && !"".Equals(paging.rating))
+            {
+                if ("asc".Equals(paging.rating))
+                {
+                    
+                }
+                if ("desc".Equals(paging.rating))
+                {
+                    films = films.OrderByDescending(p => p.Vote_average);
+                } 
+            }
+            int totalCount = films.Count();
+            int totalPages = (int)Math.Ceiling((double)totalCount / paging.pageSize);
+            films = films.Skip((paging.pageIndex - 1) * paging.pageSize).Take(paging.pageSize);
+            films = films.ToList();
+            List<BaseFilmDTO> filmDTOs= new List<BaseFilmDTO>();
+            foreach (Film film in films)
+            {
+                BaseFilmDTO filmDTO = new BaseFilmDTO();
+                filmDTO.FilmID = film.FilmID;
+                filmDTO.Poster_path = film.Poster_path;
+                filmDTOs.Add(filmDTO);
+
+            }
+            res.Data = filmDTOs;
+            res.TotalPage = totalPages;
+            res.Total = totalCount;
+            res.PageSize = paging.pageSize;
+            res.PageIndex = paging.pageIndex;
+            return res;
+        }
+
+        public List GetListByID(int id)
+        {
+            var listDetail = _listRepository.GetByID(id);
+            if (listDetail == null)
+            {
+                throw new ServiceException("Không tìm thấy list phù hợp");
+            }
+            return listDetail;
+        }
+
+        public PagingCommentResult GetCommentList(int ListID, PagingParameter paging)
+        {
+            PagingCommentResult res = new PagingCommentResult();
+            List listDetail = _listRepository.GetByID(ListID);
+            if (listDetail == null)
+            {
+                throw new ServiceException("Không tìm thấy list phù hợp");
+            }
+
+            //var comments = _commentRepository.GetAll().Where(p => p.ParentID == ListID && "List".Equals(p.Type.ToString()));
+            var comments = _commentRepository.GetAll();
+
+            int totalCount = comments.Count();
+            int totalPages = (int)Math.Ceiling((double)totalCount / paging.pageSize);
+            comments = comments.Skip((paging.pageIndex - 1) * paging.pageSize).Take(paging.pageSize);
+            comments = comments.ToList();
+            List<BaseCommentDTO> commentDTOs = new List<BaseCommentDTO>();
+            foreach (Comment comment in comments)
+            {
+                BaseCommentDTO commentDTO = new BaseCommentDTO();
+                User user = _userRepository.GetByID(comment.UserID);
+
+                commentDTO.UserID = comment.UserID;
+                commentDTO.Avatar = user.Avatar;
+                commentDTO.Username = user.UserName;
+                commentDTO.Fullname = user.FullName;
+                commentDTO.CommentID = comment.CommentID;
+                commentDTO.Content = comment.Content;
+                commentDTO.CreatedDate = comment.CreatedDate;
+
+                commentDTOs.Add(commentDTO);
+
+            }
+            res.Data = commentDTOs;
+            res.TotalPage = totalPages;
+            res.Total = totalCount;
+            res.PageSize = paging.pageSize;
+            res.PageIndex = paging.pageIndex;
+            return res;
         }
     }
 }

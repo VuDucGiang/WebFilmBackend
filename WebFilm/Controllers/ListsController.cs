@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebFilm.Core.Enitites;
+using WebFilm.Core.Enitites.Film;
 using WebFilm.Core.Enitites.FilmList;
 using WebFilm.Core.Enitites.Follow;
 using WebFilm.Core.Enitites.List;
@@ -105,6 +107,51 @@ namespace WebFilm.Controllers
             try
             {
                 var res = _listService.ListTop();
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("{id}/Films")]
+        public IActionResult GetFilmInList(int id, [FromBody] PagingDetailList parameter)
+        {
+            try
+            {
+                var res = _listService.DetailList(id, parameter);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpGet("{id}/Detail")]
+        public IActionResult DetailList(int id)
+        {
+            try
+            {
+                var res = _listService.GetListByID(id);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("{id}/Comments")]
+        public IActionResult GetCommentInList(int id, [FromBody] PagingParameter parameter)
+        {
+            try
+            {
+                var res = _listService.GetCommentList(id, parameter);
                 return Ok(res);
             }
             catch (Exception ex)

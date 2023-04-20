@@ -16,6 +16,8 @@ namespace WebFilm.Core.Enitites.List
         public string? ListName { get; set; }
         public int TotalComment { get; set; }
         public int TotalLike { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public DateTime? ModifiedDate { get; set; }
         public List<BaseFilmDTO> List { get; set; }
         public UserReviewDTO User { get; set; }
     }
