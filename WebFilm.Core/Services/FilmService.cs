@@ -26,5 +26,10 @@ namespace WebFilm.Core.Services
         {
             return await _filmRepository.GetPopular(pageSize, pageIndex, filter, sort);
         }
+
+        public async Task<FilmDto> GetDetailByID(int id)
+        {
+            return await _filmRepository.GetDetailByID(id);
+        }
     }
 }

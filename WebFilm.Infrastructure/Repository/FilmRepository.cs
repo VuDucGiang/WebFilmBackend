@@ -17,6 +17,7 @@ using System.Text.Json;
 using WebFilm.Core.Interfaces.Services;
 using WebFilm.Core.Services;
 using System.Data;
+using static Dapper.SqlMapper;
 
 namespace WebFilm.Infrastructure.Repository
 {
@@ -27,7 +28,43 @@ namespace WebFilm.Infrastructure.Repository
         public FilmRepository(IConfiguration configuration, IUserContext userContext) : base(configuration)
         {
             _userContext = userContext;
+        }
 
+        public async Task<FilmDto> GetDetailByID(int id)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                //Thực thi lấy dữ liệu
+                var sqlCommand = @$"SELECT f.*,
+                                    JSON_ARRAYAGG(
+                                        JSON_OBJECT(
+                                          'type', c1.type,
+                                          'known_for_department', c1.known_for_department,
+                                          'name', c1.name,
+                                          'personID', c1.personID,
+                                          'original_name', c1.original_name,
+                                          'character_', c1.character_,
+                                          'job', c1.job,
+                                          'credit_id', c1.credit_id
+                                        )
+                                      ) AS credits,
+                                    COUNT(f1.ListID) AS Appears, 
+                                    IF(l.LikeID IS NOT NULL, True, False) AS Liked 
+                                    FROM film f
+                                    LEFT JOIN `like` l ON f.FilmID = l.ParentID AND l.UserID = @userID AND l.Type = 'Film'
+                                    LEFT JOIN filmlist f1 ON f.FilmID = f1.FilmID
+                                    LEFT JOIN credit c1 ON f.FilmID = c1.FilmID
+                                    WHERE f.FilmID = @id
+                                    GROUP BY f.FilmID;
+                                    ";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@id", id);
+                parameters.Add("@userID", _userContext.UserId);
+                //Trả dữ liệu về client
+                var entities = await SqlConnection.QueryFirstOrDefaultAsync<FilmDto>(sqlCommand, parameters);
+                SqlConnection.Close();
+                return entities;
+            }
         }
 
         public async Task<object> GetPaging(PagingParameterFilm parameter)

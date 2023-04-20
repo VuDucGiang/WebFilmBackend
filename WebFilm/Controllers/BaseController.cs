@@ -5,7 +5,6 @@ using WebFilm.Core.Interfaces.Services;
 
 namespace WebFilm.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class BaseController<TKey, TEntity> : ControllerBase
@@ -65,6 +64,7 @@ namespace WebFilm.Controllers
         /// </summary>
         /// <returns>IActionResult</returns>
         /// Author: Vũ Đức Giang
+        [Authorize]
         [HttpPut("{id}")]
         public IActionResult Edit(TKey id, TEntity entity)
         {
@@ -84,6 +84,7 @@ namespace WebFilm.Controllers
         /// </summary>
         /// <returns>IActionResult</returns>
         /// Author: Vũ Đức Giang
+        [Authorize]
         [HttpPost]
         public IActionResult Add(TEntity entity)
         {
@@ -103,6 +104,7 @@ namespace WebFilm.Controllers
         /// </summary>
         /// <returns>IActionResult</returns>
         /// Author: Vũ Đức Giang
+        [Authorize]
         [HttpDelete]
         public IActionResult Delete(TKey id)
         {
