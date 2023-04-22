@@ -13,5 +13,7 @@ namespace WebFilm.Core.Enitites.User.Profile
         public string UserName { get; set; }
 
         public string Avatar { get; set; }
+
+        public string? Fullname { get; set; }
     }
 }

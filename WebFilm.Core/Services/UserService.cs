@@ -563,6 +563,7 @@ namespace WebFilm.Core.Services
                 dto.UserID = u.UserID;
                 dto.Avatar = u.Avatar;
                 dto.UserName = u.UserName;
+                dto.Fullname = u.FullName;
                 userDtosFollower.Add(dto);
             }
             follower.Total = followers.Count;
@@ -588,6 +589,7 @@ namespace WebFilm.Core.Services
             List<Review> reviews = _reviewRepository.GetReviewByUserID(user.UserID);
             List<List> lists = _listRepository.GetAll().Where(p => p.UserID == user.UserID).ToList();
 
+            res.Banner = user.Banner;
             res.TotalReview = reviews.Count;
             res.TotalLists = lists.Count;
             res.Followers = follower;

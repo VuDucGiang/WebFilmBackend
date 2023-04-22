@@ -56,6 +56,7 @@ namespace WebFilm.Core.Enitites.User
         /// Ngày sửa
         /// </summary>
         public DateTime? ModifiedDate { get; set; }
+        public string? Banner { get; set; }
 
         #endregion
     }
