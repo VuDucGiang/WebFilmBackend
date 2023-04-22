@@ -345,7 +345,7 @@ namespace WebFilm.Core.Services
             filmFavourite.Films = dtos;
 
             List<Review> reviews = _reviewRepository.GetReviewByUserID(userID);
-            List<List> lists = _listRepository.GetAll().ToList();
+            List<List> lists = _listRepository.GetAll().Where(p => p.UserID == userID).ToList();
             //followers
             List<Follow> followers = _followRepository.getFollowByUserID(userID);
             Following follower = new Following();
@@ -526,6 +526,74 @@ namespace WebFilm.Core.Services
                 reviewsRecent.Add(dto);
             }
             return reviewsRecent;
+        }
+
+        public ProfileInfo getInfoProfile(string userName)
+        {
+            User user = _userRepository.getUserByUsername(userName);
+            if (user == null)
+            {
+                return null;
+            }
+            ProfileInfo res = new ProfileInfo();
+
+            res.UserName = userName;
+            if (user.FullName != null)
+            {
+                res.FullName = user.FullName;
+            }
+            if (user.Bio != null)
+            {
+                res.Bio = user.Bio;
+            }
+            if (user.Avatar != null)
+            {
+                res.Avatar = user.Avatar;
+            }
+
+            //followers
+            List<Follow> followers = _followRepository.getFollowByUserID(user.UserID);
+            Following follower = new Following();
+            List<Guid> userIdsFollower = followers.Select(p => p.FollowedUserID).ToList();
+            List<User> usersFollower = _userRepository.GetAll().Where(p => userIdsFollower.Contains(p.UserID)).Take(20).ToList();
+            List<FollowingDTO> userDtosFollower = new List<FollowingDTO>();
+            foreach (User u in usersFollower)
+            {
+                FollowingDTO dto = new FollowingDTO();
+                dto.UserID = u.UserID;
+                dto.Avatar = u.Avatar;
+                dto.UserName = u.UserName;
+                userDtosFollower.Add(dto);
+            }
+            follower.Total = followers.Count;
+            follower.List = userDtosFollower;
+
+            //following
+            List<Follow> followings = _followRepository.getFollowingByUserID(user.UserID);
+            Following following = new Following();
+            List<Guid> userIds = followings.Select(p => p.UserID).ToList();
+            List<User> users = _userRepository.GetAll().Where(p => userIds.Contains(p.UserID)).Take(20).ToList();
+            List<FollowingDTO> userDtos = new List<FollowingDTO>();
+            foreach (User u in users)
+            {
+                FollowingDTO dto = new FollowingDTO();
+                dto.UserID = u.UserID;
+                dto.Avatar = u.Avatar;
+                dto.UserName = u.UserName;
+                userDtos.Add(dto);
+            }
+            following.Total = followings.Count;
+            following.List = userDtos;
+
+            List<Review> reviews = _reviewRepository.GetReviewByUserID(user.UserID);
+            List<List> lists = _listRepository.GetAll().Where(p => p.UserID == user.UserID).ToList();
+
+            res.TotalReview = reviews.Count;
+            res.TotalLists = lists.Count;
+            res.Followers = follower;
+            res.Following = following;
+
+            return res;
         }
 
         #endregion

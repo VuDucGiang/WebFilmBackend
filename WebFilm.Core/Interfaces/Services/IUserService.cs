@@ -37,5 +37,7 @@ namespace WebFilm.Core.Interfaces.Services
 
         ProfileDTO getProfile(string userName);
 
+        ProfileInfo getInfoProfile(string userName);
+
     }
 }

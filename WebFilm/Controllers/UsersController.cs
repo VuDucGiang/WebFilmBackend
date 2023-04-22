@@ -210,6 +210,22 @@ namespace WebFilm.Controllers
 
         }
 
+        [HttpGet("{userName}/Profile-info")]
+        [AllowAnonymous]
+        public IActionResult getProfileInfo(string userName)
+        {
+            try
+            {
+                return Ok(_userService.getInfoProfile(userName));
+            }
+            catch (Exception ex)
+            {
+
+                return HandleException(ex);
+            }
+
+        }
+
         //[HttpPost("{userID}/Avatar")]
         //public IActionResult SaveAvatar(Guid userID, IFormFile avatar)
         //{
@@ -236,7 +252,7 @@ namespace WebFilm.Controllers
         //    }
         //}
 
-        
+
         //[HttpGet("{userID}/Avatar")]
         //public IActionResult GetAvatar(Guid userID)
         //{
