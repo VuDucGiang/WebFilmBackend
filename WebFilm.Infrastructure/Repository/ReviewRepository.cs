@@ -1,0 +1,94 @@
+﻿using Dapper;
+using Microsoft.Extensions.Configuration;
+using MySqlConnector;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using WebFilm.Core.Enitites.Review;
+using WebFilm.Core.Enitites.User;
+using WebFilm.Core.Interfaces.Repository;
+using WebFilm.Core.Interfaces.Services;
+
+namespace WebFilm.Infrastructure.Repository
+{
+    public class ReviewRepository : BaseRepository<int, Review>, IReviewRepository
+    {
+        IUserContext _userContext;
+        public ReviewRepository(IConfiguration configuration, IUserContext userContext) : base(configuration)
+        {
+            _userContext = userContext;
+        }
+
+        public List<Review> GetReviewByUserID(Guid userID)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCommand = "SELECT * FROM Review WHERE UserID = @v_UserID";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("v_UserID", userID);
+                var reviews = SqlConnection.Query<Review>(sqlCommand, parameters);
+
+                //Trả dữ liệu về client
+                SqlConnection.Close();
+                return reviews.ToList();
+            }
+        }
+
+        public async Task<object> GetPopular(int pageSize, int pageIndex, string filter, string sort)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                int offset = (pageIndex - 1) * pageSize;
+                string where = "";
+                switch (sort)
+                {
+                    case "All":
+                        break;
+                    case "Week":
+                        where = "AND WEEK(l1.CreatedDate) = WEEK(CURDATE()) AND YEAR(l1.CreatedDate) = YEAR(CURDATE())";
+                        break;
+                    case "Month":
+                        where = "AND MONTH(l1.CreatedDate) = MONTH(CURDATE()) AND YEAR(l1.CreatedDate) = YEAR(CURDATE())";
+                        break;
+                    case "Year":
+                        where = "AND YEAR(l1.CreatedDate) = YEAR(CURDATE())";
+                        break;
+                    default:
+                        break;
+                }
+                var sqlCommand = @$"SELECT r.*, u.UserName, r1.Score, f.title, f.poster_path, f.overview, f.release_date, f.vote_average, COUNT(c.CommentID) AS CommentsCount, IF(l.LikeID IS NOT NULL, True, False) AS Liked, COUNT(l1.LikeID) AS LikeInSort FROM review r 
+                                    INNER JOIN user u ON u.UserID = r.UserID
+                                    INNER JOIN film f ON f.FilmID = r.FilmID
+                                    LEFT JOIN rating r1 ON r.UserID = r1.UserID AND r.FilmID = r1.FilmID
+                                    LEFT JOIN comment c ON r.ReviewID = c.ParentID
+                                    LEFT JOIN `like` l ON r.ReviewID = l.ParentID AND l.UserID = @userID AND l.Type = 'Review'
+                                    LEFT JOIN `like` l1 ON r.ReviewID = l1.ParentID AND l1.Type = 'Review' {where}
+                                    GROUP BY r.ReviewID
+                                    ORDER BY LikeInSort DESC
+                                    LIMIT @pageSize OFFSET @offset;
+
+                                    SELECT COUNT(r.ReviewID) FROM review r;";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@filter", filter);
+                parameters.Add("@pageSize", pageSize);
+                parameters.Add("@offset", offset);
+                parameters.Add("@userID", _userContext.UserId);
+                var result = await SqlConnection.QueryMultipleAsync(sqlCommand, parameters);
+                //Trả dữ liệu về client
+                var data = result.Read<object>().ToList();
+                var total = result.Read<int>().Single();
+                int totalPage = (int)Math.Ceiling((double)total / pageSize);
+                return new
+                {
+                    Data = data,
+                    Total = total,
+                    PageSize = pageSize,
+                    PageIndex = pageIndex,
+                    TotalPage = totalPage
+                };
+            }
+        }
+    } 
+}
