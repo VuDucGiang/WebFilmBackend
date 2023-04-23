@@ -21,6 +21,30 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<IAnswerRepository, AnswerRepository>();
+builder.Services.AddScoped<IAnswerService, AnswerService>();
+
+builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+builder.Services.AddScoped<IQuestionService, QuestionService>();
+
+builder.Services.AddScoped<IRelated_filmRepository, Related_filmRepository>();
+builder.Services.AddScoped<IRelated_filmService, Related_filmService>();
+
+builder.Services.AddScoped<IWatchListRepository, WatchListRepository>();
+builder.Services.AddScoped<IWatchListService, WatchListService>();
+
+builder.Services.AddScoped<ICreditRepository, CreditRepository>();
+builder.Services.AddScoped<ICreditService, CreditService>();
+
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+
+builder.Services.AddScoped<IBlockRepository, BlockRepository>();
+builder.Services.AddScoped<IBlockService, BlockService>();
+
+builder.Services.AddScoped<IRatingRepository, RatingRepository>();
+builder.Services.AddScoped<IRatingService, RatingService>();
+
 //X? lý DI
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
