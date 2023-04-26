@@ -217,14 +217,35 @@ namespace WebFilm.Core.Services
             return res;
         }
 
-        public List GetListByID(int id)
+        public ListPopularDTO GetListByID(int id)
         {
             var listDetail = _listRepository.GetByID(id);
             if (listDetail == null)
             {
                 throw new ServiceException("Không tìm thấy list phù hợp");
             }
-            return listDetail;
+            ListPopularDTO res = new ListPopularDTO();
+            List<FilmList> filmLists = _filmListRepository.GetAll().Where(p => p.ListID == id).ToList();
+            UserReviewDTO userReview = new UserReviewDTO();
+            User user = _userRepository.GetByID(listDetail.UserID);
+            if (user != null)
+            {
+                userReview.Avatar = user.Avatar;
+                userReview.UserName = user.UserName;
+                userReview.UserID = user.UserID;
+                userReview.FullName = user.FullName;
+            }
+
+            res.ListID = listDetail.ListID;
+            res.TotalLike = listDetail.LikesCount;
+            res.TotalComment = listDetail.CommentsCount;
+            res.ListName = listDetail.ListName;
+            res.Description = listDetail.Description;
+            res.CreatedDate = listDetail.CreatedDate;
+            res.ModifiedDate = listDetail.ModifiedDate;
+            res.Total = filmLists.Count;
+            res.User = userReview;
+            return res;
         }
 
         public PagingCommentResult GetCommentList(int ListID, PagingParameter paging)

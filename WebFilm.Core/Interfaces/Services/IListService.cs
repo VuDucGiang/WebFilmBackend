@@ -26,7 +26,7 @@ namespace WebFilm.Core.Interfaces.Services
 
         PagingFilmResult DetailList(int id, PagingDetailList paging);
 
-        List GetListByID(int id);
+        ListPopularDTO GetListByID(int id);
 
         PagingCommentResult GetCommentList(int ListID, PagingParameter parameter);
     }
