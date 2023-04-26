@@ -36,5 +36,10 @@ namespace WebFilm.Core.Services
         {
             return await _filmRepository.JustReviewed();
         }
+
+        public async Task<object> Related(int id, PagingParameter parameter)
+        {
+            return await _filmRepository.Related(id, parameter);
+        }
     }
 }
