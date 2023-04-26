@@ -71,10 +71,8 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCommand = "SELECT l.ListID as ListID, COUNT(lf.FilmID) AS LikeCounts " +
+                var sqlCommand = "SELECT l.ListID as ListID, l.CommentsCount AS LikeCounts " +
                     "FROM list l " +
-                    "join filmlist lf on l.ListID  = lf.ListID " +
-                    "GROUP BY lf.ListID " +
                     "ORDER BY LikeCounts DESC LIMIT 3";
                 DynamicParameters parameters = new DynamicParameters();
                 var lists = SqlConnection.Query<ListPopularWeekDTO>(sqlCommand);

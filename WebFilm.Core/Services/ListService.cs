@@ -96,6 +96,7 @@ namespace WebFilm.Core.Services
                 //film
                 List<BaseFilmDTO> filmDTOs = new List<BaseFilmDTO>();
                 List<FilmList> filmLists = _filmListRepository.GetAll().Where(p => p.ListID == list.ListID).Take(count).ToList();
+                List<FilmList> filmCounts = _filmListRepository.GetAll().Where(p => p.ListID == list.ListID).ToList();
                 foreach (var filmList in filmLists)
                 {
                     BaseFilmDTO filmDTO = new BaseFilmDTO();
@@ -115,7 +116,7 @@ namespace WebFilm.Core.Services
                 dto.TotalComment = list.CommentsCount;
                 dto.User = userDTO;
                 dto.List = filmDTOs;
-                dto.Total = filmLists.Count();
+                dto.Total = filmCounts.Count();
 
                 dtos.Add(dto);
             }
