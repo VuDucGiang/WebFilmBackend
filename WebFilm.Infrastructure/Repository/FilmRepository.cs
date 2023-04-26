@@ -72,7 +72,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 int offset = (parameter.pageIndex - 1) * parameter.pageSize;
-                var sql = "SELECT f.*, COUNT(f1.ListID) AS Appears, IF(l.LikeID IS NOT NULL, True, False) AS Liked FROM Film f LEFT JOIN `like` l ON f.FilmID = l.ParentID AND l.UserID = @userID AND l.Type = 'Film' LEFT JOIN filmlist f1 ON f.FilmID = f1.FilmID "; 
+                var sql = "SELECT f.*, COUNT(f1.ListID) AS Appears, IF(l.LikeID IS NOT NULL, True, False) AS Liked FROM Film f LEFT JOIN `like` l ON f.FilmID = l.ParentID AND l.UserID = @userID AND l.Type = 'Film' LEFT JOIN filmlist f1 ON f.FilmID = f1.FilmID ";
                 var where = "WHERE 1=1";
                 DynamicParameters parameters = new DynamicParameters();
 
@@ -102,7 +102,7 @@ namespace WebFilm.Infrastructure.Repository
 
                 sql += where + @$" GROUP BY f.FilmID LIMIT @pageSize OFFSET @offset;
                                 SELECT COUNT(FilmID) FROM Film " + where;
-               
+
                 parameters.Add("@userID", _userContext.UserId);
                 parameters.Add("@filter", parameter.filter);
                 parameters.Add("@pageSize", parameter.pageSize);
@@ -182,14 +182,46 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 //Thực thi lấy dữ liệu
-                var sqlCommand = @$"SELECT DISTINCT f.FilmID, f.poster_path, f.title, f.release_date FROM review r 
+                var sqlCommand = @$"SELECT DISTINCT r.ReviewID, f.FilmID, f.poster_path, f.title, f.release_date FROM review r 
                                     INNER JOIN film f ON r.FilmID = f.FilmID
                                     ORDER BY r.CreatedDate DESC
-                                    LIMIT 12;;";
+                                    LIMIT 12;";
+
                 //Trả dữ liệu về client
                 var entities = await SqlConnection.QueryAsync<object>(sqlCommand);
                 SqlConnection.Close();
                 return entities.ToList();
+            }
+        }
+
+        public async Task<object> Related(int id, PagingParameter parameter)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                //Thực thi lấy dữ liệu
+                int offset = (parameter.pageIndex - 1) * parameter.pageSize;
+                var sqlCommand = @$"SELECT rf.* FROM related_film rf WHERE rf.DetailFilmID = @id LIMIT @pageSize OFFSET @offset;
+                                    SELECT COUNT(rf.Related_filmID) FROM related_film rf WHERE rf.DetailFilmID = @id";
+
+                //Trả dữ liệu về client
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@id", id);
+                parameters.Add("@filter", parameter.filter);
+                parameters.Add("@pageSize", parameter.pageSize);
+                parameters.Add("@offset", offset);
+                var result = await SqlConnection.QueryMultipleAsync(sqlCommand, parameters);
+                //Trả dữ liệu về client
+                var data = result.Read<object>().ToList();
+                var total = result.Read<int>().Single();
+                int totalPage = (int)Math.Ceiling((double)total / parameter.pageSize);
+                return new
+                {
+                    Data = data,
+                    Total = total,
+                    PageSize = parameter.pageSize,
+                    PageIndex = parameter.pageIndex,
+                    TotalPage = totalPage
+                };
             }
         }
     }

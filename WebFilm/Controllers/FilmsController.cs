@@ -78,6 +78,20 @@ namespace WebFilm.Controllers
                 return HandleException(ex);
             }
         }
+
+        [HttpPost("{id}/Related")]
+        public async Task<IActionResult> Related(int id, [FromBody] PagingParameter parameter)
+        {
+            try
+            {
+                var res = await _filmService.Related(id, parameter);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
         #endregion
     }
 }
