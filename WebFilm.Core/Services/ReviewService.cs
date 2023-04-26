@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
+using WebFilm.Core.Enitites.Comment;
+using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.Film;
+using WebFilm.Core.Enitites.Like;
 using WebFilm.Core.Enitites.List;
 using WebFilm.Core.Enitites.Rating;
 using WebFilm.Core.Enitites.Review;
@@ -18,19 +21,25 @@ namespace WebFilm.Core.Services
         IUserRepository _userRepository;
         IFilmRepository _filmRepository;
         IRatingRepository _ratingRepository;
+        ILikeRepository _likeRepository;
+        ICommentRepository _commentRepository;
         private readonly IConfiguration _configuration;
 
         public ReviewService(IReviewRepository reviewRepository,
             IConfiguration configuration,
             IUserRepository userRepository,
             IFilmRepository filmRepository,
-            IRatingRepository ratingRepository) : base(reviewRepository)
+            IRatingRepository ratingRepository,
+            ILikeRepository likeRepository,
+            ICommentRepository commentRepository) : base(reviewRepository)
         {
             _reviewRepository = reviewRepository;
             _configuration = configuration;
             _userRepository = userRepository;
             _filmRepository = filmRepository;
             _ratingRepository = ratingRepository;
+            _likeRepository = likeRepository;
+            _commentRepository = commentRepository;
         }
 
         public async Task<object> GetPopular(int pageSize, int pageIndex, string filter, string sort)
@@ -87,7 +96,7 @@ namespace WebFilm.Core.Services
             return dtos;
         }
 
-        public BaseReviewDTO GetDetail(int id)
+        public BaseReviewDTO GetDetail(int id, int limitUser)
         {
             Review review = _reviewRepository.GetByID(id);
             if (review == null)
@@ -95,13 +104,93 @@ namespace WebFilm.Core.Services
                 throw new ServiceException("Không tìm thấy reivew tương ứng");
             }
             BaseReviewDTO res = new BaseReviewDTO();
+            BaseFilmDTO filmDTO = new BaseFilmDTO();
+            UserReviewDTO userDTO = new UserReviewDTO();
+            List<UserReviewDTO> UsersLikeReview = new List<UserReviewDTO>();
+
+            Film film = _filmRepository.GetByID(review.FilmID);
+            if (film != null)
+            {
+                filmDTO.Poster_path = film.Poster_path;
+                filmDTO.FilmID = film.FilmID;
+                filmDTO.Title = film.Title;
+                filmDTO.Release_date = film.Release_date;
+            }
+
+            User user = _userRepository.GetByID(review.UserID);
+            if (user != null)
+            {
+                userDTO.Avatar = user.Avatar;
+                userDTO.UserName = user.UserName;
+                userDTO.UserID = user.UserID;
+                userDTO.FullName = user.FullName;
+            }
+
+            //user like review
+            List<Like> likes = _likeRepository.GetAll().Where(p => p.ParentID == id && "Review".Equals(p.Type)).Take(limitUser).ToList();
+            List<Guid> ids = likes.Select(x => x.UserID).ToList();
+            List<User> usersLike = _userRepository.GetAll().Where(p => ids.Contains(p.UserID)).ToList();
+            foreach(var userLike in usersLike) {
+                UserReviewDTO dto = new UserReviewDTO();
+                dto.Avatar = userLike.Avatar;
+                dto.UserName = userLike.UserName;
+                dto.UserID = userLike.UserID;
+                dto.FullName = userLike.FullName;
+                UsersLikeReview.Add(dto);
+            }
 
             res.Content = review.Content;
             res.ReviewID = review.ReviewID;
             res.CreatedDate = review.CreatedDate;
             res.WatchedDate = review.WatchedDate;
             res.ModifiedDate = review.ModifiedDate;
-            
+            res.Rate = review.Score;
+            res.TotalLike = review.LikesCount;
+            res.Film = filmDTO;
+            res.User = userDTO;
+            res.UsersLikeReview = UsersLikeReview;
+
+            return res;
+        }
+
+        public PagingCommentResult GetCommentReview(int reviewID, PagingParameter paging)
+        {
+            PagingCommentResult res = new PagingCommentResult();
+            Review review = _reviewRepository.GetByID(reviewID);
+            if (review == null)
+            {
+                throw new ServiceException("Không tìm thấy review phù hợp");
+            }
+
+            var comments = _commentRepository.GetAll().Where(p => p.ParentID == reviewID && "Review".Equals(p.Type.ToString()));
+            //var comments = _commentRepository.GetAll();
+
+            int totalCount = comments.Count();
+            int totalPages = (int)Math.Ceiling((double)totalCount / paging.pageSize);
+            comments = comments.Skip((paging.pageIndex - 1) * paging.pageSize).Take(paging.pageSize);
+            comments = comments.ToList();
+            List<BaseCommentDTO> commentDTOs = new List<BaseCommentDTO>();
+            foreach (Comment comment in comments)
+            {
+                BaseCommentDTO commentDTO = new BaseCommentDTO();
+                User user = _userRepository.GetByID(comment.UserID);
+
+                commentDTO.UserID = comment.UserID;
+                commentDTO.Avatar = user.Avatar;
+                commentDTO.Username = user.UserName;
+                commentDTO.Fullname = user.FullName;
+                commentDTO.CommentID = comment.CommentID;
+                commentDTO.Content = comment.Content;
+                commentDTO.CreatedDate = comment.CreatedDate;
+
+                commentDTOs.Add(commentDTO);
+
+            }
+            res.Data = commentDTOs;
+            res.TotalPage = totalPages;
+            res.Total = totalCount;
+            res.PageSize = paging.pageSize;
+            res.PageIndex = paging.pageIndex;
             return res;
         }
     }

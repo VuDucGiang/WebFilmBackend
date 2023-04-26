@@ -12,5 +12,7 @@ namespace WebFilm.Core.Interfaces.Services
     public interface ICommentService : IBaseService<int, Comment>
     {
         int CreateCommentInList(int ListID, CommentCreateDTO dto);
+
+        int CreateCommentInReview(int ReviewID, CommentCreateDTO dto);
     }
 }

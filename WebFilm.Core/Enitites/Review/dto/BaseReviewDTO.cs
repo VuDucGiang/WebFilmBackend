@@ -28,5 +28,6 @@ namespace WebFilm.Core.Enitites.Review.dto
         public BaseFilmDTO Film { get; set; }
 
         public UserReviewDTO User { get; set; }
+        public List<UserReviewDTO> UsersLikeReview { get; set; }
     }
 }

@@ -257,8 +257,8 @@ namespace WebFilm.Core.Services
                 throw new ServiceException("Không tìm thấy list phù hợp");
             }
 
-            //var comments = _commentRepository.GetAll().Where(p => p.ParentID == ListID && "List".Equals(p.Type.ToString()));
-            var comments = _commentRepository.GetAll();
+            var comments = _commentRepository.GetAll().Where(p => p.ParentID == ListID && "List".Equals(p.Type.ToString()));
+            //var comments = _commentRepository.GetAll();
 
             int totalCount = comments.Count();
             int totalPages = (int)Math.Ceiling((double)totalCount / paging.pageSize);
