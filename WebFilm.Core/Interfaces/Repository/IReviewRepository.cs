@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WebFilm.Core.Enitites.List;
 using WebFilm.Core.Enitites.Review;
+using WebFilm.Core.Enitites.User.Profile;
 
 namespace WebFilm.Core.Interfaces.Repository
 {
@@ -15,6 +16,8 @@ namespace WebFilm.Core.Interfaces.Repository
         Task<object> GetPopular(int pageSize, int pageIndex, string filter, string sort);
 
         List<ListPopularWeekDTO> GetRecentWeek();
+
+        List<RateStatDTO> GetRatesByUserID(Guid userID);
 
     }
 }

@@ -432,7 +432,7 @@ namespace WebFilm.Core.Services
             foreach (Film film in filmRecentLikes)
             {
                 RecentLikeDTO dto = new RecentLikeDTO();
-                Rating rating = _ratingRepository.GetAll().Where(p => (p.FilmID == film.FilmID && p.UserID.Equals(userID))).First();
+                //Rating rating = _ratingRepository.GetAll().Where(p => (p.FilmID == film.FilmID && p.UserID.Equals(userID))).First();
                 dto.FilmID = film.FilmID;
                 dto.Title = film.Title;
                 dto.PosterPath = film.Poster_path;
@@ -467,7 +467,27 @@ namespace WebFilm.Core.Services
 
             //rate stat
             RateStat rateStats= new RateStat();
-            List<RateStatDTO> rateStatsPopular = _ratingRepository.GetRatesByUserID(userID).ToList();
+            List<RateStatDTO> rateStatsPopular = _reviewRepository.GetRatesByUserID(userID).ToList();
+            List<float> ratesValue = new List<float>();
+            for (float i = 1; i <= 10; i++)
+            {
+                ratesValue.Add(i/2f);
+            }
+            foreach (RateStatDTO statDTO in rateStatsPopular) {
+                if (ratesValue.Contains(statDTO.Value))
+                {
+                    ratesValue.Remove(statDTO.Value);
+                }
+            }
+
+            foreach(float rate in ratesValue)
+            {
+                RateStatDTO newRate = new RateStatDTO();
+                newRate.Value = rate;
+                rateStatsPopular.Add(newRate);
+            }
+
+
             rateStats.List = rateStatsPopular;
             rateStats.Total = rateStatsPopular.Select(p => p.Total).Sum();
 
@@ -494,13 +514,13 @@ namespace WebFilm.Core.Services
                 BaseReviewDTO dto = new BaseReviewDTO();
                 Film film = _filmRepository.GetByID(review.FilmID);
                 FilmReviewDTO filmReview = new FilmReviewDTO();
-                List<Rating> rates = _ratingRepository.GetAll()
+                List<Review> reviewss = _reviewRepository.GetAll()
                     .Where(p => (p.FilmID == film.FilmID && p.UserID.Equals(userID))).ToList();
-                if (rates.Count > 0)
+                if (reviewss.Count > 0)
                 {
-                    Rating rate = rates[0];
+                    Review rate = reviewss[0];
                     dto.Rate = rate.Score;
-                    dto.RatingCreatedAt = rate.CreatedDate.ToString().Substring(0, 10);
+                    //dto.RatingCreatedAt = rate.CreatedDate.ToString().Substring(0, 10);
                 }
                 if (film != null)
                 {
@@ -514,7 +534,7 @@ namespace WebFilm.Core.Services
                 dto.Film = filmReview;
                 dto.TotalLike = review.LikesCount;
                 dto.Content = review.Content;
-                dto.ReviewDate = review.CreatedDate;
+                dto.CreatedDate = review.CreatedDate;
 
                 reviewsRecent.Add(dto);
             }

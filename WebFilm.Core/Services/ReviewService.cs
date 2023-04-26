@@ -5,6 +5,8 @@ using WebFilm.Core.Enitites.Rating;
 using WebFilm.Core.Enitites.Review;
 using WebFilm.Core.Enitites.Review.dto;
 using WebFilm.Core.Enitites.User;
+using WebFilm.Core.Enitites.User.Profile;
+using WebFilm.Core.Exceptions;
 using WebFilm.Core.Interfaces.Repository;
 using WebFilm.Core.Interfaces.Services;
 
@@ -58,7 +60,7 @@ namespace WebFilm.Core.Services
                 }
               
                 //film
-                FilmReviewDTO filmDTO = new FilmReviewDTO();
+                BaseFilmDTO filmDTO = new BaseFilmDTO();
                 Film film = _filmRepository.GetByID(review.FilmID);
                 if (film != null)
                 {
@@ -75,7 +77,7 @@ namespace WebFilm.Core.Services
                 }
 
                 dto.ReviewID = review.ReviewID;
-                dto.ReviewDate = review.CreatedDate;
+                dto.CreatedDate = review.CreatedDate;
                 dto.User = userDTO;
                 dto.Film = filmDTO;
                 dto.Content = review.Content;
@@ -83,6 +85,24 @@ namespace WebFilm.Core.Services
             }
 
             return dtos;
+        }
+
+        public BaseReviewDTO GetDetail(int id)
+        {
+            Review review = _reviewRepository.GetByID(id);
+            if (review == null)
+            {
+                throw new ServiceException("Không tìm thấy reivew tương ứng");
+            }
+            BaseReviewDTO res = new BaseReviewDTO();
+
+            res.Content = review.Content;
+            res.ReviewID = review.ReviewID;
+            res.CreatedDate = review.CreatedDate;
+            res.WatchedDate = review.WatchedDate;
+            res.ModifiedDate = review.ModifiedDate;
+            
+            return res;
         }
     }
 }

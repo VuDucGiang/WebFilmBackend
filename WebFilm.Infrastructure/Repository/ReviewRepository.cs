@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using WebFilm.Core.Enitites.List;
 using WebFilm.Core.Enitites.Review;
 using WebFilm.Core.Enitites.User;
+using WebFilm.Core.Enitites.User.Profile;
 using WebFilm.Core.Interfaces.Repository;
 using WebFilm.Core.Interfaces.Services;
 
@@ -105,6 +106,23 @@ namespace WebFilm.Infrastructure.Repository
                 //Trả dữ liệu về client
                 SqlConnection.Close();
                 return lists.ToList();
+            }
+        }
+
+        public List<RateStatDTO> GetRatesByUserID(Guid userID)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCommand = "SELECT r.Score as Value, count(r.Score) as Total," +
+                    " ROUND((COUNT(r.Score) * 100 / (SELECT COUNT(r.Score) FROM Review r WHERE  r.UserID = @v_UserID)),2) AS Percent" +
+                    " FROM Review r WHERE  r.UserID = @v_UserID group by r.Score";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("v_UserID", userID);
+                var dto = SqlConnection.Query<RateStatDTO>(sqlCommand, parameters);
+
+                //Trả dữ liệu về client
+                SqlConnection.Close();
+                return dto.ToList();
             }
         }
     } 
