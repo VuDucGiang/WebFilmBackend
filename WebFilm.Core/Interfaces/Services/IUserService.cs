@@ -39,5 +39,7 @@ namespace WebFilm.Core.Interfaces.Services
 
         ProfileInfo getInfoProfile(string userName);
 
+        bool checkLikeUser(int id, string type);
+
     }
 }

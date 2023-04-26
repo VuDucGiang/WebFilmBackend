@@ -20,8 +20,6 @@ namespace WebFilm.Core.Enitites.Review.dto
 
         public int TotalLike { get; set; }
 
-        public bool IsLiked { get; set; }
-
         public DateTime? ReviewDate { get; set; }
 
         public FilmReviewDTO Film { get; set; }
