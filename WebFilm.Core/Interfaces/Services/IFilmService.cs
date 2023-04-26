@@ -8,5 +8,6 @@ namespace WebFilm.Core.Interfaces.Services
         Task<FilmDto> GetDetailByID(int id);
         public Task<object> GetPaging(PagingParameterFilm parameter);
         Task<object> GetPopular(int pageSize, int pageIndex, string filter, string sort);
+        Task<List<object>> JustReviewed();
     }
 }

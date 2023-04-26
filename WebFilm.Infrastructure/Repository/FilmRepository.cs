@@ -177,5 +177,20 @@ namespace WebFilm.Infrastructure.Repository
             }
         }
 
+        public async Task<List<object>> JustReviewed()
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                //Thực thi lấy dữ liệu
+                var sqlCommand = @$"SELECT DISTINCT f.FilmID, f.poster_path, f.title, f.release_date FROM review r 
+                                    INNER JOIN film f ON r.FilmID = f.FilmID
+                                    ORDER BY r.CreatedDate DESC
+                                    LIMIT 12;;";
+                //Trả dữ liệu về client
+                var entities = await SqlConnection.QueryAsync<object>(sqlCommand);
+                SqlConnection.Close();
+                return entities.ToList();
+            }
+        }
     }
 }

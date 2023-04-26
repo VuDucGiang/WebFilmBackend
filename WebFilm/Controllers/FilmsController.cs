@@ -64,6 +64,20 @@ namespace WebFilm.Controllers
                 return HandleException(ex);
             }
         }
+
+        [HttpGet("JustReviewed")]
+        public async Task<IActionResult> JustReviewed()
+        {
+            try
+            {
+                var res = await _filmService.JustReviewed();
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
         #endregion
     }
 }
