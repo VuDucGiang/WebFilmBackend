@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebFilm.Core.Enitites.User.Profile;
 
 namespace WebFilm.Core.Enitites.Review.dto
 {
@@ -20,9 +21,11 @@ namespace WebFilm.Core.Enitites.Review.dto
 
         public int TotalLike { get; set; }
 
-        public DateTime? ReviewDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public DateTime? ModifiedDate { get; set; }
+        public DateTime? WatchedDate { get; set; }
 
-        public FilmReviewDTO Film { get; set; }
+        public BaseFilmDTO Film { get; set; }
 
         public UserReviewDTO User { get; set; }
     }

@@ -8,5 +8,7 @@ namespace WebFilm.Core.Interfaces.Services
         Task<object> GetPopular(int pageSize, int pageIndex, string filter, string sort);
 
         List<BaseReviewDTO> GetRecent();
+
+        BaseReviewDTO GetDetail(int id);
     }
 }
