@@ -226,6 +226,21 @@ namespace WebFilm.Controllers
 
         }
 
+        [HttpGet("{id}/check")]
+        public IActionResult checkLike(int id, string type)
+        {
+            try
+            {
+                return Ok(_userService.checkLikeUser(id, type));
+            }
+            catch (Exception ex)
+            {
+
+                return HandleException(ex);
+            }
+
+        }
+
         //[HttpPost("{userID}/Avatar")]
         //public IActionResult SaveAvatar(Guid userID, IFormFile avatar)
         //{

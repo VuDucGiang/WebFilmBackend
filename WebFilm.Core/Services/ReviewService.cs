@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using WebFilm.Core.Enitites.Film;
+using WebFilm.Core.Enitites.List;
 using WebFilm.Core.Enitites.Rating;
 using WebFilm.Core.Enitites.Review;
 using WebFilm.Core.Enitites.Review.dto;
@@ -38,7 +39,9 @@ namespace WebFilm.Core.Services
         public List<BaseReviewDTO> GetRecent()
         {
             List<BaseReviewDTO> dtos = new List<BaseReviewDTO>();
-            List<Review> reviews = _reviewRepository.GetAll().OrderBy(p => p.CreatedDate).Take(6).ToList();
+            List<ListPopularWeekDTO> popularWeek = _reviewRepository.GetRecentWeek();
+            List<int> ids = popularWeek.Select(p => p.ListID).ToList();
+            List<Review> reviews = _reviewRepository.GetAll().Where(p => ids.Contains(p.ReviewID)).ToList();
             foreach (Review review in reviews)
             {
                 BaseReviewDTO dto = new BaseReviewDTO();

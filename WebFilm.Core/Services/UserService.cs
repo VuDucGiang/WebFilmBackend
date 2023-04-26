@@ -509,14 +509,7 @@ namespace WebFilm.Core.Services
                     filmReview.Title = film.Title;
                     filmReview.Release_date = film.Release_date;
                 }
-                if (user != null)
-                {
-                    Like like = _likeRepository.getlikeByUserIDAndTypeAndParentID(user.UserID, TypeLike.Review.ToString(), review.ReviewID);
-                    if (like != null)
-                    {
-                        dto.IsLiked = true;
-                    }
-                }
+
                 dto.ReviewID = review.ReviewID;
                 dto.Film = filmReview;
                 dto.TotalLike = review.LikesCount;
@@ -596,6 +589,41 @@ namespace WebFilm.Core.Services
             res.Following = following;
 
             return res;
+        }
+
+        public bool checkLikeUser(int id, string type)
+        {
+            Guid userID = (Guid)_userContext.UserId;
+            if (userID == Guid.Empty)
+            {
+                throw new ServiceException("Hành động không khả thi");
+            }
+
+            if ("film".Equals(type))
+            {
+                List<Like> likeFilm = _likeRepository.GetAll().Where(p => p.UserID == userID && p.ParentID == id && "Film".Equals(p.Type)).ToList();
+                if (likeFilm.Count > 0)
+                {
+                    return true;
+                }
+            }
+            if ("review".Equals(type))
+            {
+                List<Like> reviews = _likeRepository.GetAll().Where(p => p.UserID == userID && p.ParentID == id && "Review".Equals(p.Type)).ToList();
+                if (reviews.Count > 0)
+                {
+                    return true;
+                }
+            }
+            if ("list".Equals(type))
+            {
+                List<Like> lists = _likeRepository.GetAll().Where(p => p.UserID == userID && p.ParentID == id && "Lists".Equals(p.Type)).ToList();
+                if (lists.Count > 0)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         #endregion

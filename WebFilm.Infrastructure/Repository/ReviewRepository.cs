@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebFilm.Core.Enitites.List;
 using WebFilm.Core.Enitites.Review;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Interfaces.Repository;
@@ -88,6 +89,22 @@ namespace WebFilm.Infrastructure.Repository
                     PageIndex = pageIndex,
                     TotalPage = totalPage
                 };
+            }
+        }
+
+        public List<ListPopularWeekDTO> GetRecentWeek()
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCommand = "SELECT ParentID as ListID, COUNT(*) as LikeCounts FROM `like` " +
+                    "WHERE date >= DATE_SUB(NOW(), INTERVAL 1 WEEK) and `type` = 'Review' " +
+                    "GROUP BY ParentID ORDER BY LikeCounts DESC LIMIT 6;";
+                DynamicParameters parameters = new DynamicParameters();
+                var lists = SqlConnection.Query<ListPopularWeekDTO>(sqlCommand);
+
+                //Trả dữ liệu về client
+                SqlConnection.Close();
+                return lists.ToList();
             }
         }
     } 

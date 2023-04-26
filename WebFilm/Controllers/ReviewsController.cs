@@ -39,7 +39,7 @@ namespace WebFilm.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("Recent")]
+        [HttpGet("Popular/Week")]
         public IActionResult GetRecent()
         {
             try

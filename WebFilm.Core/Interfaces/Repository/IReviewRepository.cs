@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebFilm.Core.Enitites.List;
 using WebFilm.Core.Enitites.Review;
 
 namespace WebFilm.Core.Interfaces.Repository
@@ -12,6 +13,8 @@ namespace WebFilm.Core.Interfaces.Repository
         List<Review> GetReviewByUserID(Guid userID);
 
         Task<object> GetPopular(int pageSize, int pageIndex, string filter, string sort);
+
+        List<ListPopularWeekDTO> GetRecentWeek();
 
     }
 }
