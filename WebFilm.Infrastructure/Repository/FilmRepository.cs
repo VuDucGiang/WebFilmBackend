@@ -177,20 +177,29 @@ namespace WebFilm.Infrastructure.Repository
             }
         }
 
-        public async Task<List<object>> JustReviewed()
+        public async Task<object> JustReviewed()
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 //Thực thi lấy dữ liệu
-                var sqlCommand = @$"SELECT DISTINCT r.ReviewID, f.FilmID, f.poster_path, f.title, f.release_date FROM review r 
-                                    INNER JOIN film f ON r.FilmID = f.FilmID
-                                    ORDER BY r.CreatedDate DESC
-                                    LIMIT 12;";
+                var sqlCommand = @$"SELECT r.ReviewID, r.FilmID, MAX(r.CreatedDate) AS LatestReviewDate, f.title, f.poster_path, f.release_date
+                                    FROM review r
+                                    JOIN film f ON r.FilmID = f.FilmID
+                                    GROUP BY r.FilmID
+                                    ORDER BY LatestReviewDate DESC
+                                    LIMIT 12;
 
+                                    SELECT COUNT(DISTINCT r.FilmID) FROM review r";
+
+                var result = await SqlConnection.QueryMultipleAsync(sqlCommand);
                 //Trả dữ liệu về client
-                var entities = await SqlConnection.QueryAsync<object>(sqlCommand);
-                SqlConnection.Close();
-                return entities.ToList();
+                var data = result.Read<object>().ToList();
+                var total = result.Read<int>().Single();
+                return new
+                {
+                    Data = data,
+                    TotalReview = total,
+                };
             }
         }
 

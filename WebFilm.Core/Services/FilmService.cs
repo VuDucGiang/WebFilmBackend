@@ -32,7 +32,7 @@ namespace WebFilm.Core.Services
             return await _filmRepository.GetDetailByID(id);
         }
 
-        public async Task<List<object>> JustReviewed()
+        public async Task<object> JustReviewed()
         {
             return await _filmRepository.JustReviewed();
         }
