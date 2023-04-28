@@ -106,7 +106,7 @@ namespace WebFilm.Core.Services
             BaseReviewDTO res = new BaseReviewDTO();
             BaseFilmDTO filmDTO = new BaseFilmDTO();
             UserReviewDTO userDTO = new UserReviewDTO();
-            List<UserReviewDTO> UsersLikeReview = new List<UserReviewDTO>();
+            List<UserReviewDTO> reviewsLikedByUser = new List<UserReviewDTO>();
 
             Film film = _filmRepository.GetByID(review.FilmID);
             if (film != null)
@@ -127,16 +127,21 @@ namespace WebFilm.Core.Services
             }
 
             //user like review
-            List<Like> likes = _likeRepository.GetAll().Where(p => p.ParentID == id && "Review".Equals(p.Type)).Take(limitUser).ToList();
-            List<Guid> ids = likes.Select(x => x.UserID).ToList();
-            List<User> usersLike = _userRepository.GetAll().Where(p => ids.Contains(p.UserID)).ToList();
-            foreach(var userLike in usersLike) {
+            List<Review> reviewss = _reviewRepository.GetAll().Where(p => p.FilmID == review.FilmID && p.UserID != review.UserID).ToList();
+            List<int> parrentIDS = reviewss.Select(p => p.ReviewID).ToList();
+            List<Like> likes = _likeRepository.GetAll().Where(p => "Review".Equals(p.Type) && p.UserID == review.UserID && parrentIDS.Contains(p.ParentID)).Take(limitUser).ToList();
+            List<int> reviewIDS = likes.Select(x => x.ParentID).ToList();
+            List<Review> review2 = _reviewRepository.GetAll().Where(p => reviewIDS.Contains(p.ReviewID)).ToList();
+            
+            foreach(var rv in review2) {
+                User userLike = _userRepository.GetByID(rv.UserID);
                 UserReviewDTO dto = new UserReviewDTO();
                 dto.Avatar = userLike.Avatar;
                 dto.UserName = userLike.UserName;
                 dto.UserID = userLike.UserID;
                 dto.FullName = userLike.FullName;
-                UsersLikeReview.Add(dto);
+                dto.ReviewID = rv.ReviewID;
+                reviewsLikedByUser.Add(dto);
             }
 
             res.Content = review.Content;
@@ -148,7 +153,7 @@ namespace WebFilm.Core.Services
             res.TotalLike = review.LikesCount;
             res.Film = filmDTO;
             res.User = userDTO;
-            res.UsersLikeReview = UsersLikeReview;
+            res.ReviewsLikedByUser = reviewsLikedByUser;
 
             return res;
         }
