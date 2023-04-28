@@ -133,7 +133,7 @@ namespace WebFilm.Infrastructure.Repository
                 var sqlCommand = "Update Review set CommentsCount = @v_CommentCount where ReviewID = @v_ReviewID";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("v_CommentCount", commentCount);
-                parameters.Add("v_ListID", reviewID);
+                parameters.Add("v_ReviewID", reviewID);
                 var res = SqlConnection.Execute(sqlCommand, parameters);
 
                 //Trả dữ liệu về client
