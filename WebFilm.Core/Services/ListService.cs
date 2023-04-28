@@ -257,12 +257,12 @@ namespace WebFilm.Core.Services
                 throw new ServiceException("Không tìm thấy list phù hợp");
             }
 
-            //var comments = _commentRepository.GetAll().Where(p => p.ParentID == ListID && "List".Equals(p.Type.ToString()));
-            var comments = _commentRepository.GetAll();
+            var comments = _commentRepository.GetAll().Where(p => p.ParentID == ListID && "List".Equals(p.Type.ToString()));
+            //var comments = _commentRepository.GetAll();
 
             int totalCount = comments.Count();
             int totalPages = (int)Math.Ceiling((double)totalCount / paging.pageSize);
-            comments = comments.Skip((paging.pageIndex - 1) * paging.pageSize).Take(paging.pageSize);
+            comments = comments.OrderByDescending(p => p.CreatedDate).Skip((paging.pageIndex - 1) * paging.pageSize).Take(paging.pageSize);
             comments = comments.ToList();
             List<BaseCommentDTO> commentDTOs = new List<BaseCommentDTO>();
             foreach (Comment comment in comments)

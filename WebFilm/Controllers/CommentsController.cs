@@ -24,11 +24,25 @@ namespace WebFilm.Controllers
         }
 
         [HttpPost("{id}/lists")]
-        public IActionResult GetRecent(int id, [FromBody] CommentCreateDTO dto)
+        public IActionResult commentList(int id, [FromBody] CommentCreateDTO dto)
         {
             try
             {
                 var res = _commentService.CreateCommentInList(id, dto);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpPost("{id}/reviews")]
+        public IActionResult commentReview(int id, [FromBody] CommentCreateDTO dto)
+        {
+            try
+            {
+                var res = _commentService.CreateCommentInReview(id, dto);
                 return Ok(res);
             }
             catch (Exception ex)

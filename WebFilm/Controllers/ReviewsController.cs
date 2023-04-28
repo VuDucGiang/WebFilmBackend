@@ -52,5 +52,35 @@ namespace WebFilm.Controllers
                 return HandleException(ex);
             }
         }
+
+        [AllowAnonymous]
+        [HttpGet("{id}/detail")]
+        public IActionResult GetDetail(int id, int limitUser)
+        {
+            try
+            {
+                var res = _reviewService.GetDetail(id, limitUser);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("{id}/Comments")]
+        public IActionResult GetCommentInList(int id, [FromBody] PagingParameter parameter)
+        {
+            try
+            {
+                var res = _reviewService.GetCommentReview(id, parameter);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
     }
 }

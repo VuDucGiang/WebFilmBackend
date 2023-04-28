@@ -125,5 +125,21 @@ namespace WebFilm.Infrastructure.Repository
                 return dto.ToList();
             }
         }
+
+        public int UpdateCommentCount(int reviewID, int commentCount)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCommand = "Update Review set CommentsCount = @v_CommentCount where ReviewID = @v_ReviewID";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("v_CommentCount", commentCount);
+                parameters.Add("v_ReviewID", reviewID);
+                var res = SqlConnection.Execute(sqlCommand, parameters);
+
+                //Trả dữ liệu về client
+                SqlConnection.Close();
+                return res;
+            }
+        }
     } 
 }

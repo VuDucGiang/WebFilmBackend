@@ -18,5 +18,6 @@ namespace WebFilm.Core.Enitites.Review
         public bool HaveSpoiler { get; set; }
         public DateTime? WatchedDate { get; set; }
         public float Score { get; set; }
+        public int CommentsCount { get; set; }
     }
 }
