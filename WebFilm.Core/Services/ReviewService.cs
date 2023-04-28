@@ -91,6 +91,9 @@ namespace WebFilm.Core.Services
                 dto.Film = filmDTO;
                 dto.Content = review.Content;
                 dto.WatchedDate = review.WatchedDate;
+                dto.Rate = review.Score;
+                dto.TotalComment = review.CommentsCount;
+                dto.TotalLike = review.LikesCount;
                 dtos.Add(dto);
             }
 
@@ -142,6 +145,7 @@ namespace WebFilm.Core.Services
                 dto.UserID = userLike.UserID;
                 dto.FullName = userLike.FullName;
                 dto.ReviewID = rv.ReviewID;
+                dto.Rate = rv.Score;
                 reviewsLikedByUser.Add(dto);
             }
 
