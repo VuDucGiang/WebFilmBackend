@@ -262,8 +262,8 @@ namespace WebFilm.Core.Services
 
             int totalCount = comments.Count();
             int totalPages = (int)Math.Ceiling((double)totalCount / paging.pageSize);
-            comments = comments.Skip((paging.pageIndex - 1) * paging.pageSize).Take(paging.pageSize);
-            comments = comments.OrderByDescending(p => p.CreatedDate).ToList();
+            comments = comments.Skip((paging.pageIndex - 1) * paging.pageSize).OrderByDescending(p => p.CreatedDate).Take(paging.pageSize);
+            comments = comments.ToList();
             List<BaseCommentDTO> commentDTOs = new List<BaseCommentDTO>();
             foreach (Comment comment in comments)
             {
