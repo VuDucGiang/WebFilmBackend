@@ -90,6 +90,7 @@ namespace WebFilm.Core.Services
                 dto.User = userDTO;
                 dto.Film = filmDTO;
                 dto.Content = review.Content;
+                dto.WatchedDate = review.WatchedDate;
                 dtos.Add(dto);
             }
 
