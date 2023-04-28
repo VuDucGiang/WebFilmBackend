@@ -79,7 +79,7 @@ namespace WebFilm.Core.Services
             }
             try
             {
-                //int commentCount = review.CommentsCount + 1;
+                int commentCount = review.CommentsCount + 1;
 
                 Comment newComment = new Comment();
                 newComment.Content = dto.Content;
@@ -89,7 +89,7 @@ namespace WebFilm.Core.Services
                 newComment.ModifiedDate = DateTime.Now;
                 newComment.Type = "Review";
 
-                //_listRepository.UpdateCommentCount(ListID, commentCount);
+                _reviewRepository.UpdateCommentCount(ReviewID, commentCount);
                 return _commentRepository.Add(newComment);
             }
             catch (Exception ex)

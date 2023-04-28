@@ -19,5 +19,7 @@ namespace WebFilm.Core.Interfaces.Repository
 
         List<RateStatDTO> GetRatesByUserID(Guid userID);
 
+        int UpdateCommentCount(int reviewID, int commentCount);
+
     }
 }

@@ -152,6 +152,7 @@ namespace WebFilm.Core.Services
             res.ModifiedDate = review.ModifiedDate;
             res.Rate = review.Score;
             res.TotalLike = review.LikesCount;
+            res.TotalComment = review.CommentsCount;
             res.Film = filmDTO;
             res.User = userDTO;
             res.ReviewsLikedByUser = reviewsLikedByUser;
