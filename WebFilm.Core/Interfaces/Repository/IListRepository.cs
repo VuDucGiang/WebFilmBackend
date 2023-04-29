@@ -17,5 +17,7 @@ namespace WebFilm.Core.Interfaces.Repository
         List<ListPopularWeekDTO> ListTopLike();
         int UpdateCommentCount(int listID, int commentCount);
 
+        int UpdateLikeCount(int ListID, int likeCount);
+
     }
 }

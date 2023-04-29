@@ -50,7 +50,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 //Thực thi lấy dữ liệu
-                var sqlCommand = $"SELECT * FROM {className} WHERE {keyName} = @id";
+                var sqlCommand = $"SELECT * FROM `{className}` WHERE {keyName} = @id";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@id", id);
                 //Trả dữ liệu về client
@@ -65,7 +65,7 @@ namespace WebFilm.Infrastructure.Repository
             var keyName = GetKeyName<TEntity>();
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                StringBuilder sql = new StringBuilder($"UPDATE {className} SET ");
+                StringBuilder sql = new StringBuilder($"UPDATE `{className}` SET ");
 
                 PropertyInfo[] properties = typeof(TEntity).GetProperties();
 
@@ -123,7 +123,7 @@ namespace WebFilm.Infrastructure.Repository
 
                 var columns = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => p.Name));
                 var values = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => "@" + p.Name));
-                var query = $"INSERT INTO {className} ({columns}) VALUES ({values})";
+                var query = $"INSERT INTO `{className}` ({columns}) VALUES ({values})";
 
                 //Trả dữ liệu về client
                 var res = SqlConnection.Execute(query, parameters);
@@ -137,7 +137,7 @@ namespace WebFilm.Infrastructure.Repository
             var keyName = GetKeyName<TEntity>();
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                string query = $"DELETE FROM {className} WHERE {keyName} = @id";
+                string query = $"DELETE FROM `{className}` WHERE {keyName} = @id";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@id", id);
 

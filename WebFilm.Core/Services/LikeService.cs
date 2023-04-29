@@ -76,10 +76,15 @@ namespace WebFilm.Core.Services
                     newLike.UserID = userID;
 
                     _likeRepository.Add(newLike);
+
+                    //update like count
+                    _filmRepository.UpdateLikeCount(id, film.LikesCount + 1);
+                } else
+                {
+                    _likeRepository.Delete(like.LikeID);
+                    _filmRepository.UpdateLikeCount(id, film.LikesCount - 1);
                 }
-                //update like count
-                film.LikesCount = film.LikesCount + 1;
-                _filmRepository.Edit(id, film);
+                
                 res = true;
             }
 
@@ -104,11 +109,16 @@ namespace WebFilm.Core.Services
                     newLike.ParentID = id;
                     newLike.UserID = userID;
 
+                    _reviewRepository.UpdateLikeCount(id, review.LikesCount + 1);
+
                     _likeRepository.Add(newLike);
+                } else
+                {
+                    _likeRepository.Delete(like.LikeID);
+                    _reviewRepository.UpdateLikeCount(id, review.LikesCount - 1);
                 }
                 //update like count
-                review.LikesCount = review.LikesCount + 1;
-                _reviewRepository.Edit(id, review);
+                
                 res = true;
             }
 
@@ -134,10 +144,15 @@ namespace WebFilm.Core.Services
                     newLike.UserID = userID;
 
                     _likeRepository.Add(newLike);
+
+                    _listRepository.UpdateLikeCount(id, list.LikesCount + 1);
                 }
-                //update like count
-                list.LikesCount = list.LikesCount + 1;
-                _listRepository.Edit(id, list);
+                else
+                {
+                    _likeRepository.Delete(like.LikeID);
+                    _listRepository.UpdateLikeCount(id, list.LikesCount - 1);
+                }
+
                 res = true;
             }
 
