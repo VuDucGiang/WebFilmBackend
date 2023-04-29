@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
+using Org.BouncyCastle.Utilities.Collections;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -644,6 +645,52 @@ namespace WebFilm.Core.Services
                 }
             }
             return false;
+        }
+
+        public List<UserReviewDTO> getUserLiked(PagingParameter paging, string type)
+        {
+            if (string.IsNullOrWhiteSpace(type))
+            {
+                throw new ServiceException("Type không được null hoặc khoảng trắng");
+            }
+
+            var likes = _likeRepository.GetAll();
+            List<UserReviewDTO> res = new List<UserReviewDTO>();
+
+            if ("review".Equals(type))
+            {
+                likes = likes.Where(p => "Review".Equals(p.Type));
+            }
+
+            if ("film".Equals(type))
+            {
+                likes = likes.Where(p => "Film".Equals(p.Type));
+            }
+
+            if ("list".Equals(type))
+            {
+                likes = likes.Where(p => "List".Equals(p.Type));
+            }
+
+            int totalCount = likes.Count();
+            int totalPages = (int)Math.Ceiling((double)totalCount / paging.pageSize);
+            likes = likes.OrderByDescending(p => p.CreatedDate).Skip((paging.pageIndex - 1) * paging.pageSize).Take(paging.pageSize);
+            likes = likes.ToList();
+
+            foreach (var item in likes)
+            {
+                UserReviewDTO dto = new UserReviewDTO();
+                User user = _userRepository.GetByID(item.UserID);
+                if (user != null)
+                {
+                    dto.FullName = user.FullName;
+                    dto.Avatar = user.Avatar;
+                    dto.UserName = user.UserName;
+                    dto.UserID = user.UserID;
+                    res.Add(dto);
+                }
+            }
+            return res;
         }
 
         #endregion

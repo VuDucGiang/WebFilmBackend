@@ -241,6 +241,22 @@ namespace WebFilm.Controllers
 
         }
 
+        [HttpPost("userLike")]
+        [AllowAnonymous]
+        public IActionResult getUserLike([FromBody] PagingParameter parameter, string type)
+        {
+            try
+            {
+                return Ok(_userService.getUserLiked(parameter, type));
+            }
+            catch (Exception ex)
+            {
+
+                return HandleException(ex);
+            }
+
+        }
+
         //[HttpPost("{userID}/Avatar")]
         //public IActionResult SaveAvatar(Guid userID, IFormFile avatar)
         //{
