@@ -42,7 +42,7 @@ namespace WebFilm.Core.Interfaces.Services
 
         bool checkLikeUser(int id, string type);
 
-        List<UserReviewDTO> getUserLiked(PagingParameter paging, string type);
+        List<UserReviewDTO> getUserLiked(PagingParameter paging, string type, int id);
 
     }
 }

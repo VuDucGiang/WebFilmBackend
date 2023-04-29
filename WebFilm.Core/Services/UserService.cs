@@ -647,7 +647,7 @@ namespace WebFilm.Core.Services
             return false;
         }
 
-        public List<UserReviewDTO> getUserLiked(PagingParameter paging, string type)
+        public List<UserReviewDTO> getUserLiked(PagingParameter paging, string type, int id)
         {
             if (string.IsNullOrWhiteSpace(type))
             {
@@ -659,17 +659,32 @@ namespace WebFilm.Core.Services
 
             if ("review".Equals(type))
             {
-                likes = likes.Where(p => "Review".Equals(p.Type));
+                Review review = _reviewRepository.GetByID(id);
+                if (review == null)
+                {
+                    throw new ServiceException("Không thấy review phù hợp");
+                }
+                likes = likes.Where(p => "Review".Equals(p.Type) && p.ParentID == id);
             }
 
             if ("film".Equals(type))
             {
-                likes = likes.Where(p => "Film".Equals(p.Type));
+                Film film = _filmRepository.GetByID(id);
+                if (film == null)
+                {
+                    throw new ServiceException("Không thấy film phù hợp");
+                }
+                likes = likes.Where(p => "Film".Equals(p.Type) && p.ParentID == id);
             }
 
             if ("list".Equals(type))
             {
-                likes = likes.Where(p => "List".Equals(p.Type));
+                List list = _listRepository.GetByID(id);
+                if (list == null)
+                {
+                    throw new ServiceException("Không thấy list phù hợp");
+                }
+                likes = likes.Where(p => "List".Equals(p.Type) && p.ParentID == id);
             }
 
             int totalCount = likes.Count();

@@ -241,13 +241,13 @@ namespace WebFilm.Controllers
 
         }
 
-        [HttpPost("userLike")]
+        [HttpPost("{id}/userLike")]
         [AllowAnonymous]
-        public IActionResult getUserLike([FromBody] PagingParameter parameter, string type)
+        public IActionResult getUserLike([FromBody] PagingParameter parameter, string type, int id)
         {
             try
             {
-                return Ok(_userService.getUserLiked(parameter, type));
+                return Ok(_userService.getUserLiked(parameter, type, id));
             }
             catch (Exception ex)
             {
