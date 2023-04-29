@@ -638,7 +638,7 @@ namespace WebFilm.Core.Services
             }
             if ("list".Equals(type))
             {
-                List<Like> lists = _likeRepository.GetAll().Where(p => p.UserID == userID && p.ParentID == id && "Lists".Equals(p.Type)).ToList();
+                List<Like> lists = _likeRepository.GetAll().Where(p => p.UserID == userID && p.ParentID == id && "List".Equals(p.Type)).ToList();
                 if (lists.Count > 0)
                 {
                     return true;
