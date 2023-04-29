@@ -189,7 +189,7 @@ namespace WebFilm.Core.Services
             {
                 if ("asc".ToUpper().Equals(paging.rating.ToUpper()))
                 {
-                    
+                    films = films.OrderBy(p => p.Vote_average);
                 }
                 if ("desc".ToUpper().Equals(paging.rating.ToUpper()))
                 {
