@@ -239,22 +239,18 @@ namespace WebFilm.Infrastructure.Repository
             {
                 int offset = (pageIndex - 1) * pageSize;
                 string where = "";
-                string where1 = "";
                 switch (sort)
                 {
                     case "All":
                         break;
                     case "Week":
-                        where = "AND WEEK(r.CreatedDate) = WEEK(CURDATE()) AND YEAR(r.CreatedDate) = YEAR(CURDATE())";
-                        where1 = "AND WEEK(r1.CreatedDate) = WEEK(CURDATE()) AND YEAR(r1.CreatedDate) = YEAR(CURDATE())";
+                        where = "AND WEEK(f2.CreatedDate) = WEEK(CURDATE()) AND YEAR(f2.CreatedDate) = YEAR(CURDATE())";
                         break;
                     case "Month":
-                        where = "AND MONTH(r.CreatedDate) = MONTH(CURDATE()) AND YEAR(r.CreatedDate) = YEAR(CURDATE())";
-                        where1 = "AND MONTH(r1.CreatedDate) = MONTH(CURDATE()) AND YEAR(r1.CreatedDate) = YEAR(CURDATE())";
+                        where = "AND MONTH(f2.CreatedDate) = MONTH(CURDATE()) AND YEAR(r.CreatedDate) = YEAR(CURDATE())";
                         break;
                     case "Year":
-                        where = "AND YEAR(r.CreatedDate) = YEAR(CURDATE())";
-                        where1 = "AND YEAR(r1.CreatedDate) = YEAR(CURDATE())";
+                        where = "AND YEAR(f2.CreatedDate) = YEAR(CURDATE())";
                         break;
                     default:
                         break;
@@ -267,9 +263,9 @@ namespace WebFilm.Infrastructure.Repository
                                     (
                                     SELECT JSON_ARRAYAGG(JSON_OBJECT('title', f.title, 'poster_path', f.poster_path, 'FilmID', r2.FilmID, 'release_date', f.release_date))
                                     FROM (
-                                        SELECT r1.FilmID, r1.CreatedDate
+                                        SELECT DISTINCT r1.FilmID
                                         FROM review r1
-                                        WHERE r1.UserID = u.UserID {where1}
+                                        WHERE r1.UserID = u.UserID
                                         ORDER BY r1.LikesCount DESC
                                         LIMIT 3
                                     ) r2
@@ -277,8 +273,8 @@ namespace WebFilm.Infrastructure.Repository
                                     ) AS TopReviewFilms   
                                     FROM user u
                                     LEFT JOIN follow f1 ON u.UserID = f1.FollowedUserID
-                                    LEFT JOIN follow f2 ON u.UserID = f2.FollowedUserID
-                                    LEFT JOIN review r ON u.UserID = r.UserID {where}
+                                    LEFT JOIN follow f2 ON u.UserID = f2.FollowedUserID {where}
+                                    LEFT JOIN review r ON u.UserID = r.UserID 
                                     WHERE (u.UserName LIKE CONCAT('%', @filter, '%') OR u.Email LIKE CONCAT('%', @filter, '%'))
                                     GROUP BY u.UserID
                                     ORDER BY Follows DESC 
