@@ -45,7 +45,8 @@ namespace WebFilm.Infrastructure.Repository
                                           'original_name', c1.original_name,
                                           'character_', c1.character_,
                                           'job', c1.job,
-                                          'credit_id', c1.credit_id
+                                          'credit_id', c1.credit_id,
+                                          'poster_path', c1.poster_path
                                         )
                                       ) AS credits,
                                     COUNT(f1.ListID) AS Appears, 
@@ -72,20 +73,21 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 int offset = (parameter.pageIndex - 1) * parameter.pageSize;
-                var sql = "SELECT f.*, COUNT(f1.ListID) AS Appears, IF(l.LikeID IS NOT NULL, True, False) AS Liked FROM Film f LEFT JOIN `like` l ON f.FilmID = l.ParentID AND l.UserID = @userID AND l.Type = 'Film' LEFT JOIN filmlist f1 ON f.FilmID = f1.FilmID ";
+                var sql = "SELECT f.FilmID, f.poster_path, f.title, f.release_date, COUNT(f1.ListID) AS Appears, IF(l.LikeID IS NOT NULL, True, False) AS Liked FROM Film f LEFT JOIN `like` l ON f.FilmID = l.ParentID AND l.UserID = @userID AND l.Type = 'Film' LEFT JOIN filmlist f1 ON f.FilmID = f1.FilmID ";
                 var where = "WHERE 1=1";
+                var orderBy = "";
                 DynamicParameters parameters = new DynamicParameters();
 
                 if (parameter.year != null)
                 {
-                    parameters.Add("@year", parameter.year);
-                    where += @" AND YEAR(release_date) = @year";
+                    parameters.Add("@fromYear", parameter.year);
+                    parameters.Add("@toYear", parameter.year + 9);
+                    where += @" AND YEAR(release_date) BETWEEN @fromYear AND @toYear";
                 }
 
                 if (parameter.vote_average != null)
                 {
-                    parameters.Add("@voteAverage", parameter.vote_average);
-                    where += @" AND Vote_average = @voteAverage";
+                    orderBy += @$"Order By vote_average {parameter.vote_average}";
                 }
 
                 if (!string.IsNullOrEmpty(parameter.genre))
@@ -100,7 +102,7 @@ namespace WebFilm.Infrastructure.Repository
                     where += @" AND title LIKE CONCAT('%', @title, '%')";
                 }
 
-                sql += where + @$" GROUP BY f.FilmID LIMIT @pageSize OFFSET @offset;
+                sql += where + @$" GROUP BY f.FilmID {orderBy} LIMIT @pageSize OFFSET @offset;
                                 SELECT COUNT(FilmID) FROM Film " + where;
 
                 parameters.Add("@userID", _userContext.UserId);
