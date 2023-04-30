@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using MySqlConnector;
 using Newtonsoft.Json;
 using WebFilm.Core.Enitites;
+using WebFilm.Core.Enitites.Film;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Enitites.User.Profile;
 using WebFilm.Core.Interfaces.Repository;
@@ -272,7 +273,7 @@ namespace WebFilm.Infrastructure.Repository
                                     ORDER BY Follows DESC 
                                     LIMIT @pageSize OFFSET @offset;
 
-                                    SELECT COUNT(*) FROM user u;";
+                                    SELECT COUNT(*) FROM user u WHERE (u.UserName LIKE CONCAT('%', @filter, '%') OR u.Email LIKE CONCAT('%', @filter, '%'));";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@filter", filter);
                 parameters.Add("@pageSize", pageSize);
@@ -281,7 +282,16 @@ namespace WebFilm.Infrastructure.Repository
                 var result = await SqlConnection.QueryMultipleAsync(sqlCommand, parameters);
                 //Trả dữ liệu về client
                 var data = result.Read<object>().ToList();
-
+                foreach (var item in data)
+                {
+                    var user = (IDictionary<string, object>)item;
+                    var favouriteFilmList = (string)user["FavouriteFilmList"];
+                    if (!string.IsNullOrEmpty(favouriteFilmList))
+                    {
+                        var films = JsonConvert.DeserializeObject<List<Film>>(favouriteFilmList);
+                        user["FavouriteFilmList"] = films;
+                    }
+                }
                 var total = result.Read<int>().Single();
                 int totalPage = (int)Math.Ceiling((double)total / pageSize);
                 SqlConnection.Close();
