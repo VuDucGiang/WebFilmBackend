@@ -3,16 +3,20 @@ using Microsoft.Extensions.Configuration;
 using MySqlConnector;
 using Newtonsoft.Json;
 using WebFilm.Core.Enitites;
+using WebFilm.Core.Enitites.Film;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Enitites.User.Profile;
 using WebFilm.Core.Interfaces.Repository;
+using WebFilm.Core.Interfaces.Services;
 
 namespace WebFilm.Infrastructure.Repository
 {
     public class UserRepository : BaseRepository<Guid, User>, IUserRepository
     {
-        public UserRepository(IConfiguration configuration) : base(configuration)
+        IUserContext _userContext;
+        public UserRepository(IConfiguration configuration, IUserContext userContext) : base(configuration)
         {
+            _userContext = userContext;
         }
         #region Method
         /// <summary>
@@ -177,6 +181,10 @@ namespace WebFilm.Infrastructure.Repository
                 int offset = (pageIndex - 1) * pageSize;
                 var tableJoin = "";
                 var where = "1 = 1";
+                var orderBy = "";
+                if(!String.IsNullOrEmpty(sort)) {
+                    orderBy += @$"ORDER BY {sort}";
+                }
                 switch (typeUser)
                 {
                     case TypeUser.All:
@@ -209,7 +217,7 @@ namespace WebFilm.Infrastructure.Repository
                                     {tableJoin}
                                     WHERE {where} AND (u.UserName LIKE CONCAT('%', @filter, '%') OR u.Email LIKE CONCAT('%', @filter, '%'))
                                     GROUP BY u.UserID
-                                    ORDER BY {sort} LIMIT @pageSize OFFSET @offset;
+                                    {orderBy} LIMIT @pageSize OFFSET @offset;
                                     SELECT COUNT(*) FROM user u {tableJoin} WHERE {where};";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@filter", filter);
@@ -259,25 +267,39 @@ namespace WebFilm.Infrastructure.Repository
                                     IF(f1.FollowID IS NOT NULL, true, FALSE) AS Followed,
                                     r.LikesCount,
                                     COUNT(DISTINCT r.ReviewID) AS Reviews,
-                                    COUNT(DISTINCT f2.FollowID) AS Follows  
+                                    COUNT(DISTINCT f2.FollowID) AS FollowInSort,
+                                    COUNT(DISTINCT f3.FollowID) AS Follower,
+                                    COUNT(DISTINCT f4.FollowID) AS Following 
                                     FROM user u
-                                    LEFT JOIN follow f1 ON u.UserID = f1.FollowedUserID
+                                    LEFT JOIN follow f1 ON f1.UserID = @userId AND u.UserID = f1.FollowedUserID
                                     LEFT JOIN follow f2 ON u.UserID = f2.FollowedUserID {where}
+                                    LEFT JOIN follow f3 ON u.UserID = f3.FollowedUserID 
+                                    LEFT JOIN follow f4 ON u.UserID = f4.UserID
                                     LEFT JOIN review r ON u.UserID = r.UserID 
                                     WHERE (u.UserName LIKE CONCAT('%', @filter, '%') OR u.Email LIKE CONCAT('%', @filter, '%'))
                                     GROUP BY u.UserID
-                                    ORDER BY Follows DESC 
+                                    ORDER BY FollowInSort DESC 
                                     LIMIT @pageSize OFFSET @offset;
 
-                                    SELECT COUNT(*) FROM user u;";
+                                    SELECT COUNT(*) FROM user u WHERE (u.UserName LIKE CONCAT('%', @filter, '%') OR u.Email LIKE CONCAT('%', @filter, '%'));";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@filter", filter);
                 parameters.Add("@pageSize", pageSize);
                 parameters.Add("@offset", offset);
+                parameters.Add("@userId", _userContext.UserId);
                 var result = await SqlConnection.QueryMultipleAsync(sqlCommand, parameters);
                 //Trả dữ liệu về client
                 var data = result.Read<object>().ToList();
-
+                foreach (var item in data)
+                {
+                    var user = (IDictionary<string, object>)item;
+                    var favouriteFilmList = (string)user["FavouriteFilmList"];
+                    if (!string.IsNullOrEmpty(favouriteFilmList))
+                    {
+                        var films = JsonConvert.DeserializeObject<List<Film>>(favouriteFilmList);
+                        user["FavouriteFilmList"] = films;
+                    }
+                }
                 var total = result.Read<int>().Single();
                 int totalPage = (int)Math.Ceiling((double)total / pageSize);
                 SqlConnection.Close();
