@@ -10,5 +10,6 @@ namespace WebFilm.Core.Interfaces.Services
         Task<object> GetPopular(int pageSize, int pageIndex, string filter, string sort);
         Task<object> JustReviewed();
         Task<object> Related(int id, PagingParameter parameter);
+        Task<object> Similar(int id, PagingParameter parameter);
     }
 }

@@ -196,7 +196,7 @@ namespace WebFilm.Infrastructure.Repository
                     default:
                         break;
                 }
-                var sqlCommand = @$"SELECT DISTINCT u.UserID, u.UserName, u.FullName, u.Email, u.DateOfBirth, u.RoleType, u.FavouriteFilmList, u.Avatar, u.Bio, u.Banner,
+                var sqlCommand = @$"SELECT DISTINCT u.UserID, u.UserName, u.FullName, u.Avatar,
                                     COUNT(DISTINCT l.ListID) AS Lists,
                                     COUNT(DISTINCT l1.LikeID) AS Likes,
                                     COUNT(DISTINCT r.ReviewID) AS Reviews,
@@ -239,47 +239,34 @@ namespace WebFilm.Infrastructure.Repository
             {
                 int offset = (pageIndex - 1) * pageSize;
                 string where = "";
-                string where1 = "";
                 switch (sort)
                 {
                     case "All":
                         break;
                     case "Week":
-                        where = "AND WEEK(r.CreatedDate) = WEEK(CURDATE()) AND YEAR(r.CreatedDate) = YEAR(CURDATE())";
-                        where1 = "AND WEEK(r1.CreatedDate) = WEEK(CURDATE()) AND YEAR(r1.CreatedDate) = YEAR(CURDATE())";
+                        where = "AND WEEK(f2.CreatedDate) = WEEK(CURDATE()) AND YEAR(f2.CreatedDate) = YEAR(CURDATE())";
                         break;
                     case "Month":
-                        where = "AND MONTH(r.CreatedDate) = MONTH(CURDATE()) AND YEAR(r.CreatedDate) = YEAR(CURDATE())";
-                        where1 = "AND MONTH(r1.CreatedDate) = MONTH(CURDATE()) AND YEAR(r1.CreatedDate) = YEAR(CURDATE())";
+                        where = "AND MONTH(f2.CreatedDate) = MONTH(CURDATE()) AND YEAR(r.CreatedDate) = YEAR(CURDATE())";
                         break;
                     case "Year":
-                        where = "AND YEAR(r.CreatedDate) = YEAR(CURDATE())";
-                        where1 = "AND YEAR(r1.CreatedDate) = YEAR(CURDATE())";
+                        where = "AND YEAR(f2.CreatedDate) = YEAR(CURDATE())";
                         break;
                     default:
                         break;
                 }
-                var sqlCommand = @$"SELECT u.UserID, u.UserName, u.FullName, u.Email, u.DateOfBirth, u.RoleType, u.FavouriteFilmList, u.Avatar, u.Bio, u.Banner,
+                var sqlCommand = @$"SELECT u.UserID, u.UserName, u.FullName, u.FavouriteFilmList, u.Avatar,
                                     IF(f1.FollowID IS NOT NULL, true, FALSE) AS Followed,
                                     r.LikesCount,
-                                    COUNT(r.ReviewID) AS Reviews,
-                                    (
-                                    SELECT JSON_ARRAYAGG(JSON_OBJECT('title', f.title, 'poster_path', f.poster_path, 'FilmID', r2.FilmID, 'release_date', f.release_date))
-                                    FROM (
-                                        SELECT r1.FilmID, r1.CreatedDate
-                                        FROM review r1
-                                        WHERE r1.UserID = u.UserID {where1}
-                                        ORDER BY r1.LikesCount DESC
-                                        LIMIT 3
-                                    ) r2
-                                    LEFT JOIN film f ON r2.FilmID = f.FilmID
-                                    ) AS TopReviewFilms   
+                                    COUNT(DISTINCT r.ReviewID) AS Reviews,
+                                    COUNT(DISTINCT f2.FollowID) AS Follows  
                                     FROM user u
                                     LEFT JOIN follow f1 ON u.UserID = f1.FollowedUserID
-                                    LEFT JOIN review r ON u.UserID = r.UserID {where}
+                                    LEFT JOIN follow f2 ON u.UserID = f2.FollowedUserID {where}
+                                    LEFT JOIN review r ON u.UserID = r.UserID 
                                     WHERE (u.UserName LIKE CONCAT('%', @filter, '%') OR u.Email LIKE CONCAT('%', @filter, '%'))
                                     GROUP BY u.UserID
-                                    ORDER BY Reviews DESC 
+                                    ORDER BY Follows DESC 
                                     LIMIT @pageSize OFFSET @offset;
 
                                     SELECT COUNT(*) FROM user u;";
@@ -289,15 +276,7 @@ namespace WebFilm.Infrastructure.Repository
                 parameters.Add("@offset", offset);
                 var result = await SqlConnection.QueryMultipleAsync(sqlCommand, parameters);
                 //Trả dữ liệu về client
-                var data = result.Read<UserPopular, string, UserPopular>((users, films) =>
-                {
-                    var user = users;
-                    if(films != null)
-                    {
-                        user.TopReviewFilms = JsonConvert.DeserializeObject<List<BaseFilmDTO>>(films);
-                    }
-                    return user;
-                }, splitOn: "TopReviewFilms").ToList();
+                var data = result.Read<object>().ToList();
 
                 var total = result.Read<int>().Single();
                 int totalPage = (int)Math.Ceiling((double)total / pageSize);

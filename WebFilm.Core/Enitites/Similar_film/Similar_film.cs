@@ -1,11 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace WebFilm.Core.Enitites.Related_film
+namespace WebFilm.Core.Enitites.Similar_film
 {
-    public class Related_film : BaseEntity
+    public class Similar_film : BaseEntity
     {
         [Key]
-        public int Related_filmID { get; set; }
+        public int Similar_filmID { get; set; }
         public DateTime CreatedDate { get; set; }
         public int DetailFilmID { get; set; }
         public int FilmID { get; set; }

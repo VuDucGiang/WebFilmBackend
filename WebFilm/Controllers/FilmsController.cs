@@ -92,6 +92,20 @@ namespace WebFilm.Controllers
                 return HandleException(ex);
             }
         }
+
+        [HttpPost("{id}/Similar")]
+        public async Task<IActionResult> Similar(int id, [FromBody] PagingParameter parameter)
+        {
+            try
+            {
+                var res = await _filmService.Similar(id, parameter);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
         #endregion
     }
 }
