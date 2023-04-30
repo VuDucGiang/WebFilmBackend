@@ -92,8 +92,8 @@ namespace WebFilm.Infrastructure.Repository
 
                 if (!string.IsNullOrEmpty(parameter.genre))
                 {
-                    parameters.Add("@genre", $"{{\"name\":\"{parameter.genre}\"}}", DbType.String);
-                    where += " AND JSON_CONTAINS(genres, @genre, '$')";
+                    parameters.Add("@genre", $"{{\"name\":\"{parameter.genre.ToLower()}\"}}", DbType.String);
+                    where += " AND JSON_CONTAINS(LOWER(genres), @genre, '$')";
                 }
 
                 if (!string.IsNullOrEmpty(parameter.filmName))
