@@ -562,6 +562,7 @@ namespace WebFilm.Core.Services
                 dto.TotalLike = review.LikesCount;
                 dto.Content = review.Content;
                 dto.CreatedDate = review.CreatedDate;
+                dto.HaveSpoiler = review.HaveSpoiler;
 
                 reviewsRecent.Add(dto);
             }
