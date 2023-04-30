@@ -96,9 +96,9 @@ namespace WebFilm.Infrastructure.Repository
                     where += " AND JSON_CONTAINS(genres, @genre, '$')";
                 }
 
-                if (!string.IsNullOrEmpty(parameter.filName))
+                if (!string.IsNullOrEmpty(parameter.filmName))
                 {
-                    parameters.Add("@title", parameter.filName);
+                    parameters.Add("@title", parameter.filmName);
                     where += @" AND title LIKE CONCAT('%', @title, '%')";
                 }
 
@@ -213,6 +213,37 @@ namespace WebFilm.Infrastructure.Repository
                 int offset = (parameter.pageIndex - 1) * parameter.pageSize;
                 var sqlCommand = @$"SELECT rf.* FROM related_film rf WHERE rf.DetailFilmID = @id LIMIT @pageSize OFFSET @offset;
                                     SELECT COUNT(rf.Related_filmID) FROM related_film rf WHERE rf.DetailFilmID = @id";
+
+                //Trả dữ liệu về client
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@id", id);
+                parameters.Add("@filter", parameter.filter);
+                parameters.Add("@pageSize", parameter.pageSize);
+                parameters.Add("@offset", offset);
+                var result = await SqlConnection.QueryMultipleAsync(sqlCommand, parameters);
+                //Trả dữ liệu về client
+                var data = result.Read<object>().ToList();
+                var total = result.Read<int>().Single();
+                int totalPage = (int)Math.Ceiling((double)total / parameter.pageSize);
+                return new
+                {
+                    Data = data,
+                    Total = total,
+                    PageSize = parameter.pageSize,
+                    PageIndex = parameter.pageIndex,
+                    TotalPage = totalPage
+                };
+            }
+        }
+
+        public async Task<object> Silimar(int id, PagingParameter parameter)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                //Thực thi lấy dữ liệu
+                int offset = (parameter.pageIndex - 1) * parameter.pageSize;
+                var sqlCommand = @$"SELECT sf.* FROM similar_film sf WHERE sf.DetailFilmID = @id LIMIT @pageSize OFFSET @offset;
+                                    SELECT COUNT(sf.Similar_filmID) FROM similar_film sf WHERE sf.DetailFilmID = @id";
 
                 //Trả dữ liệu về client
                 DynamicParameters parameters = new DynamicParameters();

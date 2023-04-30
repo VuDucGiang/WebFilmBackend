@@ -12,6 +12,6 @@ namespace WebFilm.Core.Enitites.Film
         public string? rating { get; set; }
         public string? genre { get; set; }
 
-        public string? filName { get; set; }
+        public string? filmName { get; set; }
     }
 }

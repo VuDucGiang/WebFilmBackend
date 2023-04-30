@@ -92,6 +92,20 @@ namespace WebFilm.Controllers
                 return HandleException(ex);
             }
         }
+
+        [HttpPost("{id}/Silimar")]
+        public async Task<IActionResult> Silimar(int id, [FromBody] PagingParameter parameter)
+        {
+            try
+            {
+                var res = await _filmService.Silimar(id, parameter);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
         #endregion
     }
 }

@@ -17,6 +17,7 @@ namespace WebFilm.Core.Interfaces.Repository
         Task<object> GetPopular(int pageSize, int pageIndex, string filter, string sort);
         Task<object> JustReviewed();
         Task<object> Related(int id, PagingParameter parameter);
+        Task<object> Silimar(int id, PagingParameter parameter);
 
         int UpdateLikeCount(int filmID, int likeCount);
     }
