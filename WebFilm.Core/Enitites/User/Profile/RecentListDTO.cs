@@ -9,6 +9,8 @@ namespace WebFilm.Core.Enitites.User.Profile
     public class RecentListDTO
     {
         public int Total { get; set; }
+        public int ListID { get; set; }
+        public string Title { get; set; }
 
         public List<BaseFilmDTO> List { get; set; }
 

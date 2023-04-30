@@ -94,6 +94,7 @@ namespace WebFilm.Core.Services
                 dto.Rate = review.Score;
                 dto.TotalComment = review.CommentsCount;
                 dto.TotalLike = review.LikesCount;
+                dto.HaveSpoiler = review.HaveSpoiler;
                 dtos.Add(dto);
             }
 
@@ -159,6 +160,7 @@ namespace WebFilm.Core.Services
             res.TotalComment = review.CommentsCount;
             res.Film = filmDTO;
             res.User = userDTO;
+            res.HaveSpoiler = review.HaveSpoiler;
             res.ReviewsLikedByUser = reviewsLikedByUser;
 
             return res;

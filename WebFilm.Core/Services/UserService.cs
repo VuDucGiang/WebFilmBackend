@@ -154,6 +154,7 @@ namespace WebFilm.Core.Services
                     user.Status = userDto.Status;
                     user.RoleType = userDto.RoleType;
                     user.FavouriteFilmList = userDto.FavouriteFilmList;
+                    user.Avatar = userDto.Avatar;
                     return new Dictionary<string, object>()
                     {
                         { "User", user },
@@ -419,6 +420,8 @@ namespace WebFilm.Core.Services
                 dto.Total = filmRecent.Count;
                 dto.List = filmRecentBase;
                 dto.Description = list.Description;
+                dto.ListID = list.ListID;
+                dto.Title = list.ListName;
                 recentListDTO.Add(dto);
             }
            
@@ -491,6 +494,28 @@ namespace WebFilm.Core.Services
 
             rateStats.List = rateStatsPopular;
             rateStats.Total = rateStatsPopular.Select(p => p.Total).Sum();
+            rateStats.RateAverage = rateStatsPopular.Select(p => p.Value * p.Total).Sum() / rateStats.Total;
+
+            // recent like review
+            List<BaseReviewDTO> recentLikesReview = new List<BaseReviewDTO>();
+            List<Like> likeRecentss = _likeRepository.GetAll().Where(p => p.UserID == user.UserID && "Review".Equals(p.Type))
+                .OrderByDescending(p => p.Date).Take(4).ToList();
+            List<int> recentIDS = likeRecentss.Select(p => p.ParentID).ToList();
+            List<Review> reviewRecentss = _reviewRepository.GetAll().Where(p => recentIDS.Contains(p.ReviewID)).ToList();
+            recentLikesReview = enRichReviews(recentLikesReview, reviewRecentss, userID);
+            foreach (BaseReviewDTO review in recentLikesReview)
+            {
+                UserReviewDTO userDto = new UserReviewDTO();
+                Review reviewDto = _reviewRepository.GetByID(review.ReviewID);
+                User user1 = _userRepository.GetByID(reviewDto.UserID);
+                if (user1 != null) {
+                    userDto.Avatar = user1.Avatar;
+                    userDto.UserID = user1.UserID;
+                    userDto.FullName = user1.FullName;
+                    userDto.UserName = user1.UserName;
+                    review.User = userDto;
+                }
+            }
 
             profile.FavouriteFilms = filmFavourite;
             profile.TotalReview = reviews.Count;
@@ -503,6 +528,7 @@ namespace WebFilm.Core.Services
             profile.ListRecentReview = baseRecentReviews;
             profile.ListPopularReview = popularReviews;
             profile.RateStats = rateStats;
+            profile.RecentLikeReview = recentLikesReview;
 
             return profile;
         }
