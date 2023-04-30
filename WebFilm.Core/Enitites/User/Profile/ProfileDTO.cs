@@ -37,6 +37,8 @@ namespace WebFilm.Core.Enitites.User.Profile
 
         public List<BaseReviewDTO> ListPopularReview { get; set; }
 
+        public List<BaseReviewDTO> RecentLikeReview { get; set; }
+
         public RateStat RateStats { get; set; }
     }
 }

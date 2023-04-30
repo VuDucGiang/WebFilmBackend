@@ -20,6 +20,7 @@ namespace WebFilm.Core.Enitites.Review.dto
         public int TotalComment { get; set; }
 
         public int TotalLike { get; set; }
+        public bool HaveSpoiler { get; set; }
 
         public DateTime? CreatedDate { get; set; }
         public DateTime? ModifiedDate { get; set; }

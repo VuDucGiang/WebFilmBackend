@@ -10,6 +10,7 @@ namespace WebFilm.Core.Enitites.User.Profile
     public class RateStat
     {
         public int Total { get; set; }
+        public float RateAverage { get; set; }
 
         public List<RateStatDTO> List { get; set; }
     }
