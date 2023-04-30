@@ -6,13 +6,16 @@ using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Enitites.User.Profile;
 using WebFilm.Core.Interfaces.Repository;
+using WebFilm.Core.Interfaces.Services;
 
 namespace WebFilm.Infrastructure.Repository
 {
     public class UserRepository : BaseRepository<Guid, User>, IUserRepository
     {
-        public UserRepository(IConfiguration configuration) : base(configuration)
+        IUserContext _userContext;
+        public UserRepository(IConfiguration configuration, IUserContext userContext) : base(configuration)
         {
+            _userContext = userContext;
         }
         #region Method
         /// <summary>
@@ -261,7 +264,7 @@ namespace WebFilm.Infrastructure.Repository
                                     COUNT(DISTINCT r.ReviewID) AS Reviews,
                                     COUNT(DISTINCT f2.FollowID) AS Follows  
                                     FROM user u
-                                    LEFT JOIN follow f1 ON u.UserID = f1.FollowedUserID
+                                    LEFT JOIN follow f1 ON f1.UserID = @userId AND u.UserID = f1.FollowedUserID
                                     LEFT JOIN follow f2 ON u.UserID = f2.FollowedUserID {where}
                                     LEFT JOIN review r ON u.UserID = r.UserID 
                                     WHERE (u.UserName LIKE CONCAT('%', @filter, '%') OR u.Email LIKE CONCAT('%', @filter, '%'))
@@ -274,6 +277,7 @@ namespace WebFilm.Infrastructure.Repository
                 parameters.Add("@filter", filter);
                 parameters.Add("@pageSize", pageSize);
                 parameters.Add("@offset", offset);
+                parameters.Add("@userId", _userContext.UserId);
                 var result = await SqlConnection.QueryMultipleAsync(sqlCommand, parameters);
                 //Trả dữ liệu về client
                 var data = result.Read<object>().ToList();
