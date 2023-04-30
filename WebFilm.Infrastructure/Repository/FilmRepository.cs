@@ -186,7 +186,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 //Thực thi lấy dữ liệu
-                var sqlCommand = @$"SELECT r.ReviewID, r.FilmID, MAX(r.CreatedDate) AS LatestReviewDate, f.title, f.poster_path, f.release_date
+                var sqlCommand = @$"SELECT r.ReviewID, r.FilmID, MAX(r.CreatedDate) AS LatestReviewDate, f.title AS Title, f.poster_path AS Poster_path, f.release_date AS Release_date
                                     FROM review r
                                     JOIN film f ON r.FilmID = f.FilmID
                                     GROUP BY r.FilmID
