@@ -262,7 +262,8 @@ namespace WebFilm.Infrastructure.Repository
                 var sqlCommand = @$"SELECT u.UserID, u.UserName, u.FullName, u.Email, u.DateOfBirth, u.RoleType, u.FavouriteFilmList, u.Avatar, u.Bio, u.Banner,
                                     IF(f1.FollowID IS NOT NULL, true, FALSE) AS Followed,
                                     r.LikesCount,
-                                    COUNT(r.ReviewID) AS Reviews,
+                                    COUNT(DISTINCT r.ReviewID) AS Reviews,
+                                    COUNT(DISTINCT f2.FollowID) AS Follows,
                                     (
                                     SELECT JSON_ARRAYAGG(JSON_OBJECT('title', f.title, 'poster_path', f.poster_path, 'FilmID', r2.FilmID, 'release_date', f.release_date))
                                     FROM (
@@ -276,10 +277,11 @@ namespace WebFilm.Infrastructure.Repository
                                     ) AS TopReviewFilms   
                                     FROM user u
                                     LEFT JOIN follow f1 ON u.UserID = f1.FollowedUserID
+                                    LEFT JOIN follow f2 ON u.UserID = f2.FollowedUserID
                                     LEFT JOIN review r ON u.UserID = r.UserID {where}
                                     WHERE (u.UserName LIKE CONCAT('%', @filter, '%') OR u.Email LIKE CONCAT('%', @filter, '%'))
                                     GROUP BY u.UserID
-                                    ORDER BY Reviews DESC 
+                                    ORDER BY Follows DESC 
                                     LIMIT @pageSize OFFSET @offset;
 
                                     SELECT COUNT(*) FROM user u;";
