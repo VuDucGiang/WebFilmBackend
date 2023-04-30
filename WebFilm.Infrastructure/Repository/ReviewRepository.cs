@@ -141,5 +141,21 @@ namespace WebFilm.Infrastructure.Repository
                 return res;
             }
         }
+
+        public int UpdateLikeCount(int reviewID, int likeCount)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCommand = "Update Review set LikesCount = @v_LikeCount where ReviewID = @v_ReviewID";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("v_LikeCount", likeCount);
+                parameters.Add("v_ReviewID", reviewID);
+                var res = SqlConnection.Execute(sqlCommand, parameters);
+
+                //Trả dữ liệu về client
+                SqlConnection.Close();
+                return res;
+            }
+        }
     } 
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
+using Org.BouncyCastle.Utilities.Collections;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -637,13 +638,74 @@ namespace WebFilm.Core.Services
             }
             if ("list".Equals(type))
             {
-                List<Like> lists = _likeRepository.GetAll().Where(p => p.UserID == userID && p.ParentID == id && "Lists".Equals(p.Type)).ToList();
+                List<Like> lists = _likeRepository.GetAll().Where(p => p.UserID == userID && p.ParentID == id && "List".Equals(p.Type)).ToList();
                 if (lists.Count > 0)
                 {
                     return true;
                 }
             }
             return false;
+        }
+
+        public List<UserReviewDTO> getUserLiked(PagingParameter paging, string type, int id)
+        {
+            if (string.IsNullOrWhiteSpace(type))
+            {
+                throw new ServiceException("Type không được null hoặc khoảng trắng");
+            }
+
+            var likes = _likeRepository.GetAll();
+            List<UserReviewDTO> res = new List<UserReviewDTO>();
+
+            if ("review".Equals(type))
+            {
+                Review review = _reviewRepository.GetByID(id);
+                if (review == null)
+                {
+                    throw new ServiceException("Không thấy review phù hợp");
+                }
+                likes = likes.Where(p => "Review".Equals(p.Type) && p.ParentID == id);
+            }
+
+            if ("film".Equals(type))
+            {
+                Film film = _filmRepository.GetByID(id);
+                if (film == null)
+                {
+                    throw new ServiceException("Không thấy film phù hợp");
+                }
+                likes = likes.Where(p => "Film".Equals(p.Type) && p.ParentID == id);
+            }
+
+            if ("list".Equals(type))
+            {
+                List list = _listRepository.GetByID(id);
+                if (list == null)
+                {
+                    throw new ServiceException("Không thấy list phù hợp");
+                }
+                likes = likes.Where(p => "List".Equals(p.Type) && p.ParentID == id);
+            }
+
+            int totalCount = likes.Count();
+            int totalPages = (int)Math.Ceiling((double)totalCount / paging.pageSize);
+            likes = likes.OrderByDescending(p => p.CreatedDate).Skip((paging.pageIndex - 1) * paging.pageSize).Take(paging.pageSize);
+            likes = likes.ToList();
+
+            foreach (var item in likes)
+            {
+                UserReviewDTO dto = new UserReviewDTO();
+                User user = _userRepository.GetByID(item.UserID);
+                if (user != null)
+                {
+                    dto.FullName = user.FullName;
+                    dto.Avatar = user.Avatar;
+                    dto.UserName = user.UserName;
+                    dto.UserID = user.UserID;
+                    res.Add(dto);
+                }
+            }
+            return res;
         }
 
         #endregion

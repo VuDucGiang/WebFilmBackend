@@ -164,7 +164,7 @@ namespace WebFilm.Core.Services
             var films = _filmRepository.GetAll().Where(p => ids.Contains(p.FilmID));
             //var films = _filmRepository.GetAll();
             if (paging.genre != null && !"".Equals(paging.genre)) {
-                films = films.Where(f => JArray.Parse(f.Genres).Select(g => g["name"].ToString()).ToList().Contains(paging.genre));
+                films = films.Where(f => JArray.Parse(f.Genres).Select(g => g["name"].ToString().ToUpper()).ToList().Contains(paging.genre.ToUpper()));
             }
 
             if (paging.year != null)
@@ -182,16 +182,16 @@ namespace WebFilm.Core.Services
 
             if (paging.filmName != null && !"".Equals(paging.filmName))
             {
-                films = films.Where(p => (p.Title.Contains(paging.filmName)));
+                films = films.Where(p => (p.Title.ToUpper().Contains(paging.filmName.ToUpper())));
             }
 
             if (paging.rating != null && !"".Equals(paging.rating))
             {
-                if ("asc".Equals(paging.rating))
+                if ("asc".ToUpper().Equals(paging.rating.ToUpper()))
                 {
-                    
+                    films = films.OrderBy(p => p.Vote_average);
                 }
-                if ("desc".Equals(paging.rating))
+                if ("desc".ToUpper().Equals(paging.rating.ToUpper()))
                 {
                     films = films.OrderByDescending(p => p.Vote_average);
                 } 

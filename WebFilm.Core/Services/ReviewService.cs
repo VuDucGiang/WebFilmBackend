@@ -79,11 +79,11 @@ namespace WebFilm.Core.Services
                     filmDTO.Release_date = film.Release_date;
                 }
                 //rating review
-                List<Rating> rating = _ratingRepository.GetAll().Where(p => (p.UserID == user.UserID && p.FilmID == film.FilmID)).ToList();
-                if (rating.Count > 0)
-                {
-                    dto.Rate = rating[0].Score;
-                }
+                //List<Rating> rating = _ratingRepository.GetAll().Where(p => (p.UserID == user.UserID && p.FilmID == film.FilmID)).ToList();
+                //if (rating.Count > 0)
+                //{
+                //    dto.Rate = rating[0].Score;
+                //}
 
                 dto.ReviewID = review.ReviewID;
                 dto.CreatedDate = review.CreatedDate;

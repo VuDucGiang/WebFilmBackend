@@ -1,4 +1,5 @@
 ﻿using WebFilm.Core.Enitites;
+using WebFilm.Core.Enitites.Review.dto;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Enitites.User.Profile;
 
@@ -40,6 +41,8 @@ namespace WebFilm.Core.Interfaces.Services
         ProfileInfo getInfoProfile(string userName);
 
         bool checkLikeUser(int id, string type);
+
+        List<UserReviewDTO> getUserLiked(PagingParameter paging, string type, int id);
 
     }
 }
