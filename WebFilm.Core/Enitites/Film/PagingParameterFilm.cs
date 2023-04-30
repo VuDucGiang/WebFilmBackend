@@ -9,9 +9,9 @@ namespace WebFilm.Core.Enitites.Film
     public class PagingParameterFilm : PagingParameter
     {
         public int? year { get; set; }
-        public string? vote_average { get; set; }
+        public string? rating { get; set; }
         public string? genre { get; set; }
 
-        public string? title { get; set; }
+        public string? filName { get; set; }
     }
 }

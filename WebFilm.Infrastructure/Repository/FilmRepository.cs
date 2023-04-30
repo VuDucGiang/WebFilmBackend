@@ -85,9 +85,9 @@ namespace WebFilm.Infrastructure.Repository
                     where += @" AND YEAR(release_date) BETWEEN @fromYear AND @toYear";
                 }
 
-                if (parameter.vote_average != null)
+                if (parameter.rating != null)
                 {
-                    orderBy += @$"Order By vote_average {parameter.vote_average}";
+                    orderBy += @$"Order By vote_average {parameter.rating}";
                 }
 
                 if (!string.IsNullOrEmpty(parameter.genre))
@@ -96,9 +96,9 @@ namespace WebFilm.Infrastructure.Repository
                     where += " AND JSON_CONTAINS(genres, @genre, '$')";
                 }
 
-                if (!string.IsNullOrEmpty(parameter.title))
+                if (!string.IsNullOrEmpty(parameter.filName))
                 {
-                    parameters.Add("@title", parameter.title);
+                    parameters.Add("@title", parameter.filName);
                     where += @" AND title LIKE CONCAT('%', @title, '%')";
                 }
 
