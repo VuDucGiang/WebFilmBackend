@@ -60,7 +60,7 @@ namespace WebFilm.Infrastructure.Repository
                     default:
                         break;
                 }
-                var sqlCommand = @$"SELECT r.*, u.UserName, r1.Score, f.title, f.poster_path, f.overview, f.release_date, f.vote_average, COUNT(c.CommentID) AS CommentsCount, IF(l.LikeID IS NOT NULL, True, False) AS Liked, COUNT(l1.LikeID) AS LikeInSort FROM review r 
+                var sqlCommand = @$"SELECT r.*, u.UserName, r1.Score, f.title AS Title, f.poster_path AS Poster_path, f.overview Overview, f.release_date Release_date, f.vote_average Vote_average, COUNT(c.CommentID) AS CommentsCount, IF(l.LikeID IS NOT NULL, True, False) AS Liked, COUNT(l1.LikeID) AS LikeInSort FROM review r 
                                     INNER JOIN user u ON u.UserID = r.UserID
                                     INNER JOIN film f ON f.FilmID = r.FilmID
                                     LEFT JOIN rating r1 ON r.UserID = r1.UserID AND r.FilmID = r1.FilmID

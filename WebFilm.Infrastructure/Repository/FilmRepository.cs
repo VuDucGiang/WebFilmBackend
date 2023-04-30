@@ -151,7 +151,7 @@ namespace WebFilm.Infrastructure.Repository
                     default:
                         break;
                 }
-                var sqlCommand = @$"SELECT f.FilmID, f.poster_path AS Poster_path, f.title AS Title, f.release_date AS Release_date, COUNT(f1.ListID) AS Appears, IF(l.LikeID IS NOT NULL, True, False) AS Liked, COUNT(l1.LikeID) AS LikeInSort FROM film f
+                var sqlCommand = @$"SELECT f.FilmID, f.poster_path AS Poster_path, f.title AS Title, f.release_date AS Release_date, f.LikesCount, f.ReviewsCount, COUNT(f1.ListID) AS Appears, IF(l.LikeID IS NOT NULL, True, False) AS Liked, COUNT(l1.LikeID) AS LikeInSort FROM film f
                                     LEFT JOIN `like` l ON f.FilmID = l.ParentID AND l.UserID = @userID AND l.Type = 'Film'
                                     LEFT JOIN filmlist f1 ON f.FilmID = f1.FilmID
                                     LEFT JOIN `like` l1 ON f.FilmID = l1.ParentID AND l1.Type = 'Film' {where}
