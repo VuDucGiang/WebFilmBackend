@@ -196,7 +196,7 @@ namespace WebFilm.Infrastructure.Repository
                     default:
                         break;
                 }
-                var sqlCommand = @$"SELECT DISTINCT u.UserID, u.UserName, u.FullName, u.Email, u.DateOfBirth, u.RoleType, u.FavouriteFilmList, u.Avatar, u.Bio, u.Banner,
+                var sqlCommand = @$"SELECT DISTINCT u.UserID, u.UserName, u.FullName, u.Avatar,
                                     COUNT(DISTINCT l.ListID) AS Lists,
                                     COUNT(DISTINCT l1.LikeID) AS Likes,
                                     COUNT(DISTINCT r.ReviewID) AS Reviews,
@@ -255,22 +255,11 @@ namespace WebFilm.Infrastructure.Repository
                     default:
                         break;
                 }
-                var sqlCommand = @$"SELECT u.UserID, u.UserName, u.FullName, u.Email, u.DateOfBirth, u.RoleType, u.FavouriteFilmList, u.Avatar, u.Bio, u.Banner,
+                var sqlCommand = @$"SELECT u.UserID, u.UserName, u.FullName, u.FavouriteFilmList, u.Avatar,
                                     IF(f1.FollowID IS NOT NULL, true, FALSE) AS Followed,
                                     r.LikesCount,
                                     COUNT(DISTINCT r.ReviewID) AS Reviews,
-                                    COUNT(DISTINCT f2.FollowID) AS Follows,
-                                    (
-                                    SELECT JSON_ARRAYAGG(JSON_OBJECT('title', f.title, 'poster_path', f.poster_path, 'FilmID', r2.FilmID, 'release_date', f.release_date))
-                                    FROM (
-                                        SELECT DISTINCT r1.FilmID
-                                        FROM review r1
-                                        WHERE r1.UserID = u.UserID
-                                        ORDER BY r1.LikesCount DESC
-                                        LIMIT 3
-                                    ) r2
-                                    LEFT JOIN film f ON r2.FilmID = f.FilmID
-                                    ) AS TopReviewFilms   
+                                    COUNT(DISTINCT f2.FollowID) AS Follows  
                                     FROM user u
                                     LEFT JOIN follow f1 ON u.UserID = f1.FollowedUserID
                                     LEFT JOIN follow f2 ON u.UserID = f2.FollowedUserID {where}
@@ -287,15 +276,7 @@ namespace WebFilm.Infrastructure.Repository
                 parameters.Add("@offset", offset);
                 var result = await SqlConnection.QueryMultipleAsync(sqlCommand, parameters);
                 //Trả dữ liệu về client
-                var data = result.Read<UserPopular, string, UserPopular>((users, films) =>
-                {
-                    var user = users;
-                    if(films != null)
-                    {
-                        user.TopReviewFilms = JsonConvert.DeserializeObject<List<BaseFilmDTO>>(films);
-                    }
-                    return user;
-                }, splitOn: "TopReviewFilms").ToList();
+                var data = result.Read<object>().ToList();
 
                 var total = result.Read<int>().Single();
                 int totalPage = (int)Math.Ceiling((double)total / pageSize);

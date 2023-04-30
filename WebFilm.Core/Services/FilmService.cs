@@ -41,9 +41,9 @@ namespace WebFilm.Core.Services
         {
             return await _filmRepository.Related(id, parameter);
         }
-        public async Task<object> Silimar(int id, PagingParameter parameter)
+        public async Task<object> Similar(int id, PagingParameter parameter)
         {
-            return await _filmRepository.Silimar(id, parameter);
+            return await _filmRepository.Similar(id, parameter);
         }
     }
 }

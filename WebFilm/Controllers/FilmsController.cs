@@ -93,12 +93,12 @@ namespace WebFilm.Controllers
             }
         }
 
-        [HttpPost("{id}/Silimar")]
-        public async Task<IActionResult> Silimar(int id, [FromBody] PagingParameter parameter)
+        [HttpPost("{id}/Similar")]
+        public async Task<IActionResult> Similar(int id, [FromBody] PagingParameter parameter)
         {
             try
             {
-                var res = await _filmService.Silimar(id, parameter);
+                var res = await _filmService.Similar(id, parameter);
                 return Ok(res);
             }
             catch (Exception ex)

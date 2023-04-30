@@ -18,6 +18,8 @@ using WebFilm.Core.Interfaces.Services;
 using WebFilm.Core.Services;
 using System.Data;
 using static Dapper.SqlMapper;
+using WebFilm.Core.Enitites.Related_film;
+using WebFilm.Core.Enitites.Similar_film;
 
 namespace WebFilm.Infrastructure.Repository
 {
@@ -73,7 +75,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 int offset = (parameter.pageIndex - 1) * parameter.pageSize;
-                var sql = "SELECT f.FilmID, f.poster_path, f.title, f.release_date, COUNT(f1.ListID) AS Appears, IF(l.LikeID IS NOT NULL, True, False) AS Liked FROM Film f LEFT JOIN `like` l ON f.FilmID = l.ParentID AND l.UserID = @userID AND l.Type = 'Film' LEFT JOIN filmlist f1 ON f.FilmID = f1.FilmID ";
+                var sql = "SELECT f.FilmID, f.poster_path AS Poster_path, f.title AS Title, f.release_date AS Release_date, COUNT(f1.ListID) AS Appears, IF(l.LikeID IS NOT NULL, True, False) AS Liked FROM Film f LEFT JOIN `like` l ON f.FilmID = l.ParentID AND l.UserID = @userID AND l.Type = 'Film' LEFT JOIN filmlist f1 ON f.FilmID = f1.FilmID ";
                 var where = "WHERE 1=1";
                 var orderBy = "";
                 DynamicParameters parameters = new DynamicParameters();
@@ -149,7 +151,7 @@ namespace WebFilm.Infrastructure.Repository
                     default:
                         break;
                 }
-                var sqlCommand = @$"SELECT f.*, COUNT(f1.ListID) AS Appears, IF(l.LikeID IS NOT NULL, True, False) AS Liked, COUNT(l1.LikeID) AS LikeInSort FROM film f
+                var sqlCommand = @$"SELECT f.FilmID, f.poster_path AS Poster_path, f.title AS Title, f.release_date AS Release_date, COUNT(f1.ListID) AS Appears, IF(l.LikeID IS NOT NULL, True, False) AS Liked, COUNT(l1.LikeID) AS LikeInSort FROM film f
                                     LEFT JOIN `like` l ON f.FilmID = l.ParentID AND l.UserID = @userID AND l.Type = 'Film'
                                     LEFT JOIN filmlist f1 ON f.FilmID = f1.FilmID
                                     LEFT JOIN `like` l1 ON f.FilmID = l1.ParentID AND l1.Type = 'Film' {where}
@@ -222,7 +224,7 @@ namespace WebFilm.Infrastructure.Repository
                 parameters.Add("@offset", offset);
                 var result = await SqlConnection.QueryMultipleAsync(sqlCommand, parameters);
                 //Trả dữ liệu về client
-                var data = result.Read<object>().ToList();
+                var data = result.Read<Related_film>().ToList();
                 var total = result.Read<int>().Single();
                 int totalPage = (int)Math.Ceiling((double)total / parameter.pageSize);
                 return new
@@ -236,7 +238,7 @@ namespace WebFilm.Infrastructure.Repository
             }
         }
 
-        public async Task<object> Silimar(int id, PagingParameter parameter)
+        public async Task<object> Similar(int id, PagingParameter parameter)
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
@@ -253,7 +255,7 @@ namespace WebFilm.Infrastructure.Repository
                 parameters.Add("@offset", offset);
                 var result = await SqlConnection.QueryMultipleAsync(sqlCommand, parameters);
                 //Trả dữ liệu về client
-                var data = result.Read<object>().ToList();
+                var data = result.Read<Similar_film>().ToList();
                 var total = result.Read<int>().Single();
                 int totalPage = (int)Math.Ceiling((double)total / parameter.pageSize);
                 return new
