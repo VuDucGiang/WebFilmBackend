@@ -274,6 +274,7 @@ namespace WebFilm.Core.Services
                 reviewDTO.User = userReview;
                 reviewDTO.Film = film;
                 reviewDTO.ReviewID = dto.ReviewID;
+                reviewDTO.Rate = dto.Score;
 
                 res.Add(reviewDTO);
             }
