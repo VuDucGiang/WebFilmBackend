@@ -409,7 +409,7 @@ namespace WebFilm.Core.Services
 
             //recent list
             List<RecentListDTO> recentListDTO = new List<RecentListDTO>();
-            List<List> listRecents = _listRepository.GetAll().OrderByDescending(p => p.ModifiedDate).Take(3).ToList();
+            List<List> listRecents = _listRepository.GetAll().Where(p => p.UserID == userID).OrderByDescending(p => p.ModifiedDate).Take(3).ToList();
             foreach (List list in listRecents)
             {
                 RecentListDTO dto = new RecentListDTO();
