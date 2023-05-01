@@ -12,6 +12,7 @@ using WebFilm.Core.Enitites.User.Profile;
 using WebFilm.Core.Exceptions;
 using WebFilm.Core.Interfaces.Repository;
 using WebFilm.Core.Interfaces.Services;
+using WebFilm.Core.Enitites.Follow;
 
 namespace WebFilm.Core.Services
 {
@@ -23,6 +24,8 @@ namespace WebFilm.Core.Services
         IRatingRepository _ratingRepository;
         ILikeRepository _likeRepository;
         ICommentRepository _commentRepository;
+        IUserContext _userContext;
+        IFollowRepository _followRepository;
         private readonly IConfiguration _configuration;
 
         public ReviewService(IReviewRepository reviewRepository,
@@ -31,7 +34,9 @@ namespace WebFilm.Core.Services
             IFilmRepository filmRepository,
             IRatingRepository ratingRepository,
             ILikeRepository likeRepository,
-            ICommentRepository commentRepository) : base(reviewRepository)
+            ICommentRepository commentRepository,
+            IUserContext userContext,
+            IFollowRepository followRepository) : base(reviewRepository)
         {
             _reviewRepository = reviewRepository;
             _configuration = configuration;
@@ -40,6 +45,8 @@ namespace WebFilm.Core.Services
             _ratingRepository = ratingRepository;
             _likeRepository = likeRepository;
             _commentRepository = commentRepository;
+            _userContext = userContext;
+            _followRepository = followRepository;
         }
 
         public async Task<object> GetPopular(int pageSize, int pageIndex, string filter, string sort)
@@ -209,6 +216,67 @@ namespace WebFilm.Core.Services
             res.Total = totalCount;
             res.PageSize = paging.pageSize;
             res.PageIndex = paging.pageIndex;
+            return res;
+        }
+
+        public List<BaseReviewDTO> getNewFromFriend()
+        {
+            Guid userID = (Guid)_userContext.UserId;
+            if (userID == Guid.Empty)
+            {
+                throw new ServiceException("Hành động không khả thi");
+            }
+            User user = _userRepository.GetByID(userID);
+            if (user == null)
+            {
+                throw new ServiceException("Không tìm thấy user phù hợp");
+            }
+
+            List<BaseReviewDTO> res = new List<BaseReviewDTO>();
+            
+            //lay ra nhung nguoi dang follow
+            List<Follow> followings = _followRepository.getFollowingByUserID(userID);
+            List<Guid> userIds = followings.Select(p => p.UserID).ToList();
+            //lay review cua nguoi dang follow
+            List<Review> reviews = new List<Review>();
+            foreach (Guid id in userIds) {
+                List<Review> dtos = _reviewRepository.GetAll().Where(p => p.UserID == id).ToList();
+                foreach(Review dto in dtos)
+                {
+                    reviews.Add(dto);
+                }    
+            }
+
+            reviews = reviews.OrderByDescending(p => p.CreatedDate).Take(8).ToList();
+            foreach (Review dto in reviews)
+            {
+                BaseReviewDTO reviewDTO = new BaseReviewDTO();
+                User userRv = _userRepository.GetByID(dto.UserID);
+                UserReviewDTO userReview = new UserReviewDTO();
+                if (userRv != null)
+                {
+                    userReview.Avatar = userRv.Avatar;
+                    userReview.UserName = userRv.UserName;
+                    userReview.UserID = userRv.UserID;
+                    userReview.FullName = userRv.FullName;
+                }
+
+                //film
+                BaseFilmDTO film = new BaseFilmDTO();
+                Film filmEntity = _filmRepository.GetByID(dto.FilmID);
+                if (filmEntity != null)
+                {
+                    film.Title = filmEntity.Title;
+                    film.Poster_path = filmEntity.Poster_path;
+                    film.FilmID = filmEntity.FilmID;
+                    film.Release_date = filmEntity.Release_date;
+                }
+                reviewDTO.User = userReview;
+                reviewDTO.Film = film;
+                reviewDTO.ReviewID = dto.ReviewID;
+
+                res.Add(reviewDTO);
+            }
             return res;
         }
     }

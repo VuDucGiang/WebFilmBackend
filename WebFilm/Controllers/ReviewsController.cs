@@ -97,5 +97,19 @@ namespace WebFilm.Controllers
                 return HandleException(ex);
             }
         }
+
+        [HttpGet("NewFromFriend")]
+        public IActionResult getNewFromFriend()
+        {
+            try
+            {
+                var res = _reviewService.getNewFromFriend();
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
     }
 }

@@ -16,5 +16,7 @@ namespace WebFilm.Core.Interfaces.Services
         BaseReviewDTO GetDetail(int id, int limitUser);
 
         PagingCommentResult GetCommentReview(int ListID, PagingParameter parameter);
+
+        List<BaseReviewDTO> getNewFromFriend();
     }
 }

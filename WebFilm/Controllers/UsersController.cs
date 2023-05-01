@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using WebFilm.Controllers;
 using WebFilm.Core.Enitites;
+using WebFilm.Core.Enitites.Film;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Interfaces.Services;
 using WebFilm.Core.Services;
@@ -248,6 +249,22 @@ namespace WebFilm.Controllers
             try
             {
                 return Ok(_userService.getUserLiked(parameter, type, id));
+            }
+            catch (Exception ex)
+            {
+
+                return HandleException(ex);
+            }
+
+        }
+
+        [HttpPost("{userName}/Profile/Watchlist")]
+        [AllowAnonymous]
+        public IActionResult getWatchListProfile([FromBody] PagingParameterFilm parameter, string userName)
+        {
+            try
+            {
+                return Ok(_userService.watchListProfile(parameter, userName));
             }
             catch (Exception ex)
             {

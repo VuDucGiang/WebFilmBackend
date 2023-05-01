@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Utilities.Collections;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -752,6 +753,74 @@ namespace WebFilm.Core.Services
             return res;
         }
 
+        public PagingFilmResult watchListProfile(PagingParameterFilm paging, string userName)
+        {
+            User user = _userRepository.getUserByUsername(userName);
+            if (user == null)
+            {
+                throw new ServiceException("User không tồn tại");
+            }
+            PagingFilmResult res = new PagingFilmResult();
+            List<WatchList> watchLists = _watchListRepository.GetAll().Where(p => p.UserID == user.UserID).ToList();
+            List<int> ids = watchLists.Select(p => p.FilmID).ToList();
+
+            var films = _filmRepository.GetAll().Where(p => ids.Contains(p.FilmID));
+            //var films = _filmRepository.GetAll();
+            if (paging.genre != null && !"".Equals(paging.genre))
+            {
+                films = films.Where(f => JArray.Parse(f.Genres).Select(g => g["name"].ToString().ToUpper()).ToList().Contains(paging.genre.ToUpper()));
+            }
+
+            if (paging.year != null)
+            {
+                if (paging.year > 0)
+                {
+                    films = films.Where(p => (p.Release_date.Year >= paging.year && p.Release_date.Year <= (paging.year + 9)));
+                }
+                if (paging.year == -1)
+                {
+                    films = films.Where(p => p.Release_date > DateTime.Now);
+                }
+            }
+
+            if (paging.filmName != null && !"".Equals(paging.filmName))
+            {
+                films = films.Where(p => (p.Title.ToUpper().Contains(paging.filmName.ToUpper())));
+            }
+
+            if (paging.rating != null && !"".Equals(paging.rating))
+            {
+                if ("asc".ToUpper().Equals(paging.rating.ToUpper()))
+                {
+                    films = films.OrderBy(p => p.Vote_average);
+                }
+                if ("desc".ToUpper().Equals(paging.rating.ToUpper()))
+                {
+                    films = films.OrderByDescending(p => p.Vote_average);
+                }
+            }
+            int totalCount = films.Count();
+            int totalPages = (int)Math.Ceiling((double)totalCount / paging.pageSize);
+            films = films.Skip((paging.pageIndex - 1) * paging.pageSize).Take(paging.pageSize);
+            films = films.ToList();
+            List<BaseFilmDTO> filmDTOs = new List<BaseFilmDTO>();
+            foreach (Film film in films)
+            {
+                BaseFilmDTO filmDTO = new BaseFilmDTO();
+                filmDTO.FilmID = film.FilmID;
+                filmDTO.Poster_path = film.Poster_path;
+                filmDTO.Title = film.Title;
+                filmDTO.Release_date = film.Release_date;
+                filmDTOs.Add(filmDTO);
+
+            }
+            res.Data = filmDTOs;
+            res.TotalPage = totalPages;
+            res.Total = totalCount;
+            res.PageSize = paging.pageSize;
+            res.PageIndex = paging.pageIndex;
+            return res;
+        }
         #endregion
     }
 }
