@@ -480,31 +480,35 @@ namespace WebFilm.Core.Services
             //rate stat
             RateStat rateStats= new RateStat();
             List<RateStatDTO> rateStatsPopular = _reviewRepository.GetRatesByUserID(userID).ToList();
-            List<float> ratesValue = new List<float>();
-            for (float i = 1; i <= 10; i++)
+            if (rateStatsPopular.Count > 0)
             {
-                ratesValue.Add(i/2f);
-            }
-            foreach (RateStatDTO statDTO in rateStatsPopular) {
-                if (ratesValue.Contains(statDTO.Value))
+                List<float> ratesValue = new List<float>();
+                for (float i = 1; i <= 10; i++)
                 {
-                    ratesValue.Remove(statDTO.Value);
+                    ratesValue.Add(i / 2f);
                 }
-            }
+                foreach (RateStatDTO statDTO in rateStatsPopular)
+                {
+                    if (ratesValue.Contains(statDTO.Value))
+                    {
+                        ratesValue.Remove(statDTO.Value);
+                    }
+                }
 
-            foreach(float rate in ratesValue)
-            {
-                RateStatDTO newRate = new RateStatDTO();
-                newRate.Value = rate;
-                rateStatsPopular.Add(newRate);
-            }
+                foreach (float rate in ratesValue)
+                {
+                    RateStatDTO newRate = new RateStatDTO();
+                    newRate.Value = rate;
+                    rateStatsPopular.Add(newRate);
+                }
 
 
-            rateStats.List = rateStatsPopular;
-            rateStats.Total = rateStatsPopular.Select(p => p.Total).Sum();
-            if(rateStats.Total > 0)
-            {
-                rateStats.RateAverage = rateStatsPopular.Select(p => p.Value * p.Total).Sum() / rateStats.Total;
+                rateStats.List = rateStatsPopular;
+                rateStats.Total = rateStatsPopular.Select(p => p.Total).Sum();
+                if (rateStats.Total > 0)
+                {
+                    rateStats.RateAverage = rateStatsPopular.Select(p => p.Value * p.Total).Sum() / rateStats.Total;
+                }
             }
 
             // recent like review
