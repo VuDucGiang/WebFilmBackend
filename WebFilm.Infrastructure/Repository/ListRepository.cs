@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Configuration;
 using MySqlConnector;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,14 +10,67 @@ using System.Threading.Tasks;
 using WebFilm.Core.Enitites.List;
 using WebFilm.Core.Enitites.Review;
 using WebFilm.Core.Enitites.User;
+using WebFilm.Core.Enitites.User.Profile;
 using WebFilm.Core.Interfaces.Repository;
+using WebFilm.Core.Interfaces.Services;
 
 namespace WebFilm.Infrastructure.Repository
 {
     public class ListRepository : BaseRepository<int, List>, IListRepository
     {
-        public ListRepository(IConfiguration configuration) : base(configuration)
+        IUserContext _userContext;
+        public ListRepository(IConfiguration configuration, IUserContext userContext) : base(configuration)
         {
+            _userContext = userContext;
+        }
+
+        public async Task<object> GetListOfUser(int pageSize, int pageIndex, string userName)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                int offset = (pageIndex - 1) * pageSize;
+
+                var sqlCommand = @$"SELECT l.ListID, l.ListName, l.Description, l.LikesCount, l.CommentsCount,
+                                    GROUP_CONCAT(f1.poster_path SEPARATOR ',') AS Poster_paths
+                                    FROM list l
+                                    LEFT JOIN filmlist f ON l.ListID = f.ListID
+                                    LEFT JOIN film f1 ON f.FilmID = f1.FilmID
+                                    LEFT JOIN user u ON u.UserID = l.UserID
+                                    WHERE u.UserName = @userName AND 
+                                    ((l.Private = 1 AND l.UserID = @userID) OR l.Private = 0) 
+                                    GROUP BY l.ListID
+                                    LIMIT @pageSize OFFSET @offset;
+
+                                    SELECT COUNT(l.ListID) FROM list l
+                                    LEFT JOIN user u ON u.UserID = l.UserID
+                                    WHERE u.UserName = @userName AND 
+                                    ((l.Private = 1 AND l.UserID = @userID) OR l.Private = 0);";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@pageSize", pageSize);
+                parameters.Add("@offset", offset);
+                parameters.Add("@userName", userName);
+                parameters.Add("@userID", _userContext.UserId);
+                var result = await SqlConnection.QueryMultipleAsync(sqlCommand, parameters);
+                //Trả dữ liệu về client
+                var data = result.Read<object>().ToList();
+                foreach (var item in data)
+                {
+                    var list = (IDictionary<string, object>)item;
+                    var poster_paths = (string)list["Poster_paths"];
+                    list["Poster_paths"] = poster_paths.Split(',');
+                    list["FilmsCount"] = poster_paths.Split(',').Length;
+                }
+                var total = result.Read<int>().Single();
+                int totalPage = (int)Math.Ceiling((double)total / pageSize);
+                return new
+                {
+                    Data = data,
+                    Total = total,
+                    PageSize = pageSize,
+                    PageIndex = pageIndex,
+                    TotalPage = totalPage
+                };
+            }
         }
 
         public List<ListPopularWeekDTO> PopularMonthList()

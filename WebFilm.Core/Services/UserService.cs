@@ -502,7 +502,10 @@ namespace WebFilm.Core.Services
 
             rateStats.List = rateStatsPopular;
             rateStats.Total = rateStatsPopular.Select(p => p.Total).Sum();
-            rateStats.RateAverage = rateStatsPopular.Select(p => p.Value * p.Total).Sum() / rateStats.Total;
+            if(rateStats.Total > 0)
+            {
+                rateStats.RateAverage = rateStatsPopular.Select(p => p.Value * p.Total).Sum() / rateStats.Total;
+            }
 
             // recent like review
             List<BaseReviewDTO> recentLikesReview = new List<BaseReviewDTO>();

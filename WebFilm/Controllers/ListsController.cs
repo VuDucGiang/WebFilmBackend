@@ -10,7 +10,6 @@ using WebFilm.Core.Services;
 
 namespace WebFilm.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ListsController : BaseController<int, List>
@@ -25,7 +24,20 @@ namespace WebFilm.Controllers
             _listService = listService;
         }
 
-        [AllowAnonymous]
+        [HttpGet("Users")]
+        public async Task<IActionResult> GetListOfUser(int pageSize, int pageIndex, string userName)
+        {
+            try
+            {
+                var res = await _listService.GetListOfUser(pageSize, pageIndex, userName);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
         [HttpGet("Popular")]
         public IActionResult GetPopular()
         {
@@ -40,7 +52,6 @@ namespace WebFilm.Controllers
             }
         }
 
-        [AllowAnonymous]
         [HttpGet("Popular/Week")]
         public IActionResult GetPopularInWeek()
         {
@@ -55,7 +66,6 @@ namespace WebFilm.Controllers
             }
         }
 
-        [AllowAnonymous]
         [HttpGet("RecentLike")]
         public IActionResult GetRecentLikeList()
         {
@@ -70,7 +80,6 @@ namespace WebFilm.Controllers
             }
         }
 
-        [AllowAnonymous]
         [HttpGet("Popular/Month")]
         public IActionResult GetPopularInMonth()
         {
@@ -85,7 +94,6 @@ namespace WebFilm.Controllers
             }
         }
 
-        [AllowAnonymous]
         [HttpGet("MostEngaged")]
         public IActionResult GetCrewList()
         {
@@ -100,7 +108,6 @@ namespace WebFilm.Controllers
             }
         }
 
-        [AllowAnonymous]
         [HttpGet("TopLike")]
         public IActionResult GetListTop()
         {
@@ -115,7 +122,6 @@ namespace WebFilm.Controllers
             }
         }
 
-        [AllowAnonymous]
         [HttpPost("{id}/Films")]
         public IActionResult GetFilmInList(int id, [FromBody] PagingDetailList parameter)
         {
@@ -130,7 +136,6 @@ namespace WebFilm.Controllers
             }
         }
 
-        [AllowAnonymous]
         [HttpGet("{id}/Detail")]
         public IActionResult DetailList(int id)
         {
@@ -145,7 +150,6 @@ namespace WebFilm.Controllers
             }
         }
 
-        [AllowAnonymous]
         [HttpPost("{id}/Comments")]
         public IActionResult GetCommentInList(int id, [FromBody] PagingParameter parameter)
         {
