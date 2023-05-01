@@ -48,6 +48,10 @@ namespace WebFilm.Core.Services
             _likeRepository = likeRepository;
             _commentRepository = commentRepository;
         }
+        public async Task<object> GetListOfUser(int pageSize, int pageIndex, string userName)
+        {
+            return await _listRepository.GetListOfUser(pageSize, pageIndex, userName);
+        }
 
         public List<ListPopularDTO> GetListPopular()
         {
@@ -99,13 +103,16 @@ namespace WebFilm.Core.Services
                 List<FilmList> filmCounts = _filmListRepository.GetAll().Where(p => p.ListID == list.ListID).ToList();
                 foreach (var filmList in filmLists)
                 {
-                    BaseFilmDTO filmDTO = new BaseFilmDTO();
                     Film film = _filmRepository.GetByID(filmList.FilmID);
-                    filmDTO.FilmID = film.FilmID;
-                    filmDTO.Title = film.Title;
-                    filmDTO.Poster_path = film.Poster_path;
-                    filmDTO.Release_date = film.Release_date;
-                    filmDTOs.Add(filmDTO);
+                    if(film != null)
+                    {
+                        BaseFilmDTO filmDTO = new BaseFilmDTO();
+                        filmDTO.FilmID = film.FilmID;
+                        filmDTO.Title = film.Title;
+                        filmDTO.Poster_path = film.Poster_path;
+                        filmDTO.Release_date = film.Release_date;
+                        filmDTOs.Add(filmDTO);
+                    }
                 }
 
 

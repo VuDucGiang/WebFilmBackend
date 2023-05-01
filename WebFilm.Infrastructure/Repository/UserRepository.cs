@@ -276,7 +276,7 @@ namespace WebFilm.Infrastructure.Repository
                         where = "AND WEEK(f2.CreatedDate) = WEEK(CURDATE()) AND YEAR(f2.CreatedDate) = YEAR(CURDATE())";
                         break;
                     case "Month":
-                        where = "AND MONTH(f2.CreatedDate) = MONTH(CURDATE()) AND YEAR(r.CreatedDate) = YEAR(CURDATE())";
+                        where = "AND MONTH(f2.CreatedDate) = MONTH(CURDATE()) AND YEAR(f2.CreatedDate) = YEAR(CURDATE())";
                         break;
                     case "Year":
                         where = "AND YEAR(f2.CreatedDate) = YEAR(CURDATE())";
