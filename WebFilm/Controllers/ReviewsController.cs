@@ -39,6 +39,21 @@ namespace WebFilm.Controllers
         }
 
         [AllowAnonymous]
+        [HttpPost("Paging")]
+        public async Task<IActionResult> GetPaging([FromBody] PagingFilterParameter parameter)
+        {
+            try
+            {
+                var res = await _reviewService.GetPaging(parameter);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [AllowAnonymous]
         [HttpGet("Popular/Week")]
         public IActionResult GetRecent()
         {

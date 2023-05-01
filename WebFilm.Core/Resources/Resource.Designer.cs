@@ -70,6 +70,15 @@ namespace WebFilm.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to UserName đã tồn tại.
+        /// </summary>
+        public static string Error_Duplicate_UserName {
+            get {
+                return ResourceManager.GetString("Error_Duplicate_UserName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Email không đúng định dạng.
         /// </summary>
         public static string Error_EmailFormat {

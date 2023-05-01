@@ -47,6 +47,11 @@ namespace WebFilm.Core.Services
             return await _reviewRepository.GetPopular(pageSize, pageIndex, filter, sort);
         }
 
+        public async Task<object> GetPaging(PagingFilterParameter parameter)
+        {
+            return await _reviewRepository.GetPaging(parameter);
+        }
+
         public List<BaseReviewDTO> GetRecent()
         {
             List<BaseReviewDTO> dtos = new List<BaseReviewDTO>();

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.List;
 using WebFilm.Core.Enitites.Review;
 using WebFilm.Core.Enitites.User;
@@ -60,11 +61,9 @@ namespace WebFilm.Infrastructure.Repository
                     default:
                         break;
                 }
-                var sqlCommand = @$"SELECT r.*, u.UserName, r1.Score, f.title AS Title, f.poster_path AS Poster_path, f.overview Overview, f.release_date Release_date, f.vote_average Vote_average, COUNT(c.CommentID) AS CommentsCount, IF(l.LikeID IS NOT NULL, True, False) AS Liked, COUNT(l1.LikeID) AS LikeInSort FROM review r 
+                var sqlCommand = @$"SELECT r.*, u.UserName, f.title AS Title, f.poster_path AS Poster_path, f.overview Overview, f.release_date Release_date, f.vote_average Vote_average, IF(l.LikeID IS NOT NULL, True, False) AS Liked, COUNT(l1.LikeID) AS LikeInSort FROM review r 
                                     INNER JOIN user u ON u.UserID = r.UserID
                                     INNER JOIN film f ON f.FilmID = r.FilmID
-                                    LEFT JOIN rating r1 ON r.UserID = r1.UserID AND r.FilmID = r1.FilmID
-                                    LEFT JOIN comment c ON r.ReviewID = c.ParentID
                                     LEFT JOIN `like` l ON r.ReviewID = l.ParentID AND l.UserID = @userID AND l.Type = 'Review'
                                     LEFT JOIN `like` l1 ON r.ReviewID = l1.ParentID AND l1.Type = 'Review' {where}
                                     GROUP BY r.ReviewID
@@ -88,6 +87,91 @@ namespace WebFilm.Infrastructure.Repository
                     Total = total,
                     PageSize = pageSize,
                     PageIndex = pageIndex,
+                    TotalPage = totalPage
+                };
+            }
+        }
+
+        public async Task<object> GetPaging(PagingFilterParameter parameter)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                int offset = (parameter.pageIndex - 1) * parameter.pageSize;
+                string orderBy = "";
+                switch (parameter.sort.ToLower())
+                {
+                    case "popularity":
+                        orderBy = "ORDER BY r.LikesCount DESC";
+                        break;
+                    case "highest rating":
+                        orderBy = "ORDER BY r.Score DESC";
+                        break;
+                    case "lowest rating":
+                        orderBy = "ORDER BY r.Score ASC";
+                        break;
+                    case "most recent":
+                        orderBy = "ORDER BY r.CreatedDate DESC";
+                        break;
+                    case "earliest":
+                        orderBy = "ORDER BY r.CreatedDate ASC";
+                        break;
+                    default:
+                        break;
+                }
+
+                string where = "";
+                string join = "";
+                if (_userContext.UserId != null)
+                {
+                    switch (parameter.from.ToLower())
+                    {
+                        case "everyone":
+                            break;
+                        case "friends":
+                            join = "LEFT JOIN follow f2 ON f2.UserID = @userID ";
+                            where = "AND r.UserID = f2.FollowedUserID";
+                            break;
+                        case "you":
+                            where = "AND r.UserID = @userID";
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                var sqlCommand = @$"SELECT r.*, u.UserName,
+                                    IF(l.LikeID IS NOT NULL, True, False) AS Liked
+                                    FROM review r 
+                                    {join}
+                                    INNER JOIN user u ON u.UserID = r.UserID {where}
+                                    INNER JOIN film f ON f.FilmID = r.FilmID
+                                    LEFT JOIN `like` l ON r.ReviewID = l.ParentID AND l.UserID = @userID AND l.Type = 'Review'
+                                    WHERE r.FilmID = @filmID
+                                    GROUP BY r.ReviewID
+                                    {orderBy}
+                                    LIMIT @pageSize OFFSET @offset;
+
+                                    SELECT COUNT(r.ReviewID) FROM review r
+                                    {join}
+                                    INNER JOIN user u ON u.UserID = r.UserID {where}
+                                    INNER JOIN film f ON f.FilmID = r.FilmID
+                                    WHERE r.FilmID = @filmID;";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@filter", parameter.filter);
+                parameters.Add("@pageSize", parameter.pageSize);
+                parameters.Add("@offset", offset);
+                parameters.Add("@userID", _userContext.UserId);
+                parameters.Add("@filmID", parameter.id);
+                var result = await SqlConnection.QueryMultipleAsync(sqlCommand, parameters);
+                //Trả dữ liệu về client
+                var data = result.Read<object>().ToList();
+                var total = result.Read<int>().Single();
+                int totalPage = (int)Math.Ceiling((double)total / parameter.pageSize);
+                return new
+                {
+                    Data = data,
+                    Total = total,
+                    PageSize = parameter.pageSize,
+                    PageIndex = parameter.pageIndex,
                     TotalPage = totalPage
                 };
             }

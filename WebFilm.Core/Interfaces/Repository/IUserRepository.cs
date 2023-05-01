@@ -33,6 +33,8 @@ namespace WebFilm.Core.Interfaces.Repository
         /// <returns></returns>
         bool CheckDuplicateEmail(string email);
 
+        bool CheckDuplicateUserName(string userName);
+
         bool ActiveUser(string email);
 
         bool ChangePassword(string email, string newPass);

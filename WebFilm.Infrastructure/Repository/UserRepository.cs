@@ -108,6 +108,23 @@ namespace WebFilm.Infrastructure.Repository
             }
         }
 
+        public bool CheckDuplicateUserName(string userName)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCheck = "SELECT userName FROM User WHERE UserName = @v_UserName";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@v_UserName", userName);
+
+                var res = SqlConnection.QueryFirstOrDefault<string>(sql: sqlCheck, param: parameters);
+                if (res != null)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
         public bool ActiveUser(string email)
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
@@ -296,7 +313,7 @@ namespace WebFilm.Infrastructure.Repository
                     var favouriteFilmList = (string)user["FavouriteFilmList"];
                     if (!string.IsNullOrEmpty(favouriteFilmList))
                     {
-                        var films = JsonConvert.DeserializeObject<List<Film>>(favouriteFilmList);
+                        var films = JsonConvert.DeserializeObject<List<BaseFilmDTO>>(favouriteFilmList);
                         user["FavouriteFilmList"] = films;
                     }
                 }

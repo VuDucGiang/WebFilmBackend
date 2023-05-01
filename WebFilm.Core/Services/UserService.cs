@@ -103,6 +103,14 @@ namespace WebFilm.Core.Services
             {
                 throw new ServiceException(Resources.Resource.Error_Duplicate_Email);
             }
+
+            //UserName không được phép trùng
+            var isDuplicateUsername = _userRepository.CheckDuplicateUserName(user.UserName);
+            if (isDuplicateUsername)
+            {
+                throw new ServiceException(Resources.Resource.Error_Duplicate_UserName);
+            }
+
             //Chờ xác nhận
             user.Status = 1;
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
