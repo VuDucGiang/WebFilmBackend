@@ -225,9 +225,13 @@ namespace WebFilm.Infrastructure.Repository
                                     COUNT(DISTINCT l.ListID) AS Lists,
                                     COUNT(DISTINCT l1.LikeID) AS Likes,
                                     COUNT(DISTINCT r.ReviewID) AS Reviews,
-                                    IF(f1.FollowID IS NOT NULL, True, False) AS Followed
+                                    IF(f1.FollowID IS NOT NULL, True, False) AS Followed,
+                                    COUNT(DISTINCT f3.FollowID) AS Follower,
+                                    COUNT(DISTINCT f4.FollowID) AS Following
                                     FROM user u 
-                                    LEFT JOIN follow f1 ON u.UserID = f1.FollowedUserID
+                                    LEFT JOIN follow f1 ON u.UserID = f1.FollowedUserID AND @userName = f1.UserName
+                                    LEFT JOIN follow f3 ON u.UserID = f3.FollowedUserID 
+                                    LEFT JOIN follow f4 ON u.UserID = f4.UserID
                                     LEFT JOIN list l ON u.UserID = l.UserID
                                     LEFT JOIN `like` l1 ON u.UserID = l1.UserID
                                     LEFT JOIN review r ON u.UserID = r.UserID
