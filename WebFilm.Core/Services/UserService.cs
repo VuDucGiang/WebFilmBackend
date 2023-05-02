@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
+using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Utilities.Collections;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -815,6 +816,152 @@ namespace WebFilm.Core.Services
 
             }
             res.Data = filmDTOs;
+            res.TotalPage = totalPages;
+            res.Total = totalCount;
+            res.PageSize = paging.pageSize;
+            res.PageIndex = paging.pageIndex;
+            return res;
+        }
+
+        public PagingFilmResult filmLikeProfile(PagingParameter paging, string userName)
+        {
+            User user = _userRepository.getUserByUsername(userName);
+            if (user == null)
+            {
+                throw new ServiceException("User không tồn tại");
+            }
+            PagingFilmResult res = new PagingFilmResult();
+            List<Like> likes = _likeRepository.GetAll().Where(p => p.UserID == user.UserID && "Film".Equals(p.Type)).ToList();
+            List<int> filmIDS = likes.Select(p => p.ParentID).ToList();
+            var films = _filmRepository.GetAll().Where(p => filmIDS.Contains(p.FilmID));
+
+            int totalCount = films.Count();
+            int totalPages = (int)Math.Ceiling((double)totalCount / paging.pageSize);
+            films = films.Skip((paging.pageIndex - 1) * paging.pageSize).Take(paging.pageSize);
+            films = films.ToList();
+            List<BaseFilmDTO> filmDTOs = new List<BaseFilmDTO>();
+            foreach (Film film in films)
+            {
+                BaseFilmDTO filmDTO = new BaseFilmDTO();
+                filmDTO.FilmID = film.FilmID;
+                filmDTO.Poster_path = film.Poster_path;
+                filmDTO.Title = film.Title;
+                filmDTO.Release_date = film.Release_date;
+                filmDTOs.Add(filmDTO);
+
+            }
+            res.Data = filmDTOs;
+            res.TotalPage = totalPages;
+            res.Total = totalCount;
+            res.PageSize = paging.pageSize;
+            res.PageIndex = paging.pageIndex;
+            return res;
+        }
+
+        public PagingReviewResult reviewLikeProfile(PagingParameter paging, string userName)
+        {
+            User user = _userRepository.getUserByUsername(userName);
+            if (user == null)
+            {
+                throw new ServiceException("User không tồn tại");
+            }
+            PagingReviewResult res = new PagingReviewResult();
+            List<Like> likes = _likeRepository.GetAll().Where(p => p.UserID == user.UserID && "Review".Equals(p.Type)).ToList();
+            List<int> reivewIDS = likes.Select(p => p.ParentID).ToList();
+            var reviews = _reviewRepository.GetAll().Where(p => reivewIDS.Contains(p.ReviewID));
+
+            int totalCount = reviews.Count();
+            int totalPages = (int)Math.Ceiling((double)totalCount / paging.pageSize);
+            reviews = reviews.Skip((paging.pageIndex - 1) * paging.pageSize).Take(paging.pageSize);
+            reviews = reviews.ToList();
+            List<BaseReviewDTO> reviewDTOS = new List<BaseReviewDTO>();
+            foreach (Review review in reviews)
+            {
+                BaseReviewDTO reviewDTO = new BaseReviewDTO();
+                BaseFilmDTO filmDTO = new BaseFilmDTO();
+                reviewDTO.ReviewID = review.ReviewID;
+                reviewDTO.CreatedDate = review.CreatedDate;
+                reviewDTO.Content = review.Content;
+                reviewDTO.CommentsCount = review.CommentsCount;
+                reviewDTO.LikesCount = review.LikesCount;
+                reviewDTO.Rate = review.Score;
+                reviewDTO.WatchedDate = review.WatchedDate;
+                Film film = _filmRepository.GetByID(review.FilmID);
+                if (film != null)
+                {
+                    filmDTO.Poster_path = film.Poster_path;
+                    filmDTO.FilmID = film.FilmID;
+                    filmDTO.Title = film.Title;
+                    filmDTO.Release_date = film.Release_date;
+                }
+                reviewDTO.Film = filmDTO;
+                reviewDTOS.Add(reviewDTO);
+            }
+            res.Data = reviewDTOS;
+            res.TotalPage = totalPages;
+            res.Total = totalCount;
+            res.PageSize = paging.pageSize;
+            res.PageIndex = paging.pageIndex;
+            return res;
+        }
+
+        public PagingListResult listLikeProfile(PagingParameter paging, string userName)
+        {
+            User user = _userRepository.getUserByUsername(userName);
+            if (user == null)
+            {
+                throw new ServiceException("User không tồn tại");
+            }
+            PagingListResult res = new PagingListResult();
+            List<Like> likes = _likeRepository.GetAll().Where(p => p.UserID == user.UserID && "List".Equals(p.Type)).ToList();
+            List<int> listIDS = likes.Select(p => p.ParentID).ToList();
+            var lists = _listRepository.GetAll().Where(p => listIDS.Contains(p.ListID));
+
+            int totalCount = lists.Count();
+            int totalPages = (int)Math.Ceiling((double)totalCount / paging.pageSize);
+            lists = lists.Skip((paging.pageIndex - 1) * paging.pageSize).Take(paging.pageSize);
+            lists = lists.ToList();
+            List<ListPopularDTO> listDTOS = new List<ListPopularDTO>();
+            foreach (List list in lists)
+            {
+                ListPopularDTO listDTO = new ListPopularDTO();
+                List<BaseFilmDTO> filmDTOS = new List<BaseFilmDTO>();
+                UserReviewDTO userDTO = new UserReviewDTO();
+
+                //user
+                User userList = _userRepository.GetByID(list.UserID);
+                if (userList != null)
+                {
+                    userDTO.Avatar = userList.Avatar;
+                    userDTO.FullName = userList.FullName;
+                    userDTO.UserID = userList.UserID;
+                    userDTO.UserName = userList.UserName;
+                }
+
+                //films
+                List<FilmList> filmLists = _filmListRepository.GetAll().Where(p => p.ListID == list.ListID).ToList();
+                List<int> filmIDS = filmLists.Select(p => p.FilmID).Take(5).ToList();
+                List<Film> films = _filmRepository.GetAll().Where(p => filmIDS.Contains(p.FilmID)).ToList();
+                foreach (Film film in films)
+                {
+                    BaseFilmDTO filmDTO = new BaseFilmDTO();
+                    filmDTO.Title = film.Title;
+                    filmDTO.Poster_path = film.Poster_path;
+                    filmDTO.FilmID = film.FilmID;
+                    filmDTO.Release_date = film.Release_date;
+                    filmDTOS.Add(filmDTO);
+                }
+
+                listDTO.CommentsCount = list.CommentsCount;
+                listDTO.LikesCount = list.LikesCount;
+                listDTO.ListID = list.ListID;
+                listDTO.Description = list.Description;
+                listDTO.ListName = list.ListName;
+                listDTO.User = userDTO;
+                listDTO.List = filmDTOS;
+                listDTOS.Add(listDTO);
+            }
+            res.Data = listDTOS;
             res.TotalPage = totalPages;
             res.Total = totalCount;
             res.PageSize = paging.pageSize;

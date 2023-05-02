@@ -1,5 +1,7 @@
 ﻿using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.Film;
+using WebFilm.Core.Enitites.List;
+using WebFilm.Core.Enitites.Review;
 using WebFilm.Core.Enitites.Review.dto;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Enitites.User.Profile;
@@ -47,5 +49,10 @@ namespace WebFilm.Core.Interfaces.Services
 
         PagingFilmResult watchListProfile(PagingParameterFilm parameters, string userName);
 
+        PagingFilmResult filmLikeProfile(PagingParameter parameters, string userName);
+
+        PagingReviewResult reviewLikeProfile(PagingParameter parameters, string userName);
+
+        PagingListResult listLikeProfile(PagingParameter parameters, string userName);
     }
 }

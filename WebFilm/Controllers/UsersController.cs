@@ -274,6 +274,51 @@ namespace WebFilm.Controllers
 
         }
 
+        [HttpPost("{userName}/Profile/Like/Films")]
+        [AllowAnonymous]
+        public IActionResult getLikeFilmProfile([FromBody] PagingParameter parameter, string userName)
+        {
+            try
+            {
+                return Ok(_userService.filmLikeProfile(parameter, userName));
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+
+        }
+
+        [HttpPost("{userName}/Profile/Like/Reviews")]
+        [AllowAnonymous]
+        public IActionResult getLikeReviewProfile([FromBody] PagingParameter parameter, string userName)
+        {
+            try
+            {
+                return Ok(_userService.reviewLikeProfile(parameter, userName));
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+
+        }
+
+        [HttpPost("{userName}/Profile/Like/Lists")]
+        [AllowAnonymous]
+        public IActionResult getLikeListProfile([FromBody] PagingParameter parameter, string userName)
+        {
+            try
+            {
+                return Ok(_userService.listLikeProfile(parameter, userName));
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+
+        }
+
         //[HttpPost("{userID}/Avatar")]
         //public IActionResult SaveAvatar(Guid userID, IFormFile avatar)
         //{
