@@ -150,7 +150,7 @@ namespace WebFilm.Infrastructure.Repository
             {
                 var sqlCommand = "SELECT parentID as ListID, MAX(date) as Date FROM `like` " +
                     "where `type` = 'List' " +
-                    "GROUP BY parentID ORDER BY Date DESC LIMIT 10;";
+                    "GROUP BY parentID ORDER BY Date DESC LIMIT 6;";
                 DynamicParameters parameters = new DynamicParameters();
                 var lists = SqlConnection.Query<ListRecentLikeDTO>(sqlCommand);
 

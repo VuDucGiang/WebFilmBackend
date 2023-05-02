@@ -76,7 +76,7 @@ namespace WebFilm.Core.Services
             List<ListPopularDTO> dtos = new List<ListPopularDTO>();
             List<ListRecentLikeDTO> likesList = _listRepository.RecentLikeList();
             List<int> ids = likesList.Select(t => t.ListID).ToList();
-            List<List> listPopular = _listRepository.GetAll().Where(p => ids.Contains(p.ListID)).ToList();
+            List<List> listPopular = _listRepository.GetAll().Where(p => ids.Contains(p.ListID)).OrderBy(p => ids.IndexOf(p.ListID)).ToList();
             this.enrichListPopular(dtos, listPopular, 5);
             return dtos;
         }

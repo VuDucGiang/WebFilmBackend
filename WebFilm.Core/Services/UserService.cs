@@ -886,6 +886,7 @@ namespace WebFilm.Core.Services
                 reviewDTO.LikesCount = review.LikesCount;
                 reviewDTO.Rate = review.Score;
                 reviewDTO.WatchedDate = review.WatchedDate;
+                reviewDTO.HaveSpoiler = review.HaveSpoiler;
                 Film film = _filmRepository.GetByID(review.FilmID);
                 if (film != null)
                 {
