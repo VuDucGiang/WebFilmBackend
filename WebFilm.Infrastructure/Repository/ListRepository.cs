@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using MySqlConnector;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,10 +32,23 @@ namespace WebFilm.Infrastructure.Repository
                 int offset = (pageIndex - 1) * pageSize;
 
                 var sqlCommand = @$"SELECT l.ListID, l.ListName, l.Description, l.LikesCount, l.CommentsCount,
-                                    GROUP_CONCAT(f1.poster_path SEPARATOR ',') AS Poster_paths
+                                    COUNT(f.FilmID) FilmsCount,
+                                    JSON_ARRAYAGG(
+                                        JSON_OBJECT(
+                                            'FilmID', f1.FilmID,
+                                            'Poster_path', f1.poster_path,
+                                            'Release_date', f1.release_date,
+                                            'Title', f1.title
+                                        )
+                                    ) AS List,
+                                    JSON_OBJECT(
+                                        'UserID', u.UserID,
+                                        'UserName', u.UserName,
+                                        'Avatar', u.Avatar
+                                    ) AS User
                                     FROM list l
                                     LEFT JOIN filmlist f ON l.ListID = f.ListID
-                                    LEFT JOIN film f1 ON f.FilmID = f1.FilmID
+                                    INNER JOIN film f1 ON f.FilmID = f1.FilmID
                                     LEFT JOIN user u ON u.UserID = l.UserID
                                     WHERE u.UserName = @userName AND 
                                     ((l.Private = 1 AND l.UserID = @userID) OR l.Private = 0) 
@@ -42,6 +56,8 @@ namespace WebFilm.Infrastructure.Repository
                                     LIMIT @pageSize OFFSET @offset;
 
                                     SELECT COUNT(l.ListID) FROM list l
+                                    LEFT JOIN filmlist f ON l.ListID = f.ListID
+                                    INNER JOIN film f1 ON f.FilmID = f1.FilmID
                                     LEFT JOIN user u ON u.UserID = l.UserID
                                     WHERE u.UserName = @userName AND 
                                     ((l.Private = 1 AND l.UserID = @userID) OR l.Private = 0);";
@@ -55,10 +71,33 @@ namespace WebFilm.Infrastructure.Repository
                 var data = result.Read<object>().ToList();
                 foreach (var item in data)
                 {
-                    var list = (IDictionary<string, object>)item;
-                    var poster_paths = (string)list["Poster_paths"];
-                    list["Poster_paths"] = poster_paths.Split(',');
-                    list["FilmsCount"] = poster_paths.Split(',').Length;
+                    var lists = (IDictionary<string, object>)item;
+                    var list = (string)lists["List"];
+                    if (!string.IsNullOrEmpty(list))
+                    {
+                        var films = JsonConvert.DeserializeObject<List<BaseFilmDTO>>(list);
+                        if (films != null)
+                        {
+                            lists["List"] = films.Take(5);
+                        }
+                        else
+                        {
+                            lists["List"] = new List<BaseFilmDTO>();
+                        }
+                    }
+
+                    var user = (string)lists["User"];
+                    if (!string.IsNullOrEmpty(user))
+                    {
+                        var userObject = JObject.Parse(user);
+                        lists["User"] = new
+                        {
+                            UserID = (string)userObject["UserID"],
+                            UserName = (string)userObject["UserName"],
+                            Avatar = (string?)userObject["Avatar"]
+                        };
+
+                    }
                 }
                 var total = result.Read<int>().Single();
                 int totalPage = (int)Math.Ceiling((double)total / pageSize);
