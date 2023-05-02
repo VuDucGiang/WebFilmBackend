@@ -575,11 +575,11 @@ namespace WebFilm.Core.Services
 
                 dto.ReviewID = review.ReviewID;
                 dto.Film = filmReview;
-                dto.TotalLike = review.LikesCount;
+                dto.LikesCount = review.LikesCount;
                 dto.Content = review.Content;
                 dto.CreatedDate = review.CreatedDate;
                 dto.HaveSpoiler = review.HaveSpoiler;
-                dto.TotalComment = review.CommentsCount;
+                dto.CommentsCount = review.CommentsCount;
                 dto.WatchedDate = review.WatchedDate;
 
                 reviewsRecent.Add(dto);

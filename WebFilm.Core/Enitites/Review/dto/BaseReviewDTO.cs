@@ -17,9 +17,9 @@ namespace WebFilm.Core.Enitites.Review.dto
 
         public float Rate { get; set; }
 
-        public int TotalComment { get; set; }
+        public int CommentsCount { get; set; }
 
-        public int TotalLike { get; set; }
+        public int LikesCount { get; set; }
         public bool HaveSpoiler { get; set; }
 
         public DateTime? CreatedDate { get; set; }

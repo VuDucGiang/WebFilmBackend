@@ -119,8 +119,8 @@ namespace WebFilm.Core.Services
                 dto.ListID = list.ListID;
                 dto.ListName = list.ListName;
                 dto.Description = list.Description;
-                dto.TotalLike = list.LikesCount;
-                dto.TotalComment = list.CommentsCount;
+                dto.LikesCount = list.LikesCount;
+                dto.CommentsCount = list.CommentsCount;
                 dto.User = userDTO;
                 dto.List = filmDTOs;
                 dto.Total = filmCounts.Count();
@@ -244,8 +244,8 @@ namespace WebFilm.Core.Services
             }
 
             res.ListID = listDetail.ListID;
-            res.TotalLike = listDetail.LikesCount;
-            res.TotalComment = listDetail.CommentsCount;
+            res.LikesCount = listDetail.LikesCount;
+            res.CommentsCount = listDetail.CommentsCount;
             res.ListName = listDetail.ListName;
             res.Description = listDetail.Description;
             res.CreatedDate = listDetail.CreatedDate;

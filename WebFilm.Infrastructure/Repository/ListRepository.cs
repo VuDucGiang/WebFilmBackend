@@ -55,7 +55,7 @@ namespace WebFilm.Infrastructure.Repository
                                     GROUP BY l.ListID
                                     LIMIT @pageSize OFFSET @offset;
 
-                                    SELECT COUNT(l.ListID) FROM list l
+                                    SELECT COUNT(DISTINCT f.ListID) FROM list l
                                     LEFT JOIN filmlist f ON l.ListID = f.ListID
                                     INNER JOIN film f1 ON f.FilmID = f1.FilmID
                                     LEFT JOIN user u ON u.UserID = l.UserID

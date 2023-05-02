@@ -104,8 +104,8 @@ namespace WebFilm.Core.Services
                 dto.Content = review.Content;
                 dto.WatchedDate = review.WatchedDate;
                 dto.Rate = review.Score;
-                dto.TotalComment = review.CommentsCount;
-                dto.TotalLike = review.LikesCount;
+                dto.CommentsCount = review.CommentsCount;
+                dto.LikesCount = review.LikesCount;
                 dto.HaveSpoiler = review.HaveSpoiler;
                 dtos.Add(dto);
             }
@@ -168,8 +168,8 @@ namespace WebFilm.Core.Services
             res.WatchedDate = review.WatchedDate;
             res.ModifiedDate = review.ModifiedDate;
             res.Rate = review.Score;
-            res.TotalLike = review.LikesCount;
-            res.TotalComment = review.CommentsCount;
+            res.LikesCount = review.LikesCount;
+            res.CommentsCount = review.CommentsCount;
             res.Film = filmDTO;
             res.User = userDTO;
             res.HaveSpoiler = review.HaveSpoiler;
