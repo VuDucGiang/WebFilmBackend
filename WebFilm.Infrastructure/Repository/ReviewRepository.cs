@@ -1,6 +1,8 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Configuration;
 using MySqlConnector;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +24,45 @@ namespace WebFilm.Infrastructure.Repository
         public ReviewRepository(IConfiguration configuration, IUserContext userContext) : base(configuration)
         {
             _userContext = userContext;
+        }
+
+        public async Task<object> GetReviewOfUser(int pageSize, int pageIndex, string userName)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                int offset = (pageIndex - 1) * pageSize;
+
+                var sqlCommand = @$"SELECT r.*, f.title, f.poster_path Poster_path, f.release_date Release_date
+                                    FROM review r
+                                    LEFT JOIN film f ON r.FilmID = f.FilmID
+                                    LEFT JOIN user u ON r.UserID = u.UserID
+                                    WHERE u.UserName = @userName
+                                    ORDER BY r.WatchedDate DESC
+                                    LIMIT @pageSize OFFSET @offset;
+
+                                    SELECT COUNT(DISTINCT r.ReviewID) 
+                                    FROM review r
+                                    LEFT JOIN film f ON r.FilmID = f.FilmID
+                                    LEFT JOIN user u ON r.UserID = u.UserID
+                                    WHERE u.UserName = @userName;";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@pageSize", pageSize);
+                parameters.Add("@offset", offset);
+                parameters.Add("@userName", userName);
+                var result = await SqlConnection.QueryMultipleAsync(sqlCommand, parameters);
+                //Trả dữ liệu về client
+                var data = result.Read<object>().ToList();
+                var total = result.Read<int>().Single();
+                int totalPage = (int)Math.Ceiling((double)total / pageSize);
+                return new
+                {
+                    Data = data,
+                    Total = total,
+                    PageSize = pageSize,
+                    PageIndex = pageIndex,
+                    TotalPage = totalPage
+                };
+            }
         }
 
         public List<Review> GetReviewByUserID(Guid userID)

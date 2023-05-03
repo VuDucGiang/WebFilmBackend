@@ -7,7 +7,6 @@ using WebFilm.Core.Services;
 
 namespace WebFilm.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ReviewsController : BaseController<int, Review>
@@ -23,7 +22,20 @@ namespace WebFilm.Controllers
         }
         #endregion
 
-        [AllowAnonymous]
+        [HttpGet("Users")]
+        public async Task<IActionResult> GetReviewOfUser(int pageSize, int pageIndex, string userName)
+        {
+            try
+            {
+                var res = await _reviewService.GetReviewOfUser(pageSize, pageIndex, userName);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
         [HttpPost("Popular")]
         public async Task<IActionResult> GetPopular([FromBody] PagingParameter parameter)
         {
@@ -38,7 +50,6 @@ namespace WebFilm.Controllers
             }
         }
 
-        [AllowAnonymous]
         [HttpPost("Paging")]
         public async Task<IActionResult> GetPaging([FromBody] PagingFilterParameter parameter)
         {
@@ -53,7 +64,6 @@ namespace WebFilm.Controllers
             }
         }
 
-        [AllowAnonymous]
         [HttpGet("Popular/Week")]
         public IActionResult GetRecent()
         {
@@ -68,7 +78,6 @@ namespace WebFilm.Controllers
             }
         }
 
-        [AllowAnonymous]
         [HttpGet("{id}/detail")]
         public IActionResult GetDetail(int id, int limitUser)
         {
@@ -83,7 +92,6 @@ namespace WebFilm.Controllers
             }
         }
 
-        [AllowAnonymous]
         [HttpPost("{id}/Comments")]
         public IActionResult GetCommentInList(int id, [FromBody] PagingParameter parameter)
         {
@@ -98,6 +106,7 @@ namespace WebFilm.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("NewFromFriend")]
         public IActionResult getNewFromFriend()
         {

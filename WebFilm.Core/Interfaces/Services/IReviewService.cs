@@ -7,6 +7,8 @@ namespace WebFilm.Core.Interfaces.Services
 {
     public interface IReviewService : IBaseService<int, Review>
     {
+        Task<object> GetReviewOfUser(int pageSize, int pageIndex, string userName);
+
         Task<object> GetPopular(int pageSize, int pageIndex, string filter, string sort);
 
         Task<object> GetPaging(PagingFilterParameter parameter);

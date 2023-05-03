@@ -12,6 +12,7 @@ namespace WebFilm.Core.Interfaces.Repository
 {
     public interface  IReviewRepository : IBaseRepository<int, Review>
     {
+        Task<object> GetReviewOfUser(int pageSize, int pageIndex, string userName);
         List<Review> GetReviewByUserID(Guid userID);
 
         Task<object> GetPopular(int pageSize, int pageIndex, string filter, string sort);

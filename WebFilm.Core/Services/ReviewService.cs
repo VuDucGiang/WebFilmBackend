@@ -48,6 +48,10 @@ namespace WebFilm.Core.Services
             _userContext = userContext;
             _followRepository = followRepository;
         }
+        public async Task<object> GetReviewOfUser(int pageSize, int pageIndex, string userName)
+        {
+            return await _reviewRepository.GetReviewOfUser(pageSize, pageIndex, userName);
+        }
 
         public async Task<object> GetPopular(int pageSize, int pageIndex, string filter, string sort)
         {
