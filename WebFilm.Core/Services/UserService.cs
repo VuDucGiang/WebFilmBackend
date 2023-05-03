@@ -440,7 +440,7 @@ namespace WebFilm.Core.Services
             List<RecentLikeDTO> recentLikeDTOs = new List<RecentLikeDTO>();
             List<Like> likes = _likeRepository.GetAll()
                 .Where(p => (p.UserID == userID && p.Type.Equals(TypeLike.Film.ToString())))
-                .OrderByDescending(p => p.Date).Take(4).ToList();
+                .OrderByDescending(p => p.CreatedDate).Take(4).ToList();
             List<int> recentLikeIds = likes.Select(p => p.ParentID).ToList();
             List<Film> filmRecentLikes = _filmRepository.GetAll().Where(p => recentLikeIds.Contains(p.FilmID)).ToList();
             foreach (Film film in filmRecentLikes)
@@ -516,7 +516,7 @@ namespace WebFilm.Core.Services
             // recent like review
             List<BaseReviewDTO> recentLikesReview = new List<BaseReviewDTO>();
             List<Like> likeRecentss = _likeRepository.GetAll().Where(p => p.UserID == user.UserID && "Review".Equals(p.Type))
-                .OrderByDescending(p => p.Date).Take(4).ToList();
+                .OrderByDescending(p => p.CreatedDate).Take(4).ToList();
             List<int> recentIDS = likeRecentss.Select(p => p.ParentID).ToList();
             List<Review> reviewRecentss = _reviewRepository.GetAll().Where(p => recentIDS.Contains(p.ReviewID)).ToList();
             recentLikesReview = enRichReviews(recentLikesReview, reviewRecentss, userID);

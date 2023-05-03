@@ -71,7 +71,6 @@ namespace WebFilm.Core.Services
                     newLike.Type = "Film";
                     newLike.CreatedDate = DateTime.Now;
                     newLike.ModifiedDate = DateTime.Now;
-                    newLike.Date = DateTime.Now;
                     newLike.ParentID = id;
                     newLike.UserID = userID;
 
@@ -105,7 +104,6 @@ namespace WebFilm.Core.Services
                     newLike.Type = "Review";
                     newLike.CreatedDate = DateTime.Now;
                     newLike.ModifiedDate = DateTime.Now;
-                    newLike.Date = DateTime.Now;
                     newLike.ParentID = id;
                     newLike.UserID = userID;
 
@@ -139,7 +137,6 @@ namespace WebFilm.Core.Services
                     newLike.Type = "List";
                     newLike.CreatedDate = DateTime.Now;
                     newLike.ModifiedDate = DateTime.Now;
-                    newLike.Date = DateTime.Now;
                     newLike.ParentID = id;
                     newLike.UserID = userID;
 

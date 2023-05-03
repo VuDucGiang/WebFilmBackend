@@ -11,8 +11,6 @@ namespace WebFilm.Core.Enitites.Like
 
         public string Type { get; set; }
 
-        public DateTime Date { get; set; }
-
         public int ParentID { get; set; }
     }
 }
