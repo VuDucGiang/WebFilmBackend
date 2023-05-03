@@ -13,6 +13,9 @@ namespace WebFilm.Core.Interfaces.Services
     public interface IListService : IBaseService<int, List>
     {
         Task<object> GetListOfUser(int pageSize, int pageIndex, string userName);
+
+        Task<bool> AddListDetail(ListDTO list);
+
         List<ListPopularDTO> GetListPopular();
 
         List<ListPopularDTO> GetListPopularWeek();

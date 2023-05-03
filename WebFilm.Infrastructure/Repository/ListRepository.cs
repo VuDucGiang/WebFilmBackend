@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using MySqlConnector;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Org.BouncyCastle.Utilities.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -109,6 +110,56 @@ namespace WebFilm.Infrastructure.Repository
                     PageIndex = pageIndex,
                     TotalPage = totalPage
                 };
+            }
+        }
+
+        public async Task<bool> AddListDetail(ListDTO list)
+        {
+            list.ListID = await this.GetNewListID();
+            await this.AddListMaster(list);
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var filmIDs = list.FilmIDs.Split(',');
+                foreach (var item in filmIDs)
+                {
+                    var sqlCommand = @$"INSERT INTO filmlist (FilmID, ListID, CreatedDate, ModifiedDate)
+                                        VALUES (@filmID, @listID, NOW(), NOW());";
+
+                    DynamicParameters parameters = new DynamicParameters();
+                    parameters.Add("filmID", item);
+                    parameters.Add("listID", list.ListID);
+                    var result = await SqlConnection.ExecuteAsync(sqlCommand, parameters);
+
+                }
+                return true;
+            }
+        }
+
+        public async Task<int> AddListMaster(ListDTO list)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCommand = @$"INSERT INTO list(ListID, UserID, ListName, Description, CreatedDate, ModifiedDate)
+                                    VALUES(@listID, @userID, @listName, @description, NOW(), NOW());";
+
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("userID", _userContext.UserId);
+                parameters.Add("listName", list.ListName);
+                parameters.Add("description", list.Description);
+                parameters.Add("listID", list.ListID);
+                var result = await SqlConnection.ExecuteAsync(sqlCommand, parameters);
+                return result;
+            }
+        }
+
+        public async Task<int> GetNewListID()
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCommand = @$"SELECT COALESCE(MAX(ListID), 0) + 1 FROM list;";
+
+                var result = await SqlConnection.QueryAsync<int>(sqlCommand);
+                return result.FirstOrDefault();
             }
         }
 

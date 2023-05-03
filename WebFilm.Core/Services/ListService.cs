@@ -53,6 +53,11 @@ namespace WebFilm.Core.Services
             return await _listRepository.GetListOfUser(pageSize, pageIndex, userName);
         }
 
+        public async Task<bool> AddListDetail(ListDTO list)
+        {
+            return await _listRepository.AddListDetail(list);
+        }
+
         public List<ListPopularDTO> GetListPopular()
         {
             List<ListPopularDTO> dtos = new List<ListPopularDTO>();

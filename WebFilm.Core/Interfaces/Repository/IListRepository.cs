@@ -11,6 +11,7 @@ namespace WebFilm.Core.Interfaces.Repository
     public interface IListRepository : IBaseRepository<int, List>
     {
         Task<object> GetListOfUser(int pageSize, int pageIndex, string userName);
+        Task<bool> AddListDetail(ListDTO list);
         List<ListPopularWeekDTO> PopularWeekList();
         List<ListRecentLikeDTO> RecentLikeList();
         List<ListPopularWeekDTO> PopularMonthList();
