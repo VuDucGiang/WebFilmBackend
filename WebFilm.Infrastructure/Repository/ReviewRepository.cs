@@ -256,7 +256,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 var sqlCommand = "SELECT ParentID as ListID, COUNT(*) as LikeCounts FROM `like` " +
-                    "WHERE date >= DATE_SUB(NOW(), INTERVAL 1 WEEK) and `type` = 'Review' " +
+                    "WHERE createdDate >= DATE_SUB(NOW(), INTERVAL 1 WEEK) and `type` = 'Review' " +
                     "GROUP BY ParentID ORDER BY LikeCounts DESC LIMIT 6;";
                 DynamicParameters parameters = new DynamicParameters();
                 var lists = SqlConnection.Query<ListPopularWeekDTO>(sqlCommand);

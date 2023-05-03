@@ -318,7 +318,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 var sqlCommand = "SELECT ParentID as ListID, COUNT(*) as LikeCounts FROM `like` " +
-                    "WHERE date >= DATE_SUB(NOW(), INTERVAL 1 MONTH) and `type` = 'List' " +
+                    "WHERE createdDate >= DATE_SUB(NOW(), INTERVAL 1 MONTH) and `type` = 'List' " +
                     "GROUP BY ParentID ORDER BY LikeCounts DESC LIMIT 5;";
                 DynamicParameters parameters = new DynamicParameters();
                 var lists = SqlConnection.Query<ListPopularWeekDTO>(sqlCommand);
@@ -334,7 +334,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 var sqlCommand = "SELECT ParentID as ListID, COUNT(*) as LikeCounts FROM `like` " +
-                    "WHERE date >= DATE_SUB(NOW(), INTERVAL 1 WEEK) and `type` = 'List' " +
+                    "WHERE createdDate >= DATE_SUB(NOW(), INTERVAL 1 WEEK) and `type` = 'List' " +
                     "GROUP BY ParentID ORDER BY LikeCounts DESC LIMIT 3;";
                 DynamicParameters parameters = new DynamicParameters();
                 var lists = SqlConnection.Query<ListPopularWeekDTO>(sqlCommand);
@@ -349,7 +349,7 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCommand = "SELECT parentID as ListID, MAX(date) as Date FROM `like` " +
+                var sqlCommand = "SELECT parentID as ListID, MAX(createdDate) as Date FROM `like` " +
                     "where `type` = 'List' " +
                     "GROUP BY parentID ORDER BY Date DESC LIMIT 6;";
                 DynamicParameters parameters = new DynamicParameters();
