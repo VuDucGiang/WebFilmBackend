@@ -135,6 +135,28 @@ namespace WebFilm.Infrastructure.Repository
             }
         }
 
+        public async Task<bool> EditListDetail(ListDTO list)
+        {
+            await this.EditListMaster(list);
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCommand = @$"DELETE FROM filmlist WHERE ListID = @listID;";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("listID", list.ListID);
+                await SqlConnection.ExecuteAsync(sqlCommand, parameters);
+                var filmIDs = list.FilmIDs.Split(',');
+                foreach (var item in filmIDs)
+                {
+                    sqlCommand = @$"INSERT INTO filmlist (FilmID, ListID, CreatedDate, ModifiedDate)
+                                        VALUES (@filmID, @listID, NOW(), NOW());";
+
+                    parameters.Add("filmID", item);
+                    await SqlConnection.ExecuteAsync(sqlCommand, parameters);
+                }
+                return true;
+            }
+        }
+
         public async Task<int> AddListMaster(ListDTO list)
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
@@ -144,6 +166,25 @@ namespace WebFilm.Infrastructure.Repository
 
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("userID", _userContext.UserId);
+                parameters.Add("listName", list.ListName);
+                parameters.Add("description", list.Description);
+                parameters.Add("listID", list.ListID);
+                var result = await SqlConnection.ExecuteAsync(sqlCommand, parameters);
+                return result;
+            }
+        }
+
+        public async Task<int> EditListMaster(ListDTO list)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCommand = @$"UPDATE list l 
+                                    SET ListName = @listName,
+                                        Description = @description,
+                                        ModifiedDate = NOW()
+                                    WHERE ListID = @listID;";
+
+                DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("listName", list.ListName);
                 parameters.Add("description", list.Description);
                 parameters.Add("listID", list.ListID);

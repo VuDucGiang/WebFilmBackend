@@ -53,6 +53,21 @@ namespace WebFilm.Controllers
             }
         }
 
+        [Authorize]
+        [HttpPost("Edit")]
+        public async Task<IActionResult> EditListDetail([FromBody] ListDTO list)
+        {
+            try
+            {
+                var res = await _listService.EditListDetail(list);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
         [HttpGet("Popular")]
         public IActionResult GetPopular()
         {
