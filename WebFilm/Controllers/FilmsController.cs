@@ -23,6 +23,20 @@ namespace WebFilm.Controllers
             _filmService = filmService;
         }
 
+        [HttpGet("ListUserLiked")]
+        public async Task<IActionResult> GetListUserLiked(int pageSize, int pageIndex, int filmID)
+        {
+            try
+            {
+                var res = await _filmService.GetListUserLiked(pageSize, pageIndex, filmID);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
         [HttpGet("{id}/Detail")]
         public async Task<IActionResult> GetDetailByID(int id)
         {

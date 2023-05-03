@@ -224,7 +224,7 @@ namespace WebFilm.Infrastructure.Repository
                                     {orderBy}
                                     LIMIT @pageSize OFFSET @offset;
 
-                                    SELECT COUNT(r.ReviewID) FROM review r
+                                    SELECT COUNT(DISTINCT r.ReviewID) FROM review r
                                     {join}
                                     INNER JOIN user u ON u.UserID = r.UserID {where}
                                     INNER JOIN film f ON f.FilmID = r.FilmID

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.List;
 using WebFilm.Core.Enitites.Review;
 using WebFilm.Core.Enitites.User;
@@ -201,6 +202,114 @@ namespace WebFilm.Infrastructure.Repository
 
                 var result = await SqlConnection.QueryAsync<int>(sqlCommand);
                 return result.FirstOrDefault();
+            }
+        }
+
+        public async Task<object> GetPaging(PagingFilterParameter parameter)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                int offset = (parameter.pageIndex - 1) * parameter.pageSize;
+                string orderBy = "";
+                switch (parameter.sort.ToLower())
+                {
+                    case "popularity":
+                        orderBy = "ORDER BY l.LikesCount DESC";
+                        break;
+                    case "most recent":
+                        orderBy = "ORDER BY l.CreatedDate DESC";
+                        break;
+                    case "earliest":
+                        orderBy = "ORDER BY l.CreatedDate ASC";
+                        break;
+                    default:
+                        break;
+                }
+
+                string where = "";
+                string join = "";
+                if (_userContext.UserId != null)
+                {
+                    switch (parameter.from.ToLower())
+                    {
+                        case "everyone":
+                            break;
+                        case "friends":
+                            join = "LEFT JOIN follow f2 ON f2.UserID = @userID ";
+                            where = "AND l.UserID = f2.FollowedUserID";
+                            break;
+                        case "you":
+                            where = "AND l.UserID = @userID";
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                var sqlCommand = @$"SELECT l.*, u.UserName,
+                                    IF(l1.LikeID IS NOT NULL, True, False) AS Liked,
+                                    COUNT(f.FilmID) FilmsCount,
+                                    JSON_ARRAYAGG(
+                                        JSON_OBJECT(
+                                            'FilmID', f1.FilmID,
+                                            'Poster_path', f1.poster_path,
+                                            'Release_date', f1.release_date,
+                                            'Title', f1.title
+                                        )
+                                    ) AS Film
+                                    FROM list l
+                                    {join}
+                                    LEFT JOIN filmlist f ON l.ListID = f.ListID
+                                    INNER JOIN film f1 ON f.FilmID = f1.FilmID
+                                    LEFT JOIN user u ON u.UserID = l.UserID {where}
+                                    LEFT JOIN `like` l1 ON l.ListID = l1.ParentID AND l1.UserID = @userID AND l1.Type = 'List'
+                                    WHERE f.FilmID = @filmID
+                                    GROUP BY l.ListID
+                                    {orderBy}
+                                    LIMIT @pageSize OFFSET @offset;
+
+                                    SELECT COUNT(DISTINCT l.ListID) FROM list l
+                                    {join}
+                                    LEFT JOIN filmlist f ON l.ListID = f.ListID
+                                    INNER JOIN film f1 ON f.FilmID = f1.FilmID
+                                    LEFT JOIN user u ON u.UserID = l.UserID {where}
+                                    LEFT JOIN `like` l1 ON l.ListID = l1.ParentID AND l1.UserID = @userID AND l1.Type = 'List'
+                                    WHERE f.FilmID = @filmID";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@filter", parameter.filter);
+                parameters.Add("@pageSize", parameter.pageSize);
+                parameters.Add("@offset", offset);
+                parameters.Add("@userID", _userContext.UserId);
+                parameters.Add("@filmID", parameter.id);
+                var result = await SqlConnection.QueryMultipleAsync(sqlCommand, parameters);
+                //Trả dữ liệu về client
+                var data = result.Read<object>().ToList();
+                foreach (var item in data)
+                {
+                    var lists = (IDictionary<string, object>)item;
+                    var list = (string)lists["Film"];
+                    if (!string.IsNullOrEmpty(list))
+                    {
+                        var films = JsonConvert.DeserializeObject<List<BaseFilmDTO>>(list);
+                        if (films != null)
+                        {
+                            lists["Film"] = films.Take(5);
+                        }
+                        else
+                        {
+                            lists["Film"] = new List<BaseFilmDTO>();
+                        }
+                    }
+                }
+                var total = result.Read<int>().Single();
+                int totalPage = (int)Math.Ceiling((double)total / parameter.pageSize);
+                return new
+                {
+                    Data = data,
+                    Total = total,
+                    PageSize = parameter.pageSize,
+                    PageIndex = parameter.pageIndex,
+                    TotalPage = totalPage
+                };
             }
         }
 

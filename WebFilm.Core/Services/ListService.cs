@@ -62,6 +62,11 @@ namespace WebFilm.Core.Services
             return await _listRepository.EditListDetail(list);
         }
 
+        public async Task<object> GetPaging(PagingFilterParameter parameter)
+        {
+            return await _listRepository.GetPaging(parameter);
+        }
+
         public List<ListPopularDTO> GetListPopular()
         {
             List<ListPopularDTO> dtos = new List<ListPopularDTO>();

@@ -32,6 +32,48 @@ namespace WebFilm.Infrastructure.Repository
             _userContext = userContext;
         }
 
+        public async Task<object> GetListUserLiked(int pageSize, int pageIndex, int filmID)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                int offset = (pageIndex - 1) * pageSize;
+                var sql = @$"SELECT u.UserID, u.UserName, u.Avatar,
+                            COUNT(DISTINCT f1.FollowID) AS Follower,
+                            COUNT(DISTINCT f2.FollowID) AS Following,
+                            COUNT(DISTINCT r.ReviewID) AS Reviews
+                            FROM `like` l
+                            LEFT JOIN user u ON l.UserID = u.UserID
+                            LEFT JOIN follow f1 ON u.UserID = f1.FollowedUserID 
+                            LEFT JOIN follow f2 ON u.UserID = f2.UserID
+                            LEFT JOIN review r ON u.UserID = r.UserID
+                            WHERE l.Type = 'Film' AND l.ParentID = @filmID
+                            LIMIT @pageSize OFFSET @offset;
+                            
+                            SELECT COUNT(DISTINCT l.UserID)
+                            FROM `like` l
+                            WHERE l.Type = 'Film' AND l.ParentID = @filmID";
+                                
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@pageSize", pageSize);
+                parameters.Add("@offset", offset);
+                parameters.Add("@filmID", filmID);
+
+                var result = await SqlConnection.QueryMultipleAsync(sql, parameters);
+                //Trả dữ liệu về client
+                var data = result.Read<object>().ToList();
+                var total = result.Read<int>().Single();
+                int totalPage = (int)Math.Ceiling((double)total / pageSize);
+                return new
+                {
+                    Data = data,
+                    Total = total,
+                    PageSize = pageSize,
+                    PageIndex = pageIndex,
+                    TotalPage = totalPage
+                };
+            }
+        }
+
         public async Task<FilmDto> GetDetailByID(int id)
         {
             using (SqlConnection = new MySqlConnection(_connectionString))

@@ -17,6 +17,11 @@ namespace WebFilm.Core.Services
             _configuration = configuration;
         }
 
+        public async Task<object> GetListUserLiked(int pageSize, int pageIndex, int filmID)
+        {
+            return await _filmRepository.GetListUserLiked(pageSize, pageIndex, filmID);
+        }
+
         public async Task<object> GetPaging(PagingParameterFilm parameter)
         {
             return await _filmRepository.GetPaging(parameter);

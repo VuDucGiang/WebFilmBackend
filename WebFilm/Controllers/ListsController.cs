@@ -68,6 +68,20 @@ namespace WebFilm.Controllers
             }
         }
 
+        [HttpPost("Paging")]
+        public async Task<IActionResult> GetPaging([FromBody] PagingFilterParameter parameter)
+        {
+            try
+            {
+                var res = await _listService.GetPaging(parameter);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
         [HttpGet("Popular")]
         public IActionResult GetPopular()
         {
