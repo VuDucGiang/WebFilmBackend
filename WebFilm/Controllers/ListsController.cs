@@ -39,7 +39,7 @@ namespace WebFilm.Controllers
         }
 
         [Authorize]
-        [HttpPost("Detail")]
+        [HttpPost("AddList")]
         public async Task<IActionResult> AddListDetail([FromBody] ListDTO list)
         {
             try
