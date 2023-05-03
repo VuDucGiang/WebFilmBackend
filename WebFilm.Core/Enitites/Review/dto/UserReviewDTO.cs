@@ -16,6 +16,6 @@ namespace WebFilm.Core.Enitites.Review.dto
 
         public string FullName { get; set; }
         public int ReviewID { get; set; }
-        public float Rate { get; set; }
+        public float Score { get; set; }
     }
 }

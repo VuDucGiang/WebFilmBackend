@@ -563,7 +563,7 @@ namespace WebFilm.Core.Services
                 if (reviewss.Count > 0)
                 {
                     Review rate = reviewss[0];
-                    dto.Rate = rate.Score;
+                    dto.Score = rate.Score;
                     //dto.RatingCreatedAt = rate.CreatedDate.ToString().Substring(0, 10);
                 }
                 if (film != null)
@@ -884,7 +884,7 @@ namespace WebFilm.Core.Services
                 reviewDTO.Content = review.Content;
                 reviewDTO.CommentsCount = review.CommentsCount;
                 reviewDTO.LikesCount = review.LikesCount;
-                reviewDTO.Rate = review.Score;
+                reviewDTO.Score = review.Score;
                 reviewDTO.WatchedDate = review.WatchedDate;
                 reviewDTO.HaveSpoiler = review.HaveSpoiler;
                 Film film = _filmRepository.GetByID(review.FilmID);

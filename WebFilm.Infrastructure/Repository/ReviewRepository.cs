@@ -32,7 +32,18 @@ namespace WebFilm.Infrastructure.Repository
             {
                 int offset = (pageIndex - 1) * pageSize;
 
-                var sqlCommand = @$"SELECT r.*, f.title, f.poster_path Poster_path, f.release_date Release_date
+                var sqlCommand = @$"SELECT r.ReviewID, r.Content, r.LikesCount, r.HaveSpoiler, r.WatchedDate, r.Score, r.CommentsCount,
+                                    JSON_OBJECT(
+                                        'FilmID', f.FilmID,
+                                        'Poster_path', f.poster_path,
+                                        'Release_date', f.release_date,
+                                        'Title', f.title
+                                    ) AS Film,
+                                    JSON_OBJECT(
+                                        'UserID', u.UserID,
+                                        'UserName', u.UserName,
+                                        'Avatar', u.Avatar
+                                    ) AS User
                                     FROM review r
                                     LEFT JOIN film f ON r.FilmID = f.FilmID
                                     LEFT JOIN user u ON r.UserID = u.UserID
@@ -52,6 +63,28 @@ namespace WebFilm.Infrastructure.Repository
                 var result = await SqlConnection.QueryMultipleAsync(sqlCommand, parameters);
                 //Trả dữ liệu về client
                 var data = result.Read<object>().ToList();
+                foreach (var item in data)
+                {
+                    var reviews = (IDictionary<string, object>)item;
+                    var film = (string)reviews["Film"];
+                    if (!string.IsNullOrEmpty(film))
+                    {
+                        reviews["Film"] = JsonConvert.DeserializeObject<BaseFilmDTO>(film);
+                    }
+
+                    var user = (string)reviews["User"];
+                    if (!string.IsNullOrEmpty(user))
+                    {
+                        var userObject = JObject.Parse(user);
+                        reviews["User"] = new
+                        {
+                            UserID = (string)userObject["UserID"],
+                            UserName = (string)userObject["UserName"],
+                            Avatar = (string?)userObject["Avatar"]
+                        };
+
+                    }
+                }
                 var total = result.Read<int>().Single();
                 int totalPage = (int)Math.Ceiling((double)total / pageSize);
                 return new

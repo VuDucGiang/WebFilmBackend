@@ -15,7 +15,7 @@ namespace WebFilm.Core.Enitites.Review.dto
 
         public string RatingCreatedAt { get; set; }
 
-        public float Rate { get; set; }
+        public float Score { get; set; }
 
         public int CommentsCount { get; set; }
 
