@@ -61,7 +61,7 @@ namespace WebFilm.Core.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Email đã tồn tại.
+        ///   Looks up a localized string similar to Email already exists.
         /// </summary>
         public static string Error_Duplicate_Email {
             get {
@@ -70,7 +70,7 @@ namespace WebFilm.Core.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to UserName đã tồn tại.
+        ///   Looks up a localized string similar to UserName already exists.
         /// </summary>
         public static string Error_Duplicate_UserName {
             get {
@@ -79,7 +79,7 @@ namespace WebFilm.Core.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Email không đúng định dạng.
+        ///   Looks up a localized string similar to Email invalid.
         /// </summary>
         public static string Error_EmailFormat {
             get {
@@ -88,7 +88,7 @@ namespace WebFilm.Core.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Có lỗi xảy ra vui lòng liên hệ VDGiang để được hỗ trợ.
+        ///   Looks up a localized string similar to An error occurred, please contact VDGiang for support.
         /// </summary>
         public static string Error_Exception {
             get {

@@ -149,7 +149,7 @@ namespace WebFilm.Core.Services
             {
                 if (userDto.Status == 1)
                 {
-                    throw new ServiceException("Tài khoản chưa xác nhận email kích hoạt");
+                    throw new ServiceException("The account has not yet confirmed the activation email");
                 }
                 var isPasswordCorrect = BCrypt.Net.BCrypt.Verify(password, userDto.Password);
                 if (isPasswordCorrect)
@@ -173,7 +173,7 @@ namespace WebFilm.Core.Services
                     };
                 }
             }
-            throw new ServiceException("Thông tin tài khoản hoặc mật khẩu không chính xác");
+            throw new ServiceException("Incorrect account or password information");
         }
 
         private string GenarateToken(UserDto user)
@@ -254,7 +254,7 @@ namespace WebFilm.Core.Services
             {
                 if (user.Status == 1)
                 {
-                    throw new ServiceException("Tài khoản chưa xác nhận email kích hoạt");
+                    throw new ServiceException("The account has not yet confirmed the activation email");
                 }
                 var isPasswordCorrect = BCrypt.Net.BCrypt.Verify(oldPass, user.Password);
                 if (isPasswordCorrect)
@@ -263,7 +263,7 @@ namespace WebFilm.Core.Services
                     return _userRepository.ChangePassword(email, newPass);
                 }
             }
-            throw new ServiceException("Mật khẩu không chính xác");
+            throw new ServiceException("Incorrect password");
         }
 
         public bool ForgotPassword(string email)
@@ -271,7 +271,7 @@ namespace WebFilm.Core.Services
             var userDto = _userRepository.Login(email);
             if (userDto == null)
             {
-                throw new ServiceException("Email không tồn tại");
+                throw new ServiceException("Email does not exist");
             }
 
             userDto.PasswordResetToken = CreateRandomToken();
