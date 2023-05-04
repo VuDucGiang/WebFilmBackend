@@ -65,6 +65,11 @@ namespace WebFilm.Core.Services
             return await _listRepository.EditListDetail(list);
         }
 
+        public async Task<bool> DeleteListDetail(int listID)
+        {
+            return await _listRepository.DeleteListDetail(listID);
+        }
+
         public async Task<object> GetPaging(PagingFilterParameter parameter)
         {
             return await _listRepository.GetPaging(parameter);

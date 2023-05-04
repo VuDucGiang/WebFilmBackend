@@ -68,6 +68,21 @@ namespace WebFilm.Controllers
             }
         }
 
+        [Authorize]
+        [HttpDelete("Delete/{listID}")]
+        public async Task<IActionResult> DeleteListDetail(int listID)
+        {
+            try
+            {
+                var res = await _listService.DeleteListDetail(listID);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
         [HttpPost("Paging")]
         public async Task<IActionResult> GetPaging([FromBody] PagingFilterParameter parameter)
         {

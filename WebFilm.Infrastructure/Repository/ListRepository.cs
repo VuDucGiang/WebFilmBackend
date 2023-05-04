@@ -163,6 +163,20 @@ namespace WebFilm.Infrastructure.Repository
             }
         }
 
+        public async Task<bool> DeleteListDetail(int listID)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCommand = @$"DELETE FROM list l WHERE l.ListID = @listID;
+                                    DELETE FROM filmlist fl WHERE fl.ListID = @listID;";
+                                    
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("listID", listID);
+                await SqlConnection.ExecuteAsync(sqlCommand, parameters);
+                return true;
+            }
+        }
+
         public async Task<int> AddListMaster(ListDTO list)
         {
             using (SqlConnection = new MySqlConnection(_connectionString))

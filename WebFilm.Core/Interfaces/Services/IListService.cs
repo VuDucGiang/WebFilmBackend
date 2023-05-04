@@ -16,6 +16,7 @@ namespace WebFilm.Core.Interfaces.Services
 
         Task<object> AddListDetail(ListDTO list);
         Task<bool> EditListDetail(ListDTO list);
+        Task<bool> DeleteListDetail(int listID);
         Task<object> GetPaging(PagingFilterParameter parameter);
 
         List<ListPopularDTO> GetListPopular();

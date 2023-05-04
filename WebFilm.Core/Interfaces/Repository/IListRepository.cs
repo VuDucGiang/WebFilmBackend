@@ -14,6 +14,7 @@ namespace WebFilm.Core.Interfaces.Repository
         Task<object> GetListOfUser(int pageSize, int pageIndex, string userName);
         Task<object> AddListDetail(ListDTO list);
         Task<bool> EditListDetail(ListDTO list);
+        Task<bool> DeleteListDetail(int listID);
         Task<object> GetPaging(PagingFilterParameter parameter);
         List<ListPopularWeekDTO> PopularWeekList();
         List<ListRecentLikeDTO> RecentLikeList();
