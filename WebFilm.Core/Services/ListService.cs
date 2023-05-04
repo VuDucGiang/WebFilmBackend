@@ -230,6 +230,8 @@ namespace WebFilm.Core.Services
                 BaseFilmDTO filmDTO = new BaseFilmDTO();
                 filmDTO.FilmID = film.FilmID;
                 filmDTO.Poster_path = film.Poster_path;
+                filmDTO.Release_date = film.Release_date;
+                filmDTO.Title = film.Title;
                 filmDTOs.Add(filmDTO);
 
             }
