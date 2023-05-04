@@ -114,7 +114,7 @@ namespace WebFilm.Infrastructure.Repository
             }
         }
 
-        public async Task<bool> AddListDetail(ListDTO list)
+        public async Task<object> AddListDetail(ListDTO list)
         {
             list.ListID = await this.GetNewListID();
             await this.AddListMaster(list);
@@ -132,8 +132,11 @@ namespace WebFilm.Infrastructure.Repository
                     var result = await SqlConnection.ExecuteAsync(sqlCommand, parameters);
 
                 }
-                return true;
             }
+            return new {
+                ListID = list.ListID,
+                UserName = _userContext.UserName
+            };
         }
 
         public async Task<bool> EditListDetail(ListDTO list)

@@ -53,8 +53,11 @@ namespace WebFilm.Core.Services
             return await _listRepository.GetListOfUser(pageSize, pageIndex, userName);
         }
 
-        public async Task<bool> AddListDetail(ListDTO list)
+        public async Task<object> AddListDetail(ListDTO list)
         {
+            if (string.IsNullOrEmpty(list.FilmIDs)) {
+                throw new ServiceException("FilmIDs is required");
+            }
             return await _listRepository.AddListDetail(list);
         }
         public async Task<bool> EditListDetail(ListDTO list)

@@ -20,6 +20,7 @@ using System.Data;
 using static Dapper.SqlMapper;
 using WebFilm.Core.Enitites.Related_film;
 using WebFilm.Core.Enitites.Similar_film;
+using Newtonsoft.Json.Linq;
 
 namespace WebFilm.Infrastructure.Repository
 {
@@ -40,12 +41,19 @@ namespace WebFilm.Infrastructure.Repository
                 var sql = @$"SELECT u.UserID, u.UserName, u.Avatar,
                             COUNT(DISTINCT f1.FollowID) AS Follower,
                             COUNT(DISTINCT f2.FollowID) AS Following,
-                            COUNT(DISTINCT r.ReviewID) AS Reviews
+                            COUNT(DISTINCT r.ReviewID) AS Reviews,
+                            JSON_OBJECT(
+                                'FilmID', f.FilmID,
+                                'Poster_path', f.poster_path,
+                                'Release_date', f.release_date,
+                                'Title', f.title
+                            ) AS Film
                             FROM `like` l
                             LEFT JOIN user u ON l.UserID = u.UserID
                             LEFT JOIN follow f1 ON u.UserID = f1.FollowedUserID 
                             LEFT JOIN follow f2 ON u.UserID = f2.UserID
                             LEFT JOIN review r ON u.UserID = r.UserID
+                            LEFT JOIN film f ON f.FilmID = @filmID
                             WHERE l.Type = 'Film' AND l.ParentID = @filmID
                             LIMIT @pageSize OFFSET @offset;
                             
@@ -61,6 +69,15 @@ namespace WebFilm.Infrastructure.Repository
                 var result = await SqlConnection.QueryMultipleAsync(sql, parameters);
                 //Trả dữ liệu về client
                 var data = result.Read<object>().ToList();
+                foreach (var item in data)
+                {
+                    var reviews = (IDictionary<string, object>)item;
+                    var film = (string)reviews["Film"];
+                    if (!string.IsNullOrEmpty(film))
+                    {
+                        reviews["Film"] = JsonConvert.DeserializeObject<BaseFilmDTO>(film);
+                    }
+                }
                 var total = result.Read<int>().Single();
                 int totalPage = (int)Math.Ceiling((double)total / pageSize);
                 return new

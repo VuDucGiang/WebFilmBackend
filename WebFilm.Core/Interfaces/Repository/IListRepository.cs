@@ -12,7 +12,7 @@ namespace WebFilm.Core.Interfaces.Repository
     public interface IListRepository : IBaseRepository<int, List>
     {
         Task<object> GetListOfUser(int pageSize, int pageIndex, string userName);
-        Task<bool> AddListDetail(ListDTO list);
+        Task<object> AddListDetail(ListDTO list);
         Task<bool> EditListDetail(ListDTO list);
         Task<object> GetPaging(PagingFilterParameter parameter);
         List<ListPopularWeekDTO> PopularWeekList();
