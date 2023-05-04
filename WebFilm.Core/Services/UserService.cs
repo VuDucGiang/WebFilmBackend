@@ -165,6 +165,7 @@ namespace WebFilm.Core.Services
                     user.RoleType = userDto.RoleType;
                     user.FavouriteFilmList = userDto.FavouriteFilmList;
                     user.Avatar = userDto.Avatar;
+                    user.Bio = userDto.Bio;
                     return new Dictionary<string, object>()
                     {
                         { "User", user },
@@ -589,12 +590,28 @@ namespace WebFilm.Core.Services
         }
 
         public ProfileInfo getInfoProfile(string userName)
-        {
+        {   
             User user = _userRepository.getUserByUsername(userName);
             if (user == null)
             {
                 return null;
             }
+
+            bool isFollowed = false;
+            string uname = _userContext.UserName;
+            if (uname.Length > 0)
+            {
+                User userFollow = _userRepository.getUserByUsername(uname);
+                if (userFollow != null)
+                {
+                    List<Follow> follow = _followRepository.GetAll().Where(p => p.UserID == user.UserID && p.FollowedUserID == userFollow.UserID).ToList();
+                    if (follow.Count > 0)
+                    {
+                        isFollowed = true;
+                    }
+                }
+            }
+
             ProfileInfo res = new ProfileInfo();
 
             res.UserName = userName;
@@ -654,6 +671,7 @@ namespace WebFilm.Core.Services
             res.TotalLists = lists.Count;
             res.Followers = follower;
             res.Following = following;
+            res.IsFollowed = isFollowed;
 
             return res;
         }

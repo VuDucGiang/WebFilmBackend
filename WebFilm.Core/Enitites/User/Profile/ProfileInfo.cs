@@ -21,6 +21,7 @@ namespace WebFilm.Core.Enitites.User.Profile
         public int TotalLists { get; set; }
 
         public string? Banner { get; set; }
+        public bool IsFollowed { get; set; }
 
         public Following Followers { get; set; }
 
