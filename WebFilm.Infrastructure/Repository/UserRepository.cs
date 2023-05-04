@@ -19,6 +19,29 @@ namespace WebFilm.Infrastructure.Repository
             _userContext = userContext;
         }
         #region Method
+
+        public async Task<bool> EditFollow(Guid userID, bool follow)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCommand = @$"DELETE FROM follow WHERE FollowedUserID = @followedUserID AND UserID = @userID;";
+                if (follow)
+                {
+                    sqlCommand = @$"INSERT INTO follow (UserID, UserName, FollowedUserID, FollowedUserName, CreatedDate, ModifiedDate)
+                                        SELECT @userID, @userName, u.UserID, u.UserName, NOW(), NOW() FROM user u WHERE u.UserID = @followedUserID;";
+                }
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("userID", _userContext.UserId);
+                parameters.Add("userName", _userContext.UserName);
+                parameters.Add("followedUserID", userID);
+                var res = await SqlConnection.ExecuteAsync(sqlCommand, parameters);
+
+                //Trả dữ liệu về client
+                SqlConnection.Close();
+                return true;
+            }
+        }
+
         /// <summary>
         /// Lấy thông tin người dùng theo Id
         /// </summary>

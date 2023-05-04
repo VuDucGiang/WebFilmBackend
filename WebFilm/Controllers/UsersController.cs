@@ -33,6 +33,20 @@ namespace WebFilm.Controllers
 
         #region Method
 
+        [HttpPost("Follow")]
+        public async Task<IActionResult> EditFollow(Guid userID, bool follow)
+        {
+            try
+            {
+                var res = await _userService.EditFollow(userID, follow);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
         /// <summary>
         /// Đăng ký
         /// </summary>

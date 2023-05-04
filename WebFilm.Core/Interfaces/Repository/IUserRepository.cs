@@ -5,6 +5,8 @@ namespace WebFilm.Core.Interfaces.Repository
 {
     public interface IUserRepository : IBaseRepository<Guid, User>
     {
+        Task<bool> EditFollow(Guid userID, bool follow);
+
         /// <summary>
         /// Lấy thông tin user theo ID
         /// </summary>

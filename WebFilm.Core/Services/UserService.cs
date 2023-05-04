@@ -71,6 +71,10 @@ namespace WebFilm.Core.Services
         }
 
         #region Method
+        public async Task<bool> EditFollow(Guid userID, bool follow)
+        {
+            return await _userRepository.EditFollow(userID, follow);
+        }
         /// <summary>
         /// Kiểm tra trước khi lấy thông tin người dùng theo Id
         /// </summary>

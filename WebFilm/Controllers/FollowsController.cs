@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using WebFilm.Core.Enitites.Follow;
 using WebFilm.Core.Interfaces.Services;
+using WebFilm.Core.Services;
 
 namespace WebFilm.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class FollowsController : BaseController<int, Follow>
@@ -20,5 +20,6 @@ namespace WebFilm.Controllers
             _followService = followService;
         }
         #endregion
+
     }
 }

@@ -10,6 +10,8 @@ namespace WebFilm.Core.Interfaces.Services
 {
     public interface IUserService : IBaseService<Guid, User>
     {
+        Task<bool> EditFollow(Guid userID, bool follow);
+
         /// <summary>
         /// Kiểm tra trước khi lấy thông tin người dùng theo Id
         /// </summary>
