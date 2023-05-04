@@ -46,7 +46,8 @@ namespace WebFilm.Infrastructure.Repository
                                     JSON_OBJECT(
                                         'UserID', u.UserID,
                                         'UserName', u.UserName,
-                                        'Avatar', u.Avatar
+                                        'Avatar', u.Avatar,
+                                        'FullName', u.FullName
                                     ) AS User
                                     FROM list l
                                     LEFT JOIN filmlist f ON l.ListID = f.ListID
@@ -96,7 +97,8 @@ namespace WebFilm.Infrastructure.Repository
                         {
                             UserID = (string)userObject["UserID"],
                             UserName = (string)userObject["UserName"],
-                            Avatar = (string?)userObject["Avatar"]
+                            Avatar = (string?)userObject["Avatar"],
+                            FullName = (string?)userObject["FullName"]
                         };
 
                     }
@@ -248,7 +250,7 @@ namespace WebFilm.Infrastructure.Repository
                             break;
                     }
                 }
-                var sqlCommand = @$"SELECT l.*, u.UserName,
+                var sqlCommand = @$"SELECT l.*,
                                     IF(l1.LikeID IS NOT NULL, True, False) AS Liked,
                                     COUNT(f.FilmID) FilmsCount,
                                     JSON_ARRAYAGG(
@@ -258,11 +260,18 @@ namespace WebFilm.Infrastructure.Repository
                                             'Release_date', f1.release_date,
                                             'Title', f1.title
                                         )
-                                    ) AS Film
+                                    ) AS Film,
+                                    JSON_OBJECT(
+                                        'UserID', u.UserID,
+                                        'UserName', u.UserName,
+                                        'Avatar', u.Avatar,
+                                        'FullName', u.FullName
+                                    ) AS User
                                     FROM list l
                                     {join}
                                     LEFT JOIN filmlist f ON l.ListID = f.ListID
-                                    INNER JOIN film f1 ON f.FilmID = f1.FilmID
+                                    LEFT JOIN filmlist f2 ON f.ListID = f2.ListID
+                                    INNER JOIN film f1 ON f2.FilmID = f1.FilmID
                                     LEFT JOIN user u ON u.UserID = l.UserID {where}
                                     LEFT JOIN `like` l1 ON l.ListID = l1.ParentID AND l1.UserID = @userID AND l1.Type = 'List'
                                     WHERE f.FilmID = @filmID
@@ -273,7 +282,8 @@ namespace WebFilm.Infrastructure.Repository
                                     SELECT COUNT(DISTINCT l.ListID) FROM list l
                                     {join}
                                     LEFT JOIN filmlist f ON l.ListID = f.ListID
-                                    INNER JOIN film f1 ON f.FilmID = f1.FilmID
+                                    LEFT JOIN filmlist f2 ON f.ListID = f2.ListID
+                                    INNER JOIN film f1 ON f2.FilmID = f1.FilmID
                                     LEFT JOIN user u ON u.UserID = l.UserID {where}
                                     LEFT JOIN `like` l1 ON l.ListID = l1.ParentID AND l1.UserID = @userID AND l1.Type = 'List'
                                     WHERE f.FilmID = @filmID";
@@ -302,12 +312,28 @@ namespace WebFilm.Infrastructure.Repository
                             lists["Film"] = new List<BaseFilmDTO>();
                         }
                     }
+                    var user = (string)lists["User"];
+                    if (!string.IsNullOrEmpty(user))
+                    {
+                        var userObject = JObject.Parse(user);
+                        lists["User"] = new
+                        {
+                            UserID = (string)userObject["UserID"],
+                            UserName = (string)userObject["UserName"],
+                            Avatar = (string?)userObject["Avatar"],
+                            FullName = (string?)userObject["FullName"]
+                        };
+
+                    }
                 }
                 var total = result.Read<int>().Single();
                 int totalPage = (int)Math.Ceiling((double)total / parameter.pageSize);
+                sqlCommand = @$"SELECT f.FilmID, f.poster_path Poster_path, f.release_date Release_date, f.title Title FROM film f WHERE f.FilmID = @filmID";
+                var film = await SqlConnection.QueryAsync(sqlCommand, parameters);
                 return new
                 {
                     Data = data,
+                    Film = film.FirstOrDefault(),
                     Total = total,
                     PageSize = parameter.pageSize,
                     PageIndex = parameter.pageIndex,
