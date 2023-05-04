@@ -599,7 +599,7 @@ namespace WebFilm.Core.Services
 
             bool isFollowed = false;
             string uname = _userContext.UserName;
-            if (uname.Length > 0)
+            if (uname != null)
             {
                 User userFollow = _userRepository.getUserByUsername(uname);
                 if (userFollow != null)
