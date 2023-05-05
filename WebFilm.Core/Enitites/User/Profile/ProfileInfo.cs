@@ -8,6 +8,7 @@ namespace WebFilm.Core.Enitites.User.Profile
 {
     public class ProfileInfo
     {
+        public Guid UserID { get; set; }
         public string UserName { get; set; }
 
         public string FullName { get; set; }

@@ -622,7 +622,8 @@ namespace WebFilm.Core.Services
             }
 
             ProfileInfo res = new ProfileInfo();
-
+           
+            res.UserID = user.UserID;
             res.UserName = userName;
             if (user.FullName != null)
             {
