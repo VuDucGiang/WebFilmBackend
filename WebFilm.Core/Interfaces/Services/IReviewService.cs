@@ -8,6 +8,9 @@ namespace WebFilm.Core.Interfaces.Services
 {
     public interface IReviewService : IBaseService<int, Review>
     {
+        Task<bool> AddReview(ReviewDTO review);
+        Task<bool> EditReview(ReviewDTO review);
+        Task<bool> DeleteReview(int reviewID);
         Task<object> GetReviewOfUser(int pageSize, int pageIndex, string userName);
 
         Task<object> GetPopular(int pageSize, int pageIndex, string filter, string sort);

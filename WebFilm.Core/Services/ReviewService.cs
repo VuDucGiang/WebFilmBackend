@@ -53,6 +53,22 @@ namespace WebFilm.Core.Services
             return await _reviewRepository.GetReviewOfUser(pageSize, pageIndex, userName);
         }
 
+        public async Task<bool> AddReview(ReviewDTO review)
+        {
+            return await _reviewRepository.AddReview(review);
+        }
+
+        public async Task<bool> EditReview(ReviewDTO review)
+        {
+            review.FilmID = _reviewRepository.GetByID(review.ReviewID).FilmID;
+            return await _reviewRepository.EditReview(review);
+        }
+
+        public async Task<bool> DeleteReview(int reviewID)
+        {
+            return await _reviewRepository.DeleteReview(reviewID);
+        }
+
         public async Task<object> GetPopular(int pageSize, int pageIndex, string filter, string sort)
         {
             return await _reviewRepository.GetPopular(pageSize, pageIndex, filter, sort);

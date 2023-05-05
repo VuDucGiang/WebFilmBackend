@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.Review;
+using WebFilm.Core.Enitites.Review.dto;
 using WebFilm.Core.Interfaces.Services;
 using WebFilm.Core.Services;
 
@@ -21,6 +22,51 @@ namespace WebFilm.Controllers
             _reviewService = reviewService;
         }
         #endregion
+
+        [Authorize]
+        [HttpPost("Add")]
+        public async Task<IActionResult> AddReview([FromBody] ReviewDTO review)
+        {
+            try
+            {
+                var res = await _reviewService.AddReview(review);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [Authorize]
+        [HttpPost("Edit")]
+        public async Task<IActionResult> EditReview([FromBody] ReviewDTO review)
+        {
+            try
+            {
+                var res = await _reviewService.EditReview(review);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [Authorize]
+        [HttpDelete("Delete/{reviewID}")]
+        public async Task<IActionResult> DeleteReview(int reviewID)
+        {
+            try
+            {
+                var res = await _reviewService.DeleteReview(reviewID);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
 
         [HttpGet("Users")]
         public async Task<IActionResult> GetReviewOfUser(int pageSize, int pageIndex, string userName)

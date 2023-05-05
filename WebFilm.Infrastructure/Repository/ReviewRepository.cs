@@ -15,6 +15,10 @@ using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Enitites.User.Profile;
 using WebFilm.Core.Interfaces.Repository;
 using WebFilm.Core.Interfaces.Services;
+using WebFilm.Core.Enitites.Review.dto;
+using Org.BouncyCastle.Utilities.Collections;
+using WebFilm.Core.Enitites.Like;
+using WebFilm.Core.Enitites.Film;
 
 namespace WebFilm.Infrastructure.Repository
 {
@@ -24,6 +28,96 @@ namespace WebFilm.Infrastructure.Repository
         public ReviewRepository(IConfiguration configuration, IUserContext userContext) : base(configuration)
         {
             _userContext = userContext;
+        }
+
+        public async Task<bool> AddReview(ReviewDTO review)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCommand = @$"INSERT INTO review (UserID, FilmID, CreatedDate, ModifiedDate, Content, HaveSpoiler, WatchedDate, Score)
+                                    VALUES (@UserID, @FilmID, NOW(), NOW(), @Content, @HaveSpoiler, @WatchedDate, @Score);";
+                if (review.Liked)
+                {
+                    sqlCommand += @$" INSERT INTO `like` (UserID, Type, ParentID, CreatedDate, ModifiedDate)
+                                    VALUES(@UserID, 'Film', @FilmID, NOW(), NOW());";
+                }
+                sqlCommand += $@" UPDATE film f 
+                                SET f.ReviewsCount = (SELECT COUNT(DISTINCT r.ReviewID) FROM review r WHERE r.FilmID = @FilmID)
+                                WHERE f.FilmID = @FilmID;";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("UserID", _userContext.UserId);
+                parameters.Add("FilmID", review.FilmID);
+                parameters.Add("Content", review.Content);
+                parameters.Add("HaveSpoiler", review.HaveSpoiler);
+                parameters.Add("WatchedDate", review.WatchedDate);
+                parameters.Add("Score", review.Score);
+                parameters.Add("Liked", review.Liked);
+                var res = await SqlConnection.ExecuteAsync(sqlCommand, parameters);
+
+                //Trả dữ liệu về client
+                SqlConnection.Close();
+                return true; ;
+            }
+        }
+
+        public async Task<bool> EditReview(ReviewDTO review)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCommand = @$"UPDATE review r 
+                                    SET CreatedDate = NOW(),
+                                        ModifiedDate = NOW(),
+                                        Content = @Content,
+                                        HaveSpoiler = @HaveSpoiler,
+                                        WatchedDate = NOW(),
+                                        Score = @Score
+                                    WHERE ReviewID = @ReviewID;";
+                if (review.Liked)
+                {
+                    sqlCommand += @$" INSERT INTO `like` (UserID, Type, ParentID, CreatedDate, ModifiedDate)
+                                    VALUES(@UserID, 'Film', @FilmID, NOW(), NOW());";
+                } else
+                {
+                    sqlCommand += $@" DELETE FROM `like` WHERE UserID = @UserID AND Type = 'Film' AND ParentID = @FilmID;";
+                }
+                sqlCommand += $@"UPDATE film f 
+                                SET f.LikesCount = (SELECT COUNT(DISTINCT l.LikeID) FROM `like` l WHERE l.ParentID = @FilmID AND l.Type = 'Film')
+                                WHERE f.FilmID = @FilmID;";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("UserID", _userContext.UserId);
+                parameters.Add("ReviewID", review.ReviewID);
+                parameters.Add("FilmID", review.FilmID);
+                parameters.Add("Content", review.Content);
+                parameters.Add("HaveSpoiler", review.HaveSpoiler);
+                parameters.Add("WatchedDate", review.WatchedDate);
+                parameters.Add("Score", review.Score);
+                parameters.Add("Liked", review.Liked);
+                var res = await SqlConnection.ExecuteAsync(sqlCommand, parameters);
+
+                //Trả dữ liệu về client
+                SqlConnection.Close();
+                return true; ;
+            }
+        }
+
+        public async Task<bool> DeleteReview(int reviewID)
+        {
+            var filmID = this.GetByID(reviewID).FilmID;
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCommand = @$"DELETE FROM review WHERE ReviewID = @ReviewID;";
+                sqlCommand += $@"UPDATE film f 
+                                SET f.ReviewsCount = (SELECT COUNT(DISTINCT r.ReviewID) FROM review r WHERE r.FilmID = @FilmID)
+                                WHERE f.FilmID = @FilmID;";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("ReviewID", reviewID);
+                parameters.Add("FilmID", filmID);
+                var res = await SqlConnection.ExecuteAsync(sqlCommand, parameters);
+
+                //Trả dữ liệu về client
+                SqlConnection.Close();
+                return true; ;
+            }
         }
 
         public async Task<object> GetReviewOfUser(int pageSize, int pageIndex, string userName)
