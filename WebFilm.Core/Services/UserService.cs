@@ -613,7 +613,7 @@ namespace WebFilm.Core.Services
                 User userFollow = _userRepository.getUserByUsername(uname);
                 if (userFollow != null)
                 {
-                    List<Follow> follow = _followRepository.GetAll().Where(p => p.UserID == user.UserID && p.FollowedUserID == userFollow.UserID).ToList();
+                    List<Follow> follow = _followRepository.GetAll().Where(p => p.UserID == userFollow.UserID && p.FollowedUserID == user.UserID).ToList();
                     if (follow.Count > 0)
                     {
                         isFollowed = true;
