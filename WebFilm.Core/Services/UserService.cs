@@ -998,7 +998,7 @@ namespace WebFilm.Core.Services
             return res;
         }
 
-        public SearchPagingResponse search(PagingParameter paging, string type)
+        public SearchPagingResponse search(PagingParameter paging, string type, string keyword)
         {
             if (string.IsNullOrWhiteSpace(type))
             {
@@ -1011,9 +1011,9 @@ namespace WebFilm.Core.Services
             if("film".Equals(type))
             {
                 var films = _filmRepository.GetAll();
-                if (!string.IsNullOrWhiteSpace(paging.filter))
+                if (!string.IsNullOrWhiteSpace(keyword))
                 {
-                    films = films.Where(p => p?.Title?.Contains(type) == true);
+                    films = films.Where(p => p?.Title?.ToUpper().Contains(keyword.ToUpper()) == true);
                 }
                 films = films.OrderBy(p => p.Title);
                 totalCount = films.Count();
@@ -1039,9 +1039,9 @@ namespace WebFilm.Core.Services
             if ("review".Equals(type))
             {
                 var reviews = _reviewRepository.GetAll();
-                if (!string.IsNullOrWhiteSpace(paging.filter))
+                if (!string.IsNullOrWhiteSpace(keyword))
                 {
-                    reviews = reviews.Where(p => p?.Content?.Contains(type) == true);
+                    reviews = reviews.Where(p => p?.Content?.ToUpper().Contains(keyword.ToUpper()) == true);
                 }
                 reviews.OrderByDescending(p => p.LikesCount);
                 totalCount = reviews.Count();
@@ -1090,9 +1090,9 @@ namespace WebFilm.Core.Services
             if ("list".Equals(type))
             {
                 var lists = _listRepository.GetAll();
-                if (!string.IsNullOrWhiteSpace(paging.filter))
+                if (!string.IsNullOrWhiteSpace(keyword))
                 {
-                    lists = lists.Where(p => p?.Description?.Contains(type) == true);
+                    lists = lists.Where(p => p?.Description?.ToUpper().Contains(keyword.ToUpper()) == true);
                 }
                 lists.OrderByDescending(p => p.LikesCount);
                 totalCount = lists.Count();

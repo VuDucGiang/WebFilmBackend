@@ -58,6 +58,6 @@ namespace WebFilm.Core.Interfaces.Services
 
         PagingListResult listLikeProfile(PagingParameter parameters, string userName);
 
-        SearchPagingResponse search(PagingParameter parameters, string type);
+        SearchPagingResponse search(PagingParameter parameters, string type, string keyword);
     }
 }

@@ -333,13 +333,13 @@ namespace WebFilm.Controllers
 
         }
 
-        [HttpPost("{type}/search")]
+        [HttpPost("{type}/search/{keyword}")]
         [AllowAnonymous]
-        public IActionResult search([FromBody] PagingParameter parameter, string type)
+        public IActionResult search([FromBody] PagingParameter parameter, string type, string keyword)
         {
             try
             {
-                return Ok(_userService.search(parameter, type));
+                return Ok(_userService.search(parameter, type, keyword));
             }
             catch (Exception ex)
             {
