@@ -1147,9 +1147,9 @@ namespace WebFilm.Core.Services
             if ("member".Equals(type))
             {
                 var members = _userRepository.GetAll().Where(p => p.Status == 2);
-                if (!string.IsNullOrWhiteSpace(paging.filter))
+                if (!string.IsNullOrWhiteSpace(keyword))
                 {
-                    members = members.Where(p => p?.FullName?.Contains(type) == true);
+                    members = members.Where(p => p?.FullName?.ToUpper().Contains(keyword.ToUpper()) == true);
                 }
                 members.OrderBy(p => p.UserName);
                 totalCount = members.Count();
