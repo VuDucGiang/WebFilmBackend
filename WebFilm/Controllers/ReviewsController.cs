@@ -121,7 +121,7 @@ namespace WebFilm.Controllers
             }
         }
 
-        [HttpGet("TopReviewMonth")]
+        [HttpGet("HomeBanner")]
         public IActionResult getBannerFilmTopReview()
         {
             try

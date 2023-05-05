@@ -295,12 +295,12 @@ namespace WebFilm.Core.Services
                 ListPopularWeekDTO dto = dtos[0];
                 Film film = _filmRepository.GetByID(dto.ListID);
                 if (film != null) {
-                res.Title = film.Title;
-                    res.Poster_path = film.Poster_path;
-                    res.Release_date= film.Release_date;
-                    res.FilmID= film.FilmID;
                     res.Banner = film.Backdrop_path;
                 }
+            } else
+            {
+                List<Film> films = _filmRepository.GetAll().OrderByDescending(p => p.Popularity).Take(1).ToList();
+                res.Banner = films[0].Backdrop_path;
             }
 
             return res;
