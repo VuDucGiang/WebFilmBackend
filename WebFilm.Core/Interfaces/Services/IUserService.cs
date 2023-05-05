@@ -5,6 +5,7 @@ using WebFilm.Core.Enitites.Review;
 using WebFilm.Core.Enitites.Review.dto;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Enitites.User.Profile;
+using WebFilm.Core.Enitites.User.Search;
 
 namespace WebFilm.Core.Interfaces.Services
 {
@@ -56,5 +57,7 @@ namespace WebFilm.Core.Interfaces.Services
         PagingReviewResult reviewLikeProfile(PagingParameter parameters, string userName);
 
         PagingListResult listLikeProfile(PagingParameter parameters, string userName);
+
+        SearchPagingResponse search(PagingParameter parameters, string type);
     }
 }

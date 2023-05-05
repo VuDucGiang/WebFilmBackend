@@ -26,5 +26,7 @@ namespace WebFilm.Core.Interfaces.Repository
         int UpdateCommentCount(int reviewID, int commentCount);
 
         int UpdateLikeCount(int reviewID, int likeCount);
+
+        List<ListPopularWeekDTO> TopReviewMonth();
     }
 }

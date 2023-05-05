@@ -333,6 +333,21 @@ namespace WebFilm.Controllers
 
         }
 
+        [HttpPost("{type}/search")]
+        [AllowAnonymous]
+        public IActionResult search([FromBody] PagingParameter parameter, string type)
+        {
+            try
+            {
+                return Ok(_userService.search(parameter, type));
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+
+        }
+
         //[HttpPost("{userID}/Avatar")]
         //public IActionResult SaveAvatar(Guid userID, IFormFile avatar)
         //{

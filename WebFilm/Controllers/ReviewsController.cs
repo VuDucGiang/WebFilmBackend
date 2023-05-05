@@ -120,5 +120,19 @@ namespace WebFilm.Controllers
                 return HandleException(ex);
             }
         }
+
+        [HttpGet("TopReviewMonth")]
+        public IActionResult getBannerFilmTopReview()
+        {
+            try
+            {
+                var res = _reviewService.filmReviewMonth();
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
     }
 }

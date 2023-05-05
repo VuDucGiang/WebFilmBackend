@@ -284,5 +284,26 @@ namespace WebFilm.Core.Services
             }
             return res;
         }
+
+        public BaseFilmDTO filmReviewMonth()
+        {
+            BaseFilmDTO res = new BaseFilmDTO();
+            List<ListPopularWeekDTO> dtos = _reviewRepository.TopReviewMonth();
+
+            if (dtos.Count > 0)
+            {
+                ListPopularWeekDTO dto = dtos[0];
+                Film film = _filmRepository.GetByID(dto.ListID);
+                if (film != null) {
+                res.Title = film.Title;
+                    res.Poster_path = film.Poster_path;
+                    res.Release_date= film.Release_date;
+                    res.FilmID= film.FilmID;
+                    res.Banner = film.Backdrop_path;
+                }
+            }
+
+            return res;
+        }
     }
 }

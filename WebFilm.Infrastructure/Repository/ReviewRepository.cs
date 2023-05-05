@@ -341,5 +341,21 @@ namespace WebFilm.Infrastructure.Repository
                 return res;
             }
         }
-    } 
+
+        public List<ListPopularWeekDTO> TopReviewMonth()
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCommand = "SELECT FilmID as ListID, COUNT(*) as LikeCounts FROM `review` " +
+                    "WHERE createdDate >= DATE_SUB(NOW(), INTERVAL 1 MONTH) " +
+                    "GROUP BY FilmID ORDER BY LikeCounts DESC;";
+                DynamicParameters parameters = new DynamicParameters();
+                var lists = SqlConnection.Query<ListPopularWeekDTO>(sqlCommand);
+
+                //Trả dữ liệu về client
+                SqlConnection.Close();
+                return lists.ToList();
+            }
+        }
+    }
 }

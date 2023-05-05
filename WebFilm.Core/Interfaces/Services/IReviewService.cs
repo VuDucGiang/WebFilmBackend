@@ -2,6 +2,7 @@
 using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.Review;
 using WebFilm.Core.Enitites.Review.dto;
+using WebFilm.Core.Enitites.User.Profile;
 
 namespace WebFilm.Core.Interfaces.Services
 {
@@ -20,5 +21,7 @@ namespace WebFilm.Core.Interfaces.Services
         PagingCommentResult GetCommentReview(int ListID, PagingParameter parameter);
 
         List<BaseReviewDTO> getNewFromFriend();
+
+        BaseFilmDTO filmReviewMonth();
     }
 }

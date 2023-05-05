@@ -10,6 +10,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using WebFilm.Core.Enitites;
+using WebFilm.Core.Enitites.Credit;
 using WebFilm.Core.Enitites.Film;
 using WebFilm.Core.Enitites.FilmList;
 using WebFilm.Core.Enitites.Follow;
@@ -21,6 +22,7 @@ using WebFilm.Core.Enitites.Review;
 using WebFilm.Core.Enitites.Review.dto;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Enitites.User.Profile;
+using WebFilm.Core.Enitites.User.Search;
 using WebFilm.Core.Enitites.WatchList;
 using WebFilm.Core.Exceptions;
 using WebFilm.Core.Interfaces.Repository;
@@ -40,6 +42,7 @@ namespace WebFilm.Core.Services
         ILikeRepository _likeRepository;
         IRatingRepository _ratingRepository;
         IUserContext _userContext;
+        ICreditRepository _creditRepository;
         private readonly IMailService _mail;
         private readonly IConfiguration _configuration;
 
@@ -54,7 +57,8 @@ namespace WebFilm.Core.Services
             IFilmListRepository filmListRepository,
             ILikeRepository likeRepository,
             IRatingRepository ratingRepository,
-            IUserContext userContext) : base(userRepository)
+            IUserContext userContext,
+            ICreditRepository creditRepository) : base(userRepository)
         {
             _userRepository = userRepository;
             _reviewRepository = reviewRepository;
@@ -68,6 +72,7 @@ namespace WebFilm.Core.Services
             _likeRepository = likeRepository;
             _ratingRepository = ratingRepository;
             _userContext = userContext;
+            _creditRepository = creditRepository;
         }
 
         #region Method
@@ -989,6 +994,193 @@ namespace WebFilm.Core.Services
             res.Total = totalCount;
             res.PageSize = paging.pageSize;
             res.PageIndex = paging.pageIndex;
+            return res;
+        }
+
+        public SearchPagingResponse search(PagingParameter paging, string type)
+        {
+            if (string.IsNullOrWhiteSpace(type))
+            {
+                throw new ServiceException("Type không được null hoặc khoảng trắng");
+            }
+            SearchPagingResponse res = new SearchPagingResponse();
+            SearchDTO search = new SearchDTO();
+            int totalCount = 0;
+            int totalPages = 0;
+            if("film".Equals(type))
+            {
+                var films = _filmRepository.GetAll();
+                if (!string.IsNullOrWhiteSpace(paging.filter))
+                {
+                    films = films.Where(p => p?.Title?.Contains(type) == true);
+                }
+                films = films.OrderBy(p => p.Title);
+                totalCount = films.Count();
+                totalPages = (int)Math.Ceiling((double)totalCount / paging.pageSize);
+                films = films.Skip((paging.pageIndex - 1) * paging.pageSize).Take(paging.pageSize);
+                films = films.ToList();
+                List<FilmSearchDTO> filmDTOS = new List<FilmSearchDTO>();
+                foreach (Film film in films)
+                {
+                    FilmSearchDTO filmDTO = new FilmSearchDTO();
+                    filmDTO.FilmID = film.FilmID;
+                    filmDTO.Title = film.Title;
+                    filmDTO.Poster_Path = film.Poster_path;
+                    filmDTO.ReleaseDate = film.Release_date;
+                    List<Credit> credits = _creditRepository.GetAll().Where(p => p.FilmID == film.FilmID).ToList();
+                    filmDTO.Cast =  string.Join(", ", credits.Where(c => "Acting".Equals(c.Known_for_department)).GroupBy(c => c.PersonID).Select(c => c.First().Name));
+                    filmDTO.Director = string.Join(", ", credits.Where(c => "Directing".Equals(c.Known_for_department)).GroupBy(c => c.PersonID).Select(c => c.First().Name));
+                    filmDTOS.Add(filmDTO);
+                }
+                search.films = filmDTOS;
+            }
+
+            if ("review".Equals(type))
+            {
+                var reviews = _reviewRepository.GetAll();
+                if (!string.IsNullOrWhiteSpace(paging.filter))
+                {
+                    reviews = reviews.Where(p => p?.Content?.Contains(type) == true);
+                }
+                reviews.OrderByDescending(p => p.LikesCount);
+                totalCount = reviews.Count();
+                totalPages = (int)Math.Ceiling((double)totalCount / paging.pageSize);
+                reviews = reviews.Skip((paging.pageIndex - 1) * paging.pageSize).Take(paging.pageSize);
+                reviews = reviews.ToList();
+                List<BaseReviewDTO> reviewDTOS = new List<BaseReviewDTO>();
+                foreach (Review review in reviews)
+                {
+                    BaseReviewDTO reviewDTO = new BaseReviewDTO();
+                    UserReviewDTO userRv = new UserReviewDTO();
+                    FilmReviewDTO filmRv = new FilmReviewDTO();
+                    reviewDTO.Content = review.Content;
+                    reviewDTO.CommentsCount = review.CommentsCount;
+                    reviewDTO.LikesCount = review.LikesCount;
+                    reviewDTO.CreatedDate = review.CreatedDate;
+                    reviewDTO.WatchedDate = review.WatchedDate;
+                    reviewDTO.ModifiedDate = review.ModifiedDate;
+                    reviewDTO.Score = review.Score;
+                    reviewDTO.ReviewID = review.ReviewID;
+                    reviewDTO.HaveSpoiler = review.HaveSpoiler;
+
+                    User user = _userRepository.GetByID(review.UserID);
+                    if (user != null )
+                    {
+                        userRv.Avatar = user.Avatar;
+                        userRv.FullName = user.FullName;
+                        userRv.UserID = user.UserID;
+                        userRv.UserName = user.UserName;
+                    }
+                    Film filmR = _filmRepository.GetByID(review.FilmID);
+                    if (filmR != null )
+                    {
+                        filmRv.FilmID = filmR.FilmID;
+                        filmRv.Poster_path = filmR.Poster_path;
+                        filmRv.Release_date = filmR.Release_date;
+                        filmRv.Title = filmR.Title;
+                    }
+                    reviewDTO.User = userRv;
+                    reviewDTO.Film = filmRv;
+                    reviewDTOS.Add(reviewDTO);
+                }
+                search.reviews = reviewDTOS;                
+            }
+
+            if ("list".Equals(type))
+            {
+                var lists = _listRepository.GetAll();
+                if (!string.IsNullOrWhiteSpace(paging.filter))
+                {
+                    lists = lists.Where(p => p?.Description?.Contains(type) == true);
+                }
+                lists.OrderByDescending(p => p.LikesCount);
+                totalCount = lists.Count();
+                totalPages = (int)Math.Ceiling((double)totalCount / paging.pageSize);
+                lists = lists.Skip((paging.pageIndex - 1) * paging.pageSize).Take(paging.pageSize);
+                lists = lists.ToList();
+                List<ListPopularDTO> listDTOS = new List<ListPopularDTO>();
+                foreach (List list in lists)
+                {
+                    ListPopularDTO listDTO = new ListPopularDTO();
+                    List<FilmList> filmList = _filmListRepository.GetAll().Where(p => p.ListID == list.ListID).Take(5).ToList();
+                    UserReviewDTO userRv = new UserReviewDTO();
+                    List<BaseFilmDTO> filmLists = new List<BaseFilmDTO>();
+
+                    listDTO.CommentsCount = list.CommentsCount;
+                    listDTO.LikesCount = list.LikesCount;
+                    listDTO.ListID = list.ListID;
+                    listDTO.ListName = list.ListName;
+                    listDTO.Description = list.Description;
+                    listDTO.CreatedDate = list.CreatedDate;
+                    listDTO.ModifiedDate = list.ModifiedDate;
+                    listDTO.Total = filmList.Count;
+
+                    User user = _userRepository.GetByID(list.UserID);
+                    if (user != null)
+                    {
+                        userRv.Avatar = user.Avatar;
+                        userRv.FullName = user.FullName;
+                        userRv.UserID = user.UserID;
+                        userRv.UserName = user.UserName;
+                    }
+                    foreach (var film in filmList)
+                    {
+                        BaseFilmDTO filmListDTO = new BaseFilmDTO();
+                        Film filmL = _filmRepository.GetByID(film.FilmID);
+                        if (filmL != null)
+                        {
+                            filmListDTO.FilmID = filmL.FilmID;
+                            filmListDTO.Title = filmL.Title;
+                            filmListDTO.Poster_path = filmL.Poster_path;
+                            filmListDTO.Release_date = filmL.Release_date;
+                            filmLists.Add(filmListDTO);
+                        }
+                    }
+                    listDTO.User = userRv;
+                    listDTO.List = filmLists;
+                    listDTOS.Add(listDTO);
+                }
+                search.lists = listDTOS;
+            }
+
+            if ("member".Equals(type))
+            {
+                var members = _userRepository.GetAll().Where(p => p.Status == 2);
+                if (!string.IsNullOrWhiteSpace(paging.filter))
+                {
+                    members = members.Where(p => p?.FullName?.Contains(type) == true);
+                }
+                members.OrderBy(p => p.UserName);
+                totalCount = members.Count();
+                totalPages = (int)Math.Ceiling((double)totalCount / paging.pageSize);
+                members = members.Skip((paging.pageIndex - 1) * paging.pageSize).Take(paging.pageSize);
+                members = members.ToList();
+                List<UserSearchDTO> userDTOS = new List<UserSearchDTO>();
+                foreach (User user in members)
+                {
+                    UserSearchDTO userDTO = new UserSearchDTO();
+                    var follows = _followRepository.GetAll();
+                    var userReview = _reviewRepository.GetAll().Where(p => p.UserID == user.UserID);
+
+                    userDTO.UserID = user.UserID;
+                    userDTO.UserName = user.UserName;
+                    userDTO.Fullname = user.FullName;
+                    userDTO.Avatar = user.Avatar;
+                    userDTO.TotalFollowing = follows.Where(p => p.FollowedUserID == user.UserID).Count();
+                    userDTO.TotalFollowers = follows.Where(p => p.UserID == user.UserID).Count();
+                    userDTO.TotalReviewed = userReview.Count();
+
+                    userDTOS.Add(userDTO);
+                }
+                search.members = userDTOS;
+            }
+
+            res.Data = search;
+            res.Total = totalCount;
+            res.TotalPage = totalPages;
+            res.PageSize = paging.pageSize;
+            res.PageIndex = paging.pageIndex;
+
             return res;
         }
         #endregion
