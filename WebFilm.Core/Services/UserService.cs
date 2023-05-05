@@ -1092,7 +1092,7 @@ namespace WebFilm.Core.Services
                 var lists = _listRepository.GetAll();
                 if (!string.IsNullOrWhiteSpace(keyword))
                 {
-                    lists = lists.Where(p => p?.Description?.ToUpper().Contains(keyword.ToUpper()) == true);
+                    lists = lists.Where(p => p?.Description?.ToUpper().Contains(keyword.ToUpper()) == true || p?.ListName?.ToUpper().Contains(keyword.ToUpper()) == true);
                 }
                 lists.OrderByDescending(p => p.LikesCount);
                 totalCount = lists.Count();
