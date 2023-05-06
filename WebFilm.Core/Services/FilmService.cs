@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.Film;
+using WebFilm.Core.Exceptions;
 using WebFilm.Core.Interfaces.Repository;
 using WebFilm.Core.Interfaces.Services;
 
@@ -21,7 +22,19 @@ namespace WebFilm.Core.Services
         {
             return await _filmRepository.GetListUserLiked(pageSize, pageIndex, filmID);
         }
-
+        public async Task<bool> AddFilmToList(int filmID, string listIDs)
+        {
+            if (string.IsNullOrEmpty(listIDs))
+            {
+                throw new ServiceException("ListIDs is required");
+            }
+            var check = await _filmRepository.CheckDuplicateFilmInList(filmID, listIDs);
+            if (!string.IsNullOrEmpty(check))
+            {
+                throw new ServiceException("Lists " + check.TrimEnd(',', ' ') + " already have this film.");
+            }
+            return await _filmRepository.AddFilmToList(filmID, listIDs);
+        }
         public async Task<object> GetPaging(PagingParameterFilm parameter)
         {
             return await _filmRepository.GetPaging(parameter);

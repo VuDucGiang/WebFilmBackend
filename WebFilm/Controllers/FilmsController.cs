@@ -37,6 +37,21 @@ namespace WebFilm.Controllers
             }
         }
 
+        [Authorize]
+        [HttpPost("AddFilmToList")]
+        public async Task<IActionResult> AddFilmToList([FromBody] AddFilmToListParam param)
+        {
+            try
+            {
+                var res = await _filmService.AddFilmToList(param.filmID, param.listIDs);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
         [HttpGet("{id}/Detail")]
         public async Task<IActionResult> GetDetailByID(int id)
         {

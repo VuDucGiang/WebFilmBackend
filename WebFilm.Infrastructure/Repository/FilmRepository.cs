@@ -21,6 +21,7 @@ using static Dapper.SqlMapper;
 using WebFilm.Core.Enitites.Related_film;
 using WebFilm.Core.Enitites.Similar_film;
 using Newtonsoft.Json.Linq;
+using WebFilm.Core.Enitites.FilmList;
 
 namespace WebFilm.Infrastructure.Repository
 {
@@ -57,7 +58,7 @@ namespace WebFilm.Infrastructure.Repository
                             SELECT COUNT(DISTINCT l.UserID)
                             FROM `like` l
                             WHERE l.Type = 'Film' AND l.ParentID = @filmID";
-                                
+
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@pageSize", pageSize);
                 parameters.Add("@offset", offset);
@@ -79,6 +80,50 @@ namespace WebFilm.Infrastructure.Repository
                     PageIndex = pageIndex,
                     TotalPage = totalPage
                 };
+            }
+        }
+
+        public async Task<string> CheckDuplicateFilmInList(int filmID, string listIDs)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var listIDArr = listIDs.Split(',');
+                var msg = "";
+                foreach (var item in listIDArr)
+                {
+                    var sqlCommand = @$"SELECT l.ListName FROM filmlist f LEFT JOIN list l ON f.ListID = l.ListID WHERE f.FilmID = @filmID AND f.ListID = @listID";
+
+                    DynamicParameters parameters = new DynamicParameters();
+                    parameters.Add("filmID", filmID);
+                    parameters.Add("listID", item);
+                    var result = await SqlConnection.QueryAsync<List>(sqlCommand, parameters);
+                    if (result.ToList().Count > 0)
+                    {
+                        msg += result.ToList()[0].ListName + ", ";
+                    }
+                }
+                //Trả dữ liệu về client
+                return msg;
+            }
+        }
+
+        public async Task<bool> AddFilmToList(int filmID, string listIDs)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var listIDArr = listIDs.Split(',');
+                foreach (var item in listIDArr)
+                {
+                    var sqlCommand = @$"INSERT INTO filmlist (FilmID, ListID, CreatedDate, ModifiedDate)
+                                        VALUES (@filmID, @listID, NOW(), NOW());";
+
+                    DynamicParameters parameters = new DynamicParameters();
+                    parameters.Add("filmID", filmID);
+                    parameters.Add("listID", item);
+                    await SqlConnection.ExecuteAsync(sqlCommand, parameters);
+                }
+                //Trả dữ liệu về client
+                return true;
             }
         }
 

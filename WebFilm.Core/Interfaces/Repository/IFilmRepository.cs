@@ -13,6 +13,8 @@ namespace WebFilm.Core.Interfaces.Repository
     public interface IFilmRepository : IBaseRepository<int, Film>
     {
         Task<object> GetListUserLiked(int pageSize, int pageIndex, int filmID);
+        Task<bool> AddFilmToList(int filmID, string listIDs);
+        Task<string> CheckDuplicateFilmInList(int filmID, string listIDs);
         Task<FilmDto> GetDetailByID(int id);
         public Task<object> GetPaging(PagingParameterFilm parameter);
         Task<object> GetPopular(int pageSize, int pageIndex, string filter, string sort);
