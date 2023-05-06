@@ -1184,6 +1184,33 @@ namespace WebFilm.Core.Services
 
             return res;
         }
+
+        public List<BaseFilmDTO> favouriteFilms()
+        {
+            List<BaseFilmDTO> res = new List<BaseFilmDTO>();
+            string username = _userContext.UserName;
+            User user = _userRepository.getUserByUsername(username);
+            if (user != null)
+            {
+                if (user.FavouriteFilmList != null)
+                {
+                    JArray favouriteFilms = JArray.Parse(user.FavouriteFilmList);
+                    foreach (JObject obj in favouriteFilms.ToArray())
+                    {
+                        int id = (int)obj.GetValue("FilmID");
+                        string posterPath = (string)obj.GetValue("poster_path");
+                        string title = (string)obj.GetValue("title");
+                        BaseFilmDTO dto = new BaseFilmDTO();
+                        dto.FilmID = id;
+                        dto.Poster_path = posterPath;
+                        dto.Title = title;
+                        res.Add(dto);
+                    }
+                }
+            }
+           
+            return res;
+        }
         #endregion
     }
 }

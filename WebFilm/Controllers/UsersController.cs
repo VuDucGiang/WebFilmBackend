@@ -348,6 +348,20 @@ namespace WebFilm.Controllers
 
         }
 
+        [HttpGet("FavouriteFilm")]
+        public IActionResult favouriteFilm()
+        {
+            try
+            {
+                return Ok(_userService.favouriteFilms());
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+
+        }
+
         //[HttpPost("{userID}/Avatar")]
         //public IActionResult SaveAvatar(Guid userID, IFormFile avatar)
         //{
