@@ -35,13 +35,13 @@ namespace WebFilm.Infrastructure.Repository
                 return journal.ToList();
             }
         }
-        public List<Journal> GetReviewJournalsList()
+        public List<JournalLite> GetReviewJournalsList()
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
 
-                var sqlCommand = "SELECT * FROM journal WHERE Category = 'Review' order by CreatedDate desc LIMIT 3";
-                var journal = SqlConnection.Query<Journal>(sqlCommand);
+                var sqlCommand = "SELECT Author,Banner,Category,CreatedDate,Intro,JournalID,MentionedFilm,ModifiedDate,Title FROM journal WHERE Category = 'Review' order by CreatedDate desc LIMIT 3";
+                var journal = SqlConnection.Query<JournalLite>(sqlCommand);
 
                 
                 SqlConnection.Close();
@@ -50,13 +50,13 @@ namespace WebFilm.Infrastructure.Repository
             }
         }
 
-        public List<Journal> GetNewsJournalsList()
+        public List<JournalLite> GetNewsJournalsList()
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
 
-                var sqlCommand = "SELECT * FROM journal WHERE Category = 'News' order by CreatedDate desc LIMIT 3";
-                var journal = SqlConnection.Query<Journal>(sqlCommand);
+                var sqlCommand = "SELECT Author,Banner,Category,CreatedDate,Intro,JournalID,MentionedFilm,ModifiedDate,Title FROM journal WHERE Category = 'News' order by CreatedDate desc LIMIT 3";
+                var journal = SqlConnection.Query<JournalLite>(sqlCommand);
 
 
                 SqlConnection.Close();

@@ -13,8 +13,8 @@ namespace WebFilm.Core.Interfaces.Services
     {
 
         List<Journal> GetListNewJournal();
-        List<Journal> GetReviewJournalsList();
-        List<Journal> GetNewsJournalsList();
+        List<JournalLite> GetReviewJournalsList();
+        List<JournalLite> GetNewsJournalsList();
         object GetPaging(int pageSize, int pageIndex);
 
     }
