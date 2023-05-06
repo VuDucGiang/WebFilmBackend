@@ -16,6 +16,16 @@ namespace WebFilm.Core.Services
             _configuration = configuration;
         }
 
-        
+        public async Task<bool> AddWatchList(int filmID)
+        {
+            return await _watchListRepository.AddWatchList(filmID);
+        }
+
+        public async Task<bool> DeleteWatchList(ParamDelete param)
+        {
+            return await _watchListRepository.DeleteWatchList(param);
+        }
+
+
     }
 }

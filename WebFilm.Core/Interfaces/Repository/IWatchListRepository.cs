@@ -9,5 +9,7 @@ namespace WebFilm.Core.Interfaces.Repository
 {
     public interface IWatchListRepository : IBaseRepository<int, WatchList>
     {
+        Task<bool> AddWatchList(int filmID);
+        Task<bool> DeleteWatchList(ParamDelete param);
     }
 }
