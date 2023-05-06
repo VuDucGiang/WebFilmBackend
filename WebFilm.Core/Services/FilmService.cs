@@ -28,10 +28,15 @@ namespace WebFilm.Core.Services
             {
                 throw new ServiceException("ListIDs is required");
             }
-            var check = await _filmRepository.CheckDuplicateFilmInList(filmID, listIDs);
-            if (!string.IsNullOrEmpty(check))
+            var check = await _filmRepository.CheckPermissionInList(listIDs);
+            if (!check)
             {
-                throw new ServiceException("Lists " + check.TrimEnd(',', ' ') + " already have this film.");
+                throw new ServiceException("No permission");
+            }
+            var msg = await _filmRepository.CheckDuplicateFilmInList(filmID, listIDs);
+            if (!string.IsNullOrEmpty(msg))
+            {
+                throw new ServiceException("Lists " + msg.TrimEnd(',', ' ') + " already have this film.");
             }
             return await _filmRepository.AddFilmToList(filmID, listIDs);
         }
@@ -48,6 +53,11 @@ namespace WebFilm.Core.Services
         public async Task<FilmDto> GetDetailByID(int id)
         {
             return await _filmRepository.GetDetailByID(id);
+        }
+
+        public async Task<object> GetInfoUser(int id)
+        {
+            return await _filmRepository.GetInfoUser(id);
         }
 
         public async Task<object> JustReviewed()
