@@ -272,7 +272,7 @@ namespace WebFilm.Core.Services
                     return _userRepository.ChangePassword(email, newPass);
                 }
             }
-            throw new ServiceException("Incorrect password");
+            throw new ServiceException("Current password is incorrect");
         }
 
         public bool ChangeInfo(ChangeInfoParam user)
