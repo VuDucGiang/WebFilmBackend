@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.Follow;
 using WebFilm.Core.Enitites.Journal;
 using WebFilm.Core.Enitites.User;
@@ -78,7 +79,7 @@ namespace WebFilm.Infrastructure.Repository
             }
         }
 
-        public object GetPaging(int pageSize, int pageIndex)
+        public object GetPaging(PagingJournal parameter)
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
