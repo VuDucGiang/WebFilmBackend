@@ -396,7 +396,7 @@ namespace WebFilm.Infrastructure.Repository
             {
                 //Thực thi lấy dữ liệu
                 int offset = (parameter.pageIndex - 1) * parameter.pageSize;
-                var sqlCommand = @$"SELECT rf.* FROM related_film rf WHERE rf.DetailFilmID = @id LIMIT @pageSize OFFSET @offset;
+                var sqlCommand = @$"SELECT rf.FilmID, rf.poster_path Poster_path FROM related_film rf WHERE rf.DetailFilmID = @id LIMIT @pageSize OFFSET @offset;
                                     SELECT COUNT(rf.Related_filmID) FROM related_film rf WHERE rf.DetailFilmID = @id";
 
                 //Trả dữ liệu về client
@@ -407,7 +407,7 @@ namespace WebFilm.Infrastructure.Repository
                 parameters.Add("@offset", offset);
                 var result = await SqlConnection.QueryMultipleAsync(sqlCommand, parameters);
                 //Trả dữ liệu về client
-                var data = result.Read<Related_film>().ToList();
+                var data = result.Read<object>().ToList();
                 var total = result.Read<int>().Single();
                 int totalPage = (int)Math.Ceiling((double)total / parameter.pageSize);
                 return new
@@ -427,7 +427,7 @@ namespace WebFilm.Infrastructure.Repository
             {
                 //Thực thi lấy dữ liệu
                 int offset = (parameter.pageIndex - 1) * parameter.pageSize;
-                var sqlCommand = @$"SELECT sf.* FROM similar_film sf WHERE sf.DetailFilmID = @id LIMIT @pageSize OFFSET @offset;
+                var sqlCommand = @$"SELECT sf.FilmID, sf.poster_path Poster_path FROM similar_film sf WHERE sf.DetailFilmID = @id LIMIT @pageSize OFFSET @offset;
                                     SELECT COUNT(sf.Similar_filmID) FROM similar_film sf WHERE sf.DetailFilmID = @id";
 
                 //Trả dữ liệu về client
@@ -438,7 +438,7 @@ namespace WebFilm.Infrastructure.Repository
                 parameters.Add("@offset", offset);
                 var result = await SqlConnection.QueryMultipleAsync(sqlCommand, parameters);
                 //Trả dữ liệu về client
-                var data = result.Read<Similar_film>().ToList();
+                var data = result.Read<object>().ToList();
                 var total = result.Read<int>().Single();
                 int totalPage = (int)Math.Ceiling((double)total / parameter.pageSize);
                 return new
