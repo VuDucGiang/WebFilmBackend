@@ -27,10 +27,12 @@ namespace WebFilm.Infrastructure.Repository
     public class FilmRepository : BaseRepository<int, Film>, IFilmRepository
     {
         IUserContext _userContext;
+        IReviewRepository _reviewRepository;
 
-        public FilmRepository(IConfiguration configuration, IUserContext userContext) : base(configuration)
+        public FilmRepository(IConfiguration configuration, IUserContext userContext, IReviewRepository reviewRepository) : base(configuration)
         {
             _userContext = userContext;
+            _reviewRepository = reviewRepository;
         }
 
         public async Task<object> GetListUserLiked(int pageSize, int pageIndex, int filmID)
@@ -80,6 +82,39 @@ namespace WebFilm.Infrastructure.Repository
 
         public async Task<FilmDto> GetDetailByID(int id)
         {
+            RateStat rateStats = new RateStat();
+            List<RateStatDTO> rateStatsPopular = _reviewRepository.GetRatesByFilmID(id);
+            if (rateStatsPopular.Count > 0)
+            {
+                List<float> ratesValue = new List<float>();
+                for (float i = 1; i <= 10; i++)
+                {
+                    ratesValue.Add(i / 2f);
+                }
+                foreach (RateStatDTO statDTO in rateStatsPopular)
+                {
+                    if (ratesValue.Contains(statDTO.Value))
+                    {
+                        ratesValue.Remove(statDTO.Value);
+                    }
+                }
+
+                foreach (float rate in ratesValue)
+                {
+                    RateStatDTO newRate = new RateStatDTO();
+                    newRate.Value = rate;
+                    rateStatsPopular.Add(newRate);
+                }
+
+
+                rateStats.List = rateStatsPopular;
+                rateStats.Total = rateStatsPopular.Select(p => p.Total).Sum();
+                if (rateStats.Total > 0)
+                {
+                    rateStats.RateAverage = rateStatsPopular.Select(p => p.Value * p.Total).Sum() / rateStats.Total;
+                }
+            }
+
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 //Thực thi lấy dữ liệu
@@ -97,12 +132,16 @@ namespace WebFilm.Infrastructure.Repository
                                           'poster_path', c1.poster_path
                                         )
                                       ) AS credits,
-                                    COUNT(f1.ListID) AS Appears, 
+                                    COUNT(DISTINCT f1.ListID) AS Appears, 
+                                    IF(r.ReviewID IS NOT NULL, True, False) AS Reviewed,
+                                    IF(r.ReviewID IS NOT NULL, True, False) AS Watchlisted,
                                     IF(l.LikeID IS NOT NULL, True, False) AS Liked 
                                     FROM film f
                                     LEFT JOIN `like` l ON f.FilmID = l.ParentID AND l.UserID = @userID AND l.Type = 'Film'
                                     LEFT JOIN filmlist f1 ON f.FilmID = f1.FilmID
                                     LEFT JOIN credit c1 ON f.FilmID = c1.FilmID
+                                    LEFT JOIN review r ON r.FilmID = f.FilmID AND r.UserID = @userID
+                                    LEFT JOIN watchlist w ON  f.FilmID = w.FilmID AND w.UserID = @userID
                                     WHERE f.FilmID = @id
                                     GROUP BY f.FilmID;
                                     ";
@@ -111,6 +150,7 @@ namespace WebFilm.Infrastructure.Repository
                 parameters.Add("@userID", _userContext.UserId);
                 //Trả dữ liệu về client
                 var entities = await SqlConnection.QueryFirstOrDefaultAsync<FilmDto>(sqlCommand, parameters);
+                entities.RateStats = rateStats;
                 SqlConnection.Close();
                 return entities;
             }

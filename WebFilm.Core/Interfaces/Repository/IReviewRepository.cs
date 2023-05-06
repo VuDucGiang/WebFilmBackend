@@ -26,6 +26,7 @@ namespace WebFilm.Core.Interfaces.Repository
         List<ListPopularWeekDTO> GetRecentWeek();
 
         List<RateStatDTO> GetRatesByUserID(Guid userID);
+        List<RateStatDTO> GetRatesByFilmID(int filmID);
 
         int UpdateCommentCount(int reviewID, int commentCount);
 

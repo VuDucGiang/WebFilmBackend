@@ -65,11 +65,10 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 var sqlCommand = @$"UPDATE review r 
-                                    SET CreatedDate = NOW(),
-                                        ModifiedDate = NOW(),
+                                    SET ModifiedDate = NOW(),
                                         Content = @Content,
                                         HaveSpoiler = @HaveSpoiler,
-                                        WatchedDate = NOW(),
+                                        WatchedDate = @WatchedDate,
                                         Score = @Score
                                     WHERE ReviewID = @ReviewID;";
                 if (review.Liked)
@@ -396,6 +395,23 @@ namespace WebFilm.Infrastructure.Repository
                     " FROM Review r WHERE  r.UserID = @v_UserID group by r.Score";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("v_UserID", userID);
+                var dto = SqlConnection.Query<RateStatDTO>(sqlCommand, parameters);
+
+                //Trả dữ liệu về client
+                SqlConnection.Close();
+                return dto.ToList();
+            }
+        }
+
+        public List<RateStatDTO> GetRatesByFilmID(int filmID)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCommand = "SELECT r.Score as Value, count(r.Score) as Total," +
+                    " ROUND((COUNT(r.Score) * 100 / (SELECT COUNT(r.Score) FROM Review r WHERE  r.FilmID = @FilmID)),2) AS Percent" +
+                    " FROM Review r WHERE  r.FilmID = @FilmID group by r.Score";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("FilmID", filmID);
                 var dto = SqlConnection.Query<RateStatDTO>(sqlCommand, parameters);
 
                 //Trả dữ liệu về client
