@@ -20,7 +20,20 @@ namespace WebFilm.Infrastructure.Repository
         {
         }
 
+        public List<JournalLite> GetListNewJournal()
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
 
+                var sqlCommand = "SELECT Author,Banner,Category,CreatedDate,Intro,JournalID,MentionedFilm,ModifiedDate,Title FROM journal order by CreatedDate desc LIMIT 7";
+                var journal = SqlConnection.Query<JournalLite>(sqlCommand);
+
+
+                SqlConnection.Close();
+                return journal.ToList();
+
+            }
+        }
         public List<MentionedInArticle> GetMentionedInArticle(int filmID)
         {
             using (SqlConnection = new MySqlConnection(_connectionString))

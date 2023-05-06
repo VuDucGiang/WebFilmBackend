@@ -12,7 +12,7 @@ namespace WebFilm.Core.Interfaces.Services
     public interface IJournalService : IBaseService<int, Journal>
     {
 
-        List<Journal> GetListNewJournal();
+        List<JournalLite> GetListNewJournal();
         List<JournalLite> GetReviewJournalsList();
         List<JournalLite> GetNewsJournalsList();
         object GetPaging(int pageSize, int pageIndex);
