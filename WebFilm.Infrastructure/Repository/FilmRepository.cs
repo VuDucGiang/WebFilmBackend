@@ -22,6 +22,7 @@ using WebFilm.Core.Enitites.Related_film;
 using WebFilm.Core.Enitites.Similar_film;
 using Newtonsoft.Json.Linq;
 using WebFilm.Core.Enitites.FilmList;
+using WebFilm.Core.Enitites.Credit;
 
 namespace WebFilm.Infrastructure.Repository
 {
@@ -107,6 +108,30 @@ namespace WebFilm.Infrastructure.Repository
             }
         }
 
+        public async Task<bool> CheckPermissionInList(string listIDs)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var listIDArr = listIDs.Split(',');
+                foreach (var item in listIDArr)
+                {
+                    var sqlCommand = @$"SELECT l.UserID FROM list l WHERE l.ListID = @listID";
+                    DynamicParameters parameters = new DynamicParameters();
+                    parameters.Add("listID", item);
+                    var result = await SqlConnection.QueryAsync<Guid>(sqlCommand, parameters);
+                    if (result.ToList().Count > 0)
+                    {
+                        if (result.ToList()[0] != _userContext.UserId)
+                        {
+                            return false;
+                        }
+                    }
+                }
+                //Trả dữ liệu về client
+                return true;
+            }
+        }
+
         public async Task<bool> AddFilmToList(int filmID, string listIDs)
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
@@ -166,7 +191,19 @@ namespace WebFilm.Infrastructure.Repository
             {
                 //Thực thi lấy dữ liệu
                 var sqlCommand = @$"SELECT f.*,
-                                    JSON_ARRAYAGG(
+                                    COUNT(DISTINCT f1.ListID) AS Appears
+                                    FROM film f
+                                    LEFT JOIN filmlist f1 ON f.FilmID = f1.FilmID
+                                    WHERE f.FilmID = @id
+                                    GROUP BY f.FilmID;";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@id", id);
+                parameters.Add("@userID", _userContext.UserId);
+                //Trả dữ liệu về client
+                var entities = await SqlConnection.QueryFirstOrDefaultAsync<FilmDto>(sqlCommand, parameters);
+                entities.RateStats = rateStats;
+                entities.MentionedInArticles = _journalRepository.GetMentionedInArticle(id);
+                sqlCommand = @$"SELECT JSON_ARRAYAGG(
                                         JSON_OBJECT(
                                           'type', c1.type,
                                           'known_for_department', c1.known_for_department,
@@ -178,27 +215,39 @@ namespace WebFilm.Infrastructure.Repository
                                           'credit_id', c1.credit_id,
                                           'poster_path', c1.poster_path
                                         )
-                                      ) AS credits,
-                                    COUNT(DISTINCT f1.ListID) AS Appears, 
+                                      ) AS credits
+                                    FROM credit c1 
+                                    WHERE c1.FilmID = @id;";
+                var credits = await SqlConnection.QueryAsync<string>(sqlCommand, parameters);
+                if (credits.ToList().Count > 0)
+                {
+                  entities.Credits = credits.ToList()[0];
+                }
+                SqlConnection.Close();
+                return entities;
+            }
+        }
+
+        public async Task<object> GetInfoUser(int id)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                //Thực thi lấy dữ liệu
+                var sqlCommand = @$"SELECT 
                                     IF(r.ReviewID IS NOT NULL, True, False) AS Reviewed,
-                                    IF(r.ReviewID IS NOT NULL, True, False) AS Watchlisted,
+                                    IF(w.watchlistID IS NOT NULL, True, False) AS Watchlisted,
                                     IF(l.LikeID IS NOT NULL, True, False) AS Liked 
                                     FROM film f
                                     LEFT JOIN `like` l ON f.FilmID = l.ParentID AND l.UserID = @userID AND l.Type = 'Film'
-                                    LEFT JOIN filmlist f1 ON f.FilmID = f1.FilmID
-                                    LEFT JOIN credit c1 ON f.FilmID = c1.FilmID
                                     LEFT JOIN review r ON r.FilmID = f.FilmID AND r.UserID = @userID
                                     LEFT JOIN watchlist w ON  f.FilmID = w.FilmID AND w.UserID = @userID
                                     WHERE f.FilmID = @id
-                                    GROUP BY f.FilmID;
-                                    ";
+                                    GROUP BY f.FilmID;";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@id", id);
                 parameters.Add("@userID", _userContext.UserId);
                 //Trả dữ liệu về client
-                var entities = await SqlConnection.QueryFirstOrDefaultAsync<FilmDto>(sqlCommand, parameters);
-                entities.RateStats = rateStats;
-                entities.MentionedInArticles = _journalRepository.GetMentionedInArticle(id);
+                var entities = await SqlConnection.QueryFirstOrDefaultAsync<object>(sqlCommand, parameters);
                 SqlConnection.Close();
                 return entities;
             }

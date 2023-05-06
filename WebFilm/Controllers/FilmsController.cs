@@ -10,7 +10,6 @@ namespace WebFilm.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [AllowAnonymous]
     public class FilmsController : BaseController<int, Film>
     {
         #region Field
@@ -58,6 +57,20 @@ namespace WebFilm.Controllers
             try
             {
                 var entity = await _filmService.GetDetailByID(id);
+                return Ok(entity);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpGet("{id}/GetInfoUser")]
+        public async Task<IActionResult> GetInfoUser(int id)
+        {
+            try
+            {
+                var entity = await _filmService.GetInfoUser(id);
                 return Ok(entity);
             }
             catch (Exception ex)

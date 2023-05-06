@@ -8,6 +8,7 @@ namespace WebFilm.Core.Interfaces.Services
         Task<object> GetListUserLiked(int pageSize, int pageIndex, int filmID);
         Task<bool> AddFilmToList(int filmID, string listIDs);
         Task<FilmDto> GetDetailByID(int id);
+        Task<object> GetInfoUser(int id);
         public Task<object> GetPaging(PagingParameterFilm parameter);
         Task<object> GetPopular(int pageSize, int pageIndex, string filter, string sort);
         Task<object> JustReviewed();
