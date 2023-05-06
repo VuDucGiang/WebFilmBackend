@@ -20,18 +20,6 @@ namespace WebFilm.Infrastructure.Repository
         {
         }
 
-        public Journal GetLastestJournal()
-        {
-            using (SqlConnection = new MySqlConnection(_connectionString))
-            {
-                var sqlCommand = "SELECT * FROM Journal order by CreatedDate desc LIMIT 1";
-                var journal = SqlConnection.QueryFirstOrDefault<Journal>(sqlCommand);
-
-                //Trả dữ liệu về client
-                SqlConnection.Close();
-                return journal;
-            }
-        }
 
         public List<MentionedInArticle> GetMentionedInArticle(int filmID)
         {
@@ -74,6 +62,17 @@ namespace WebFilm.Infrastructure.Repository
                 SqlConnection.Close();
                 return journal.ToList();
 
+            }
+        }
+
+        public object GetPaging(int pageSize, int pageIndex)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                return new
+                {
+                    Data = 0,
+                };
             }
         }
     }

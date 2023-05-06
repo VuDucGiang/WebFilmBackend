@@ -11,11 +11,11 @@ namespace WebFilm.Core.Interfaces.Services
 {
     public interface IJournalService : IBaseService<int, Journal>
     {
-        Journal GetLastestJournal();
 
         List<Journal> GetListNewJournal();
         List<Journal> GetReviewJournalsList();
         List<Journal> GetNewsJournalsList();
+        object GetPaging(int pageSize, int pageIndex);
 
     }
 }

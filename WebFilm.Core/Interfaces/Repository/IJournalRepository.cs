@@ -10,10 +10,12 @@ namespace WebFilm.Core.Interfaces.Repository
 {
     public interface IJournalRepository : IBaseRepository<int, Journal>
     {
-        Journal GetLastestJournal();
+        
         List<MentionedInArticle> GetMentionedInArticle(int filmID);
         List<Journal> GetReviewJournalsList();
         List<Journal> GetNewsJournalsList();
+
+        object GetPaging(int pageSize, int pageIndex);
 
     }
 }
