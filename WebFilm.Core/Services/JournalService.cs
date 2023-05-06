@@ -29,7 +29,16 @@ namespace WebFilm.Core.Services
 
         public List<Journal> GetListNewJournal()
         {
-            return _journalRepository.GetAll().OrderByDescending(p => p.CreatedDate).Take(3).ToList();
+            return _journalRepository.GetAll().OrderByDescending(p => p.CreatedDate).Take(6).ToList();
+        }
+        
+        public List<Journal> GetReviewJournalsList()
+        {
+            return  _journalRepository.GetReviewJournalsList();
+        }
+        public List<Journal> GetNewsJournalsList()
+        {
+            return _journalRepository.GetNewsJournalsList();
         }
     }
 }

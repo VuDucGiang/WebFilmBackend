@@ -12,5 +12,8 @@ namespace WebFilm.Core.Interfaces.Repository
     {
         Journal GetLastestJournal();
         List<MentionedInArticle> GetMentionedInArticle(int filmID);
+        List<Journal> GetReviewJournalsList();
+        List<Journal> GetNewsJournalsList();
+
     }
 }

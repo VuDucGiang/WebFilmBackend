@@ -8,7 +8,7 @@ using WebFilm.Core.Services;
 
 namespace WebFilm.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class Related_filmController : BaseController<int, Related_film>

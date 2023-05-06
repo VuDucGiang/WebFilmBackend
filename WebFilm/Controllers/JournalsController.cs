@@ -52,6 +52,36 @@ namespace WebFilm.Controllers
                 return HandleException(ex);
             }
         }
+
+        
+        //[AllowAnonymous]
+        [HttpGet("ReviewsJournals")]
+        public async Task<IActionResult> GetReviewJournalsList()
+        {
+            try
+            {
+                var res = _journalService.GetReviewJournalsList();
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpGet("NewsJournals")]
+        public async Task<IActionResult> GetNewsJournalsList()
+        {
+            try
+            {
+                var res = _journalService.GetNewsJournalsList();
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
         #endregion
     }
 }
