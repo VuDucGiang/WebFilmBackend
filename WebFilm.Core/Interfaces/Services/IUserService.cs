@@ -33,6 +33,9 @@ namespace WebFilm.Core.Interfaces.Services
         bool ActiveUser(string email);
 
         bool ChangePassword(string email, string oldPass, string newPass);
+        bool ChangeInfo(ChangeInfoParam user);
+        bool ChangeAvatar(string url);
+        bool ChangeBanner(string url);
 
         bool ForgotPassword(string email);
 
