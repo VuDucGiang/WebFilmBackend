@@ -31,5 +31,20 @@ namespace WebFilm.Infrastructure.Repository
                 return journal;
             }
         }
+
+        public List<MentionedInArticle> GetMentionedInArticle(int filmID)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCommand = "SELECT j.JournalID, j.Title, j.Banner FROM Journal j WHERE j.MentionedFilm = @filmID";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@filmID", filmID);
+                var journal = SqlConnection.Query<MentionedInArticle>(sqlCommand, parameters);
+
+                //Trả dữ liệu về client
+                SqlConnection.Close();
+                return journal.ToList();
+            }
+        }
     }
 }

@@ -11,5 +11,6 @@ namespace WebFilm.Core.Interfaces.Repository
     public interface IJournalRepository : IBaseRepository<int, Journal>
     {
         Journal GetLastestJournal();
+        List<MentionedInArticle> GetMentionedInArticle(int filmID);
     }
 }

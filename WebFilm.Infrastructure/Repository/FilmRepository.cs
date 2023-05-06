@@ -28,11 +28,13 @@ namespace WebFilm.Infrastructure.Repository
     {
         IUserContext _userContext;
         IReviewRepository _reviewRepository;
+        IJournalRepository _journalRepository;
 
-        public FilmRepository(IConfiguration configuration, IUserContext userContext, IReviewRepository reviewRepository) : base(configuration)
+        public FilmRepository(IConfiguration configuration, IUserContext userContext, IReviewRepository reviewRepository, IJournalRepository journalRepository) : base(configuration)
         {
             _userContext = userContext;
             _reviewRepository = reviewRepository;
+            _journalRepository = journalRepository;
         }
 
         public async Task<object> GetListUserLiked(int pageSize, int pageIndex, int filmID)
@@ -151,6 +153,7 @@ namespace WebFilm.Infrastructure.Repository
                 //Trả dữ liệu về client
                 var entities = await SqlConnection.QueryFirstOrDefaultAsync<FilmDto>(sqlCommand, parameters);
                 entities.RateStats = rateStats;
+                entities.MentionedInArticles = _journalRepository.GetMentionedInArticle(id);
                 SqlConnection.Close();
                 return entities;
             }
