@@ -114,11 +114,57 @@ namespace WebFilm.Controllers
         /// <param name="user"></param>
         /// <returns></returns>
         [HttpPost("ChangePassword")]
-        public IActionResult ChangePassword(string email, string oldPass, string newPass)
+        public IActionResult ChangePassword(string? email, string oldPass, string newPass)
         {
             try
             {
+                if (string.IsNullOrEmpty(email))
+                {
+                    email = _userContext.Email;
+                }
                 var res = _userService.ChangePassword(email, oldPass, newPass);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpPost("ChangeInfo")]
+        public IActionResult ChangeInfo(ChangeInfoParam user)
+        {
+            try
+            {
+                var res = _userService.ChangeInfo(user);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpPost("ChangeAvatar")]
+        public IActionResult ChangeAvatar(string url)
+        {
+            try
+            {
+                var res = _userService.ChangeAvatar(url);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpPost("ChangeBanner")]
+        public IActionResult ChangeBanner(string url)
+        {
+            try
+            {
+                var res = _userService.ChangeBanner(url);
                 return Ok(res);
             }
             catch (Exception ex)

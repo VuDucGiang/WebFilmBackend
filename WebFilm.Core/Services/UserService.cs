@@ -275,6 +275,21 @@ namespace WebFilm.Core.Services
             throw new ServiceException("Incorrect password");
         }
 
+        public bool ChangeInfo(ChangeInfoParam user)
+        {
+            return _userRepository.ChangeInfo(user);
+        }
+
+        public bool ChangeAvatar(string url)
+        {
+            return _userRepository.ChangeAvatar(url);
+        }
+
+        public bool ChangeBanner(string url)
+        {
+            return _userRepository.ChangeBanner(url);
+        }
+
         public bool ForgotPassword(string email)
         {
             var userDto = _userRepository.Login(email);

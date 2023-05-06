@@ -40,6 +40,9 @@ namespace WebFilm.Core.Interfaces.Repository
         bool ActiveUser(string email);
 
         bool ChangePassword(string email, string newPass);
+        bool ChangeInfo(ChangeInfoParam user);
+        bool ChangeAvatar(string url);
+        bool ChangeBanner(string url);
 
         bool AddTokenReset(UserDto user);
 

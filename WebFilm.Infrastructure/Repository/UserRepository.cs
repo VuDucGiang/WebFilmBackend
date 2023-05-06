@@ -172,11 +172,73 @@ namespace WebFilm.Infrastructure.Repository
                 parameters.Add("@v_NewPass", newPass);
 
                 var res = SqlConnection.Execute(sql: sqlCheck, param: parameters);
-                if(res > 0)
+                if (res > 0)
                 {
                     return true;
                 }
                 return false;
+            }
+        }
+
+        public bool ChangeInfo(ChangeInfoParam user)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCheck = @$"UPDATE user u 
+                                SET UserName = @UserName,
+                                    FullName = @FullName,
+                                    Bio = @Bio,
+                                    ModifiedDate = NOW()
+                                WHERE UserID = @UserID;
+                                
+                                UPDATE follow f 
+                                LEFT JOIN user u1 ON f.FollowedUserID = u1.UserID
+                                SET f.FollowedUserName = u1.UserName
+                                WHERE f.FollowedUserID = @UserID;
+
+                                UPDATE follow f 
+                                LEFT JOIN user u ON f.UserID = u.UserID
+                                SET f.UserName = u.UserName
+                                WHERE f.UserID = @UserID;";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@UserID", _userContext.UserId);
+                parameters.Add("@UserName", user.UserName);
+                parameters.Add("@FullName", user.FullName);
+                parameters.Add("@Bio", user.Bio);
+                var res = SqlConnection.Execute(sql: sqlCheck, param: parameters);
+                return true;
+            }
+        }
+
+        public bool ChangeAvatar(string url)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCheck = @$"UPDATE user u 
+                                SET Avatar = @url,
+                                    ModifiedDate = NOW()
+                                WHERE UserID = @UserID;";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@UserID", _userContext.UserId);
+                parameters.Add("@url", url);
+                var res = SqlConnection.Execute(sql: sqlCheck, param: parameters);
+                return true;
+            }
+        }
+
+        public bool ChangeBanner(string url)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCheck = @$"UPDATE user u 
+                                SET Banner = @url,
+                                    ModifiedDate = NOW()
+                                WHERE UserID = @UserID;";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@UserID", _userContext.UserId);
+                parameters.Add("@url", url);
+                var res = SqlConnection.Execute(sql: sqlCheck, param: parameters);
+                return true;
             }
         }
 
