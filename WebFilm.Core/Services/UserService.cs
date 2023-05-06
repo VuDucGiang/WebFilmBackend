@@ -1045,7 +1045,7 @@ namespace WebFilm.Core.Services
                     filmDTO.ReleaseDate = film.Release_date;
                     List<Credit> credits = _creditRepository.GetAll().Where(p => p.FilmID == film.FilmID).ToList();
                     filmDTO.Cast =  string.Join(", ", credits.Where(c => "Acting".Equals(c.Known_for_department)).GroupBy(c => c.PersonID).Select(c => c.First().Name));
-                    filmDTO.Director = string.Join(", ", credits.Where(c => "Directing".Equals(c.Known_for_department)).GroupBy(c => c.PersonID).Select(c => c.First().Name));
+                    filmDTO.Director = string.Join(", ", credits.Where(c => "Director".Equals(c.Job)).GroupBy(c => c.PersonID).Select(c => c.First().Name));
                     filmDTOS.Add(filmDTO);
                 }
                 search.films = filmDTOS;

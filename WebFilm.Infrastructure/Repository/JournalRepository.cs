@@ -10,6 +10,7 @@ using WebFilm.Core.Enitites.Follow;
 using WebFilm.Core.Enitites.Journal;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Interfaces.Repository;
+using static Dapper.SqlMapper;
 
 namespace WebFilm.Infrastructure.Repository
 {
@@ -19,18 +20,6 @@ namespace WebFilm.Infrastructure.Repository
         {
         }
 
-        public Journal GetLastestJournal()
-        {
-            using (SqlConnection = new MySqlConnection(_connectionString))
-            {
-                var sqlCommand = "SELECT * FROM Journal order by CreatedDate desc LIMIT 1";
-                var journal = SqlConnection.QueryFirstOrDefault<Journal>(sqlCommand);
-
-                //Trả dữ liệu về client
-                SqlConnection.Close();
-                return journal;
-            }
-        }
 
         public List<MentionedInArticle> GetMentionedInArticle(int filmID)
         {
@@ -44,6 +33,46 @@ namespace WebFilm.Infrastructure.Repository
                 //Trả dữ liệu về client
                 SqlConnection.Close();
                 return journal.ToList();
+            }
+        }
+        public List<JournalLite> GetReviewJournalsList()
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+
+                var sqlCommand = "SELECT Author,Banner,Category,CreatedDate,Intro,JournalID,MentionedFilm,ModifiedDate,Title FROM journal WHERE Category = 'Review' order by CreatedDate desc LIMIT 3";
+                var journal = SqlConnection.Query<JournalLite>(sqlCommand);
+
+                
+                SqlConnection.Close();
+                return journal.ToList();
+               
+            }
+        }
+
+        public List<JournalLite> GetNewsJournalsList()
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+
+                var sqlCommand = "SELECT Author,Banner,Category,CreatedDate,Intro,JournalID,MentionedFilm,ModifiedDate,Title FROM journal WHERE Category = 'News' order by CreatedDate desc LIMIT 3";
+                var journal = SqlConnection.Query<JournalLite>(sqlCommand);
+
+
+                SqlConnection.Close();
+                return journal.ToList();
+
+            }
+        }
+
+        public object GetPaging(int pageSize, int pageIndex)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                return new
+                {
+                    Data = 0,
+                };
             }
         }
     }

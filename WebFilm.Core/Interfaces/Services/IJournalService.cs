@@ -5,13 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using WebFilm.Core.Enitites.Film;
 using WebFilm.Core.Enitites.Journal;
+using WebFilm.Core.Interfaces.Repository;
 
 namespace WebFilm.Core.Interfaces.Services
 {
     public interface IJournalService : IBaseService<int, Journal>
     {
-        Journal GetLastestJournal();
 
         List<Journal> GetListNewJournal();
+        List<JournalLite> GetReviewJournalsList();
+        List<JournalLite> GetNewsJournalsList();
+        object GetPaging(int pageSize, int pageIndex);
+
     }
 }

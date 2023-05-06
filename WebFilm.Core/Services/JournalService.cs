@@ -22,14 +22,24 @@ namespace WebFilm.Core.Services
             _configuration = configuration;
         }
 
-        public Journal GetLastestJournal()
-        {
-            return _journalRepository.GetLastestJournal();
-        }
+        
 
         public List<Journal> GetListNewJournal()
         {
-            return _journalRepository.GetAll().OrderByDescending(p => p.CreatedDate).Take(3).ToList();
+            return _journalRepository.GetAll().OrderByDescending(p => p.CreatedDate).Take(7).ToList();
+        }
+        
+        public List<JournalLite> GetReviewJournalsList()
+        {
+            return  _journalRepository.GetReviewJournalsList();
+        }
+        public List<JournalLite> GetNewsJournalsList()
+        {
+            return _journalRepository.GetNewsJournalsList();
+        }
+        public object GetPaging(int pageSize, int pageIndex)
+        {
+            return _journalRepository.GetPaging(pageSize, pageIndex);
         }
     }
 }

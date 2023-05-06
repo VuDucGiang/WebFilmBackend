@@ -23,20 +23,7 @@ namespace WebFilm.Controllers
             _journalService = journalService;
         }
 
-        [AllowAnonymous]
-        [HttpGet("Lastest")]
-        public IActionResult GetLastest()
-        {
-            try
-            {
-                var res = _journalService.GetLastestJournal();
-                return Ok(res);
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
-        }
+       
 
         [AllowAnonymous]
         [HttpGet("New")]
@@ -45,6 +32,50 @@ namespace WebFilm.Controllers
             try
             {
                 var res = _journalService.GetListNewJournal();
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        
+        //[AllowAnonymous]
+        [HttpGet("ReviewsJournals")]
+        public async Task<IActionResult> GetReviewJournalsList()
+        {
+            try
+            {
+                var res = _journalService.GetReviewJournalsList();
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpGet("NewsJournals")]
+        public async Task<IActionResult> GetNewsJournalsList()
+        {
+            try
+            {
+                var res = _journalService.GetNewsJournalsList();
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpGet("GetPaging")]
+        public async Task<IActionResult> GetPaging(int pageSize, int pageIndex)
+        {
+            try
+            {
+                var res = _journalService.GetPaging(pageSize,pageIndex);
                 return Ok(res);
             }
             catch (Exception ex)
