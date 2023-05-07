@@ -24,6 +24,33 @@ namespace WebFilm.Controllers
         }
         #endregion
 
-       
+
+        [HttpPost("GetAll")]
+        public IActionResult getNoti([FromBody] PagingParameter parameter)
+        {
+            try
+            {
+                var res = _notificationService.GetNotification(parameter);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpPut("{id}/MarkAsSeen")]
+        public IActionResult markAsSeen(int id)
+        {
+            try
+            {
+                var res = _notificationService.MarkAsSeen(id);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
     }
 }

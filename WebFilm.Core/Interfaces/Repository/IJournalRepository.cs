@@ -16,7 +16,7 @@ namespace WebFilm.Core.Interfaces.Repository
         List<JournalLite> GetReviewJournalsList();
         List<JournalLite> GetNewsJournalsList();
 
-        object GetPaging(PagingJournal parameter);
+        object GetPaging(int pageSize, int pageIndex);
 
     }
 }
