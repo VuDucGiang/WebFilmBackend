@@ -83,6 +83,19 @@ namespace WebFilm.Controllers
                 return HandleException(ex);
             }
         }
+        [HttpPost("GetRelatedArticles")]
+        public async Task<IActionResult> GetPaging(int JournalID)
+        {
+            try
+            {
+                var res = _journalService.GetRelatedArticles(JournalID);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
         #endregion
     }
 }

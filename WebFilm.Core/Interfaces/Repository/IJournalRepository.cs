@@ -17,6 +17,7 @@ namespace WebFilm.Core.Interfaces.Repository
         List<JournalLite> GetNewsJournalsList();
 
         object GetPaging(int pageSize, int pageIndex);
+        List<JournalLite> GetRelatedArticles(int JournalID);
 
     }
 }

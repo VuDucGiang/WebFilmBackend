@@ -42,5 +42,9 @@ namespace WebFilm.Core.Services
         {
             return _journalRepository.GetPaging(pageSize,pageIndex);
         }
+        public List<JournalLite> GetRelatedArticles(int JournalID)
+        {
+            return _journalRepository.GetRelatedArticles(JournalID);
+        }
     }
 }

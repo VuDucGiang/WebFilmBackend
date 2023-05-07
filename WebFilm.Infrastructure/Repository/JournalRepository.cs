@@ -12,6 +12,7 @@ using WebFilm.Core.Enitites.Journal;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Interfaces.Repository;
 using static Dapper.SqlMapper;
+using Newtonsoft.Json;
 
 namespace WebFilm.Infrastructure.Repository
 {
@@ -93,6 +94,7 @@ namespace WebFilm.Infrastructure.Repository
                 var result2 = SqlConnection.Query(sql2);
                 var total = result2.ToList().Count;
                 int totalPage = (int)Math.Ceiling((double)total / pageSize);
+                var a = new {Data = 5 };
                 return new
                 {
                     Data = result.ToList(),
@@ -101,6 +103,26 @@ namespace WebFilm.Infrastructure.Repository
                     PageIndex = pageIndex,
                     TotalPage = totalPage,
                 };
+            }
+        }
+        public List<JournalLite> GetRelatedArticles(int JournalID)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCommand = "SELECT * FROM Journal WHERE JournalID = @Jid;";
+                
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@Jid", JournalID);
+                var journal = SqlConnection.QueryFirstOrDefault<Journal>(sqlCommand,parameters);
+                
+                var category = journal.Category;
+                DynamicParameters parameters2 = new DynamicParameters();
+                parameters2.Add("@category", category);
+                var sqlCommand2 = "SELECT Author,Banner,Category,CreatedDate,Intro,JournalID,MentionedFilm,ModifiedDate,Title FROM Journal WHERE category = @category order by CreatedDate desc LIMIT 3;";
+                var relatedArticles = SqlConnection.Query<JournalLite>(sqlCommand2, parameters2);
+                SqlConnection.Close();
+                return relatedArticles.ToList();
+                
             }
         }
     }
