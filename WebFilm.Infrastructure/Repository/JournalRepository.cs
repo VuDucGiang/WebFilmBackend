@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.Follow;
 using WebFilm.Core.Enitites.Journal;
 using WebFilm.Core.Enitites.User;
@@ -20,7 +21,20 @@ namespace WebFilm.Infrastructure.Repository
         {
         }
 
+        public List<JournalLite> GetListNewJournal()
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
 
+                var sqlCommand = "SELECT Author,Banner,Category,CreatedDate,Intro,JournalID,MentionedFilm,ModifiedDate,Title FROM journal order by CreatedDate desc LIMIT 7";
+                var journal = SqlConnection.Query<JournalLite>(sqlCommand);
+
+
+                SqlConnection.Close();
+                return journal.ToList();
+
+            }
+        }
         public List<MentionedInArticle> GetMentionedInArticle(int filmID)
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
@@ -65,7 +79,7 @@ namespace WebFilm.Infrastructure.Repository
             }
         }
 
-        public object GetPaging(int pageSize, int pageIndex)
+        public object GetPaging(PagingJournal parameter)
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {

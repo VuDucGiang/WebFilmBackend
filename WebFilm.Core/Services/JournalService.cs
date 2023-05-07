@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.Follow;
 using WebFilm.Core.Enitites.Journal;
 using WebFilm.Core.Interfaces.Repository;
@@ -24,9 +25,9 @@ namespace WebFilm.Core.Services
 
         
 
-        public List<Journal> GetListNewJournal()
+        public List<JournalLite> GetListNewJournal()
         {
-            return _journalRepository.GetAll().OrderByDescending(p => p.CreatedDate).Take(7).ToList();
+            return _journalRepository.GetListNewJournal();
         }
         
         public List<JournalLite> GetReviewJournalsList()
@@ -37,9 +38,9 @@ namespace WebFilm.Core.Services
         {
             return _journalRepository.GetNewsJournalsList();
         }
-        public object GetPaging(int pageSize, int pageIndex)
+        public object GetPaging(PagingJournal parameter)
         {
-            return _journalRepository.GetPaging(pageSize, pageIndex);
+            return _journalRepository.GetPaging(parameter);
         }
     }
 }

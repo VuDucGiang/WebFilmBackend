@@ -70,12 +70,12 @@ namespace WebFilm.Controllers
             }
         }
 
-        [HttpGet("GetPaging")]
-        public async Task<IActionResult> GetPaging(int pageSize, int pageIndex)
+        [HttpPost("GetPaging")]
+        public async Task<IActionResult> GetPaging(PagingJournal parameter)
         {
             try
             {
-                var res = _journalService.GetPaging(pageSize,pageIndex);
+                var res = _journalService.GetPaging(parameter);
                 return Ok(res);
             }
             catch (Exception ex)
