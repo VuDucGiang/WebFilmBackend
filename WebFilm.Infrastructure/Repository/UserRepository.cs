@@ -188,6 +188,7 @@ namespace WebFilm.Infrastructure.Repository
                                 SET UserName = @UserName,
                                     FullName = @FullName,
                                     Bio = @Bio,
+                                    FavouriteFilmList = @FavouriteFilmList,
                                     ModifiedDate = NOW()
                                 WHERE UserID = @UserID;
                                 
@@ -205,6 +206,8 @@ namespace WebFilm.Infrastructure.Repository
                 parameters.Add("@UserName", user.UserName);
                 parameters.Add("@FullName", user.FullName);
                 parameters.Add("@Bio", user.Bio);
+                parameters.Add("@FavouriteFilmList", user.FavouriteFilmList);
+
                 var res = SqlConnection.Execute(sql: sqlCheck, param: parameters);
                 return true;
             }

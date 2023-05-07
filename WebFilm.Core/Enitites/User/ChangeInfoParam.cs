@@ -25,5 +25,7 @@ namespace WebFilm.Core.Enitites.User
         public DateTime? DateOfBirth { get; set; }
 
         public string? Bio { get; set; }
+
+        public string? FavouriteFilmList { get; set; }
     }
 }
