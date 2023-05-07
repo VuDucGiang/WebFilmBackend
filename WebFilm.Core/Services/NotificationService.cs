@@ -33,7 +33,8 @@ namespace WebFilm.Core.Services
             }
             List<Notification> data = new List<Notification>();
             var noti = _notificationRepository.GetAll().Where(p => p.ReceiverUserId == userID);
-
+            
+            int totalUnSeen = noti.Where(p => p.Seen == false).Count();
             int totalCount = noti.Count();
             int totalPages = (int)Math.Ceiling((double)totalCount / paging.pageSize);
             noti = noti.OrderByDescending(p => p.CreatedDate).Skip((paging.pageIndex - 1) * paging.pageSize).Take(paging.pageSize);
@@ -48,6 +49,7 @@ namespace WebFilm.Core.Services
             res.Total = totalCount;
             res.PageSize = paging.pageSize;
             res.PageIndex = paging.pageIndex;
+            res.TotalUnseen = totalUnSeen;
             return res;
         }
     }

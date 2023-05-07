@@ -25,7 +25,7 @@ namespace WebFilm.Controllers
         #endregion
 
 
-        [HttpPost("")]
+        [HttpPost("GetAll")]
         public IActionResult getNoti([FromBody] PagingParameter parameter)
         {
             try

@@ -14,5 +14,6 @@ namespace WebFilm.Core.Enitites.Notification
         public int PageSize { get; set; }
         public int PageIndex { get; set; }
         public int TotalPage { get; set; }
+        public int TotalUnseen { get; set; }
     }
 }
