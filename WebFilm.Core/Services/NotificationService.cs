@@ -52,5 +52,36 @@ namespace WebFilm.Core.Services
             res.TotalUnseen = totalUnSeen;
             return res;
         }
+
+        public bool MarkAsSeen(int id)
+        {
+            bool res = false;
+            Guid userID = (Guid)_userContext.UserId;
+            if (userID == Guid.Empty)
+            {
+                throw new ServiceException("Hành động không khả thi");
+            }
+
+            if(id != -1)
+            {
+                Notification noti = _notificationRepository.GetByID(id);
+                if (noti != null)
+                {
+                    noti.Seen = true;
+                    _notificationRepository.Edit(id, noti);
+                    res = true;
+                }
+            } else
+            {
+                List<Notification> notis = _notificationRepository.GetAll().Where(p => p.ReceiverUserId == userID && p.Seen == false).ToList();
+                foreach (Notification noti in notis)
+                {
+                    noti.Seen = true;
+                    _notificationRepository.Edit(noti.NotificationID, noti);
+                }
+                res = true;
+            }
+            return res;
+        }
     }
 }

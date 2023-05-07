@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using WebFilm.Core.Enitites.Film;
 using WebFilm.Core.Enitites.Like;
 using WebFilm.Core.Enitites.List;
+using WebFilm.Core.Enitites.Notification;
 using WebFilm.Core.Enitites.Review;
+using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Exceptions;
 using WebFilm.Core.Interfaces.Repository;
 using WebFilm.Core.Interfaces.Services;
@@ -21,6 +23,8 @@ namespace WebFilm.Core.Services
         IFilmRepository _filmRepository;
         ILikeRepository _likeRepository;
         IListRepository _listRepository;
+        IUserRepository _userRepository;
+        INotificationRepository _notificationRepository;
         private readonly IConfiguration _configuration;
 
         public LikeService(IReviewRepository reviewRepository,
@@ -28,7 +32,9 @@ namespace WebFilm.Core.Services
             IFilmRepository filmRepository,
             ILikeRepository likeRepository,
             IUserContext userContext,
-            IListRepository listRepository) : base(likeRepository)
+            IListRepository listRepository,
+            IUserRepository userRepository,
+            INotificationRepository notificationRepository) : base(likeRepository)
         {
             _reviewRepository = reviewRepository;
             _configuration = configuration;
@@ -36,6 +42,8 @@ namespace WebFilm.Core.Services
             _likeRepository = likeRepository;
             _userContext = userContext;
             _listRepository = listRepository;
+            _userRepository = userRepository;
+            _notificationRepository = notificationRepository;
         }
 
         public bool newLike(int id, string type)
@@ -110,6 +118,23 @@ namespace WebFilm.Core.Services
                     _reviewRepository.UpdateLikeCount(id, review.LikesCount + 1);
 
                     _likeRepository.Add(newLike);
+
+                    //add notification
+                    if (!userID.Equals(review.UserID))
+                    {
+                        Notification noti = new Notification();
+                        User userReceive = _userRepository.GetByID(review.UserID);
+                        noti.ReceiverUserId = review.UserID;
+                        noti.SenderUserID = userID;
+                        noti.Seen = false;
+                        noti.Content = "liked your review of " + review.Content;
+                        noti.CreatedDate = DateTime.Now;
+                        noti.ModifiedDate = DateTime.Now;
+                        noti.Date = DateTime.Now;
+                        noti.Link = "/u/" + userReceive.UserName + "reviews/" + review.ReviewID;
+                        _notificationRepository.Add(noti);
+                    }
+
                 } else
                 {
                     _likeRepository.Delete(like.LikeID);
@@ -143,6 +168,21 @@ namespace WebFilm.Core.Services
                     _likeRepository.Add(newLike);
 
                     _listRepository.UpdateLikeCount(id, list.LikesCount + 1);
+                    //add notification
+                    if (!userID.Equals(list.UserID))
+                    {
+                        Notification noti = new Notification();
+                        User userReceive = _userRepository.GetByID(list.UserID);
+                        noti.ReceiverUserId = list.UserID;
+                        noti.SenderUserID = userID;
+                        noti.Seen = false;
+                        noti.Content = "liked your list " + list.ListName;
+                        noti.CreatedDate = DateTime.Now;
+                        noti.ModifiedDate = DateTime.Now;
+                        noti.Date = DateTime.Now;
+                        noti.Link = "/u/" + userReceive.UserName + "lists/" + list.ListID;
+                        _notificationRepository.Add(noti);
+                    }
                 }
                 else
                 {

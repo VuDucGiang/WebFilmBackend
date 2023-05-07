@@ -38,5 +38,19 @@ namespace WebFilm.Controllers
                 return HandleException(ex);
             }
         }
+
+        [HttpPut("{id}/MarkAsSeen")]
+        public IActionResult markAsSeen(int id)
+        {
+            try
+            {
+                var res = _notificationService.MarkAsSeen(id);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
     }
 }
