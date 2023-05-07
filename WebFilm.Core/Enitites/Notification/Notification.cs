@@ -6,17 +6,11 @@ namespace WebFilm.Core.Enitites.Notification
     {
         [Key]
         public int NotificationID { get; set; }
+        public Guid ReceiverUserId { get; set; }
+        public Guid SenderUserID { get; set; }
+        public string Link { get; set; }
+        public bool Seen { get; set; }
         public string Content { get; set; }
-        public DateTime CreatedDate { get; set; }
-public DateTime Date { get; set; }
-public string Link { get; set; }
-public DateTime ModifiedDate { get; set; }
-
-public char OtherUserID { get; set; }
-public int Seen { get; set; }
-public Guid UserID { get; set; }
-
-
-
+        public DateTime?  Date { get; set; }
     }
 }

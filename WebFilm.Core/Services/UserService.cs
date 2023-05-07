@@ -370,8 +370,8 @@ namespace WebFilm.Core.Services
                 foreach (JObject obj in favouriteFilms.ToArray())
                 {
                     int id = (int)obj.GetValue("FilmID");
-                    string posterPath = (string)obj.GetValue("poster_path");
-                    string title = (string)obj.GetValue("title");
+                    string posterPath = (string)obj.GetValue("Poster_path");
+                    string title = (string)obj.GetValue("Title");
                     BaseFilmDTO dto = new BaseFilmDTO();
                     dto.FilmID = id;
                     dto.Poster_path = posterPath;
@@ -1213,8 +1213,8 @@ namespace WebFilm.Core.Services
                     foreach (JObject obj in favouriteFilms.ToArray())
                     {
                         int id = (int)obj.GetValue("FilmID");
-                        string posterPath = (string)obj.GetValue("poster_path");
-                        string title = (string)obj.GetValue("title");
+                        string posterPath = (string)obj.GetValue("Poster_path");
+                        string title = (string)obj.GetValue("Title");
                         BaseFilmDTO dto = new BaseFilmDTO();
                         dto.FilmID = id;
                         dto.Poster_path = posterPath;
