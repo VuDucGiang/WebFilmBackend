@@ -38,9 +38,9 @@ namespace WebFilm.Core.Services
         {
             return _journalRepository.GetNewsJournalsList();
         }
-        public object GetPaging(PagingJournal parameter)
+        public object GetPaging(int pageSize, int pageIndex)
         {
-            return _journalRepository.GetPaging(parameter);
+            return _journalRepository.GetPaging(pageSize,pageIndex);
         }
     }
 }

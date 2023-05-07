@@ -79,13 +79,27 @@ namespace WebFilm.Infrastructure.Repository
             }
         }
 
-        public object GetPaging(PagingJournal parameter)
+        public object GetPaging(int pageSize, int pageIndex)
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
+                int offset = (pageIndex - 1) * pageSize;
+                var sql = "SELECT Author,Banner,Category,CreatedDate,Intro,JournalID,MentionedFilm,ModifiedDate,Title FROM journal order by CreatedDate desc LIMIT @pageSize OFFSET @offset;";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@pageSize", pageSize);
+                parameters.Add("@offset", offset);
+                var result = SqlConnection.Query(sql, parameters);
+                var sql2 = "SELECT * FROM `journal`;";
+                var result2 = SqlConnection.Query(sql2);
+                var total = result2.ToList().Count;
+                int totalPage = (int)Math.Ceiling((double)total / pageSize);
                 return new
                 {
-                    Data = 0,
+                    Data = result.ToList(),
+                    Total = total,
+                    PageSize = pageSize,
+                    PageIndex = pageIndex,
+                    TotalPage = totalPage,
                 };
             }
         }
