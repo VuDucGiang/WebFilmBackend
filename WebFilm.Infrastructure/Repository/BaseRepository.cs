@@ -77,9 +77,11 @@ namespace WebFilm.Infrastructure.Repository
                     {
                         if(property.Name == "ModifiedDate")
                         {
-                            sql.Append($"{property.Name} = @{DateTime.Now}, ");
+                            sql.Append($"{property.Name} = @{property.Name}, ");
+                            parameters.Add(property.Name, DateTime.Now);
 
-                        } else
+                        }
+                        else
                         {
                             sql.Append($"{property.Name} = @{property.Name}, ");
                             parameters.Add(property.Name, property.GetValue(entity));
