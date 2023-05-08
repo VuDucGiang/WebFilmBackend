@@ -13,11 +13,15 @@ using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Interfaces.Repository;
 using static Dapper.SqlMapper;
 using Newtonsoft.Json;
+using WebFilm.Core.Enitites.User.Search;
+using WebFilm.Core.Enitites.Film;
+using WebFilm.Core.Enitites.Credit;
 
 namespace WebFilm.Infrastructure.Repository
 {
     public class JournalRepository : BaseRepository<int, Journal>, IJournalRepository
     {
+        
         public JournalRepository(IConfiguration configuration) : base(configuration)
         {
         }
@@ -123,6 +127,38 @@ namespace WebFilm.Infrastructure.Repository
                 SqlConnection.Close();
                 return relatedArticles.ToList();
                 
+            }
+        }
+        public FilmSearchDTO GetMentionedFilm(int JournalID)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                FilmSearchDTO filmDTO = new FilmSearchDTO();
+                var sqlCommand = "SELECT * FROM Journal WHERE JournalID = @Jid;";
+
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@Jid", JournalID);
+                var journal = SqlConnection.QueryFirstOrDefault<Journal>(sqlCommand, parameters);
+
+                var FilmID = journal.MentionedFilm;
+                DynamicParameters parameters2 = new DynamicParameters();
+                parameters2.Add("@FilmID", FilmID);
+                var sqlCommand2 = "SELECT * FROM Film WHERE FilmID = @FilmID;";
+                var film = SqlConnection.QueryFirstOrDefault<Film>(sqlCommand2, parameters2);
+                filmDTO.FilmID = film.FilmID;
+                filmDTO.Title = film.Title;
+                filmDTO.Poster_Path = film.Poster_path;
+                filmDTO.ReleaseDate = film.Release_date;
+                var sqlCommand3 = "SELECT * FROM Credit WHERE FilmID = @FilmID;";
+                DynamicParameters parameters3 = new DynamicParameters();
+                parameters3.Add("@FilmID", FilmID);
+                var credit = SqlConnection.Query<Credit>(sqlCommand3, parameters3);
+                List<Credit> credits = credit.ToList();
+                filmDTO.Cast = string.Join(", ", credits.Where(c => "Acting".Equals(c.Known_for_department)).GroupBy(c => c.PersonID).Select(c => c.First().Name));
+                filmDTO.Director = string.Join(", ", credits.Where(c => "Director".Equals(c.Job)).GroupBy(c => c.PersonID).Select(c => c.First().Name));
+                SqlConnection.Close();
+                return filmDTO;
+
             }
         }
     }

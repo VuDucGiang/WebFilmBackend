@@ -96,6 +96,19 @@ namespace WebFilm.Controllers
                 return HandleException(ex);
             }
         }
+        [HttpPost("GetMentionedFilm")]
+        public async Task<IActionResult> GetMentionedFilm(int JournalID)
+        {
+            try
+            {
+                var res = _journalService.GetMentionedFilm(JournalID);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
         #endregion
     }
 }

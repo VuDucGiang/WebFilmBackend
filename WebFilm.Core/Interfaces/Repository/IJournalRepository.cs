@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.FilmList;
 using WebFilm.Core.Enitites.Journal;
+using WebFilm.Core.Enitites.User.Search;
 
 namespace WebFilm.Core.Interfaces.Repository
 {
@@ -18,6 +19,7 @@ namespace WebFilm.Core.Interfaces.Repository
 
         object GetPaging(int pageSize, int pageIndex);
         List<JournalLite> GetRelatedArticles(int JournalID);
+        FilmSearchDTO GetMentionedFilm(int JournalID);
 
     }
 }

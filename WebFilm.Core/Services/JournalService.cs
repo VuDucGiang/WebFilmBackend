@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.Follow;
 using WebFilm.Core.Enitites.Journal;
+using WebFilm.Core.Enitites.User.Search;
 using WebFilm.Core.Interfaces.Repository;
 using WebFilm.Core.Interfaces.Services;
 
@@ -45,6 +46,10 @@ namespace WebFilm.Core.Services
         public List<JournalLite> GetRelatedArticles(int JournalID)
         {
             return _journalRepository.GetRelatedArticles(JournalID);
+        }
+        public FilmSearchDTO GetMentionedFilm(int JournalID)
+        {
+            return _journalRepository.GetMentionedFilm(JournalID);
         }
     }
 }
