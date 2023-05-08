@@ -16,6 +16,9 @@ namespace WebFilm.Core.Services
             _configuration = configuration;
         }
 
-        
+        public object GetQuestionsAndAnswers(int FilmID)
+        {
+            return _questionRepository.GetQuestionsAndAnswers(FilmID);
+        }
     }
 }

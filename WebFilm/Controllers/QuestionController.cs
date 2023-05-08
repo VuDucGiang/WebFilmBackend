@@ -8,7 +8,7 @@ using WebFilm.Core.Services;
 
 namespace WebFilm.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class QuestionController : BaseController<int, Question>
@@ -22,8 +22,21 @@ namespace WebFilm.Controllers
         {
             _questionService = questionService;
         }
+        [HttpGet("QuestionsAndAnswers")]
+        public async Task<IActionResult> GetQuestionsAndAnswers(int FilmID)
+        {
+            try
+            {
+                var res = _questionService.GetQuestionsAndAnswers(FilmID);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
         #endregion
 
-       
+
     }
 }

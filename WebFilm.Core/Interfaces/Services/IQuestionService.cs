@@ -4,6 +4,6 @@ namespace WebFilm.Core.Interfaces.Services
 {
     public interface IQuestionService : IBaseService<int, Question>
     {
-        
+        object GetQuestionsAndAnswers(int FilmID);
     }
 }

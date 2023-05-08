@@ -10,7 +10,7 @@ namespace WebFilm.Core.Interfaces.Repository
 {
     public interface IQuestionRepository : IBaseRepository<int, Question>
     {
-        
+        object GetQuestionsAndAnswers(int FilmID);
 
     }
 }
