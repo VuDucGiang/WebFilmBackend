@@ -122,7 +122,8 @@ namespace WebFilm.Infrastructure.Repository
                 var category = journal.Category;
                 DynamicParameters parameters2 = new DynamicParameters();
                 parameters2.Add("@category", category);
-                var sqlCommand2 = "SELECT Author,Banner,Category,CreatedDate,Intro,JournalID,MentionedFilm,ModifiedDate,Title FROM Journal WHERE category = @category order by CreatedDate desc LIMIT 3;";
+                parameters2.Add("@Jid", JournalID);
+                var sqlCommand2 = "SELECT Author,Banner,Category,CreatedDate,Intro,JournalID,MentionedFilm,ModifiedDate,Title FROM Journal WHERE category = @category and JournalID != @Jid order by CreatedDate desc LIMIT 3;";
                 var relatedArticles = SqlConnection.Query<JournalLite>(sqlCommand2, parameters2);
                 SqlConnection.Close();
                 return relatedArticles.ToList();
