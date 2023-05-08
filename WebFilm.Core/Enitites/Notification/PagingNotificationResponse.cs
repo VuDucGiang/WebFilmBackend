@@ -9,7 +9,7 @@ namespace WebFilm.Core.Enitites.Notification
 {
     public class PagingNotificationResponse
     {
-        public List<Notification> Data { get; set; }
+        public List<NotificationRes> Data { get; set; }
         public int Total { get; set; }
         public int PageSize { get; set; }
         public int PageIndex { get; set; }

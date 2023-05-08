@@ -3,6 +3,7 @@ using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.Comment;
 using WebFilm.Core.Enitites.Notification;
 using WebFilm.Core.Enitites.Review;
+using WebFilm.Core.Enitites.Review.dto;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Exceptions;
 using WebFilm.Core.Interfaces.Repository;
@@ -15,12 +16,14 @@ namespace WebFilm.Core.Services
         INotificationRepository _notificationRepository;
         private readonly IConfiguration _configuration;
         IUserContext _userContext;
+        IUserRepository _userRepository;
 
-        public NotificationService(INotificationRepository notificationRepository, IConfiguration configuration, IUserContext userContext) : base(notificationRepository)
+        public NotificationService(INotificationRepository notificationRepository, IConfiguration configuration, IUserContext userContext, IUserRepository userRepository) : base(notificationRepository)
         {
             _notificationRepository = notificationRepository;
             _configuration = configuration;
             _userContext = userContext;
+            _userRepository = userRepository;
         }
 
         public PagingNotificationResponse GetNotification(PagingParameter paging)
@@ -31,7 +34,7 @@ namespace WebFilm.Core.Services
             {
                 throw new ServiceException("Hành động không khả thi");
             }
-            List<Notification> data = new List<Notification>();
+            List<NotificationRes> data = new List<NotificationRes>();
             var noti = _notificationRepository.GetAll().Where(p => p.ReceiverUserId == userID);
             
             int totalUnSeen = noti.Where(p => p.Seen == false).Count();
@@ -40,9 +43,29 @@ namespace WebFilm.Core.Services
             noti = noti.OrderByDescending(p => p.CreatedDate).Skip((paging.pageIndex - 1) * paging.pageSize).Take(paging.pageSize);
             noti = noti.ToList();
             List<BaseCommentDTO> commentDTOs = new List<BaseCommentDTO>();
-            foreach (Notification dto in noti)
+            foreach (var dto in noti)
             {
-                data.Add(dto);
+                NotificationRes notification = new NotificationRes();
+                UserReviewDTO sender = new UserReviewDTO();
+                User user = _userRepository.GetByID(dto.SenderUserID);
+                if (user != null)
+                {
+                    sender.Avatar = user.Avatar;
+                    sender.UserID = user.UserID;
+                    sender.FullName = user.FullName;
+                    sender.UserName = user.UserName;
+                }
+
+                notification.Sender = sender;
+                notification.Seen = dto.Seen;
+                notification.CreatedDate = dto.CreatedDate;
+                notification.ModifiedDate = dto.ModifiedDate;
+                notification.Date = dto.Date;
+                notification.Content = dto.Content;
+                notification.Link = dto.Link;
+                notification.NotificationID = dto.NotificationID;
+                notification.ReceiverUserId = dto.ReceiverUserId;
+                data.Add(notification);
             }
             res.Data = data;
             res.TotalPage = totalPages;
