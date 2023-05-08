@@ -30,10 +30,12 @@ namespace WebFilm.Core.Services
         IUserContext _userContext;
         IReviewRepository _reviewRepository;
         INotificationRepository _notificationRepository;
+        IFilmRepository _filmRepository;
         private readonly IConfiguration _configuration;
 
         public CommentService(ICommentRepository commentRepository, IConfiguration configuration,
-            IListRepository listRepository, IUserRepository userRepository, IUserContext userContext, IReviewRepository reviewRepository, INotificationRepository notificationRepository) : base(commentRepository)
+            IListRepository listRepository, IUserRepository userRepository, IUserContext userContext, IReviewRepository reviewRepository, INotificationRepository notificationRepository,
+            IFilmRepository filmRepository) : base(commentRepository)
         {
             _commentRepository = commentRepository;
             _configuration = configuration;
@@ -42,6 +44,7 @@ namespace WebFilm.Core.Services
             _userContext = userContext;
             _reviewRepository = reviewRepository;
             _notificationRepository = notificationRepository;
+            _filmRepository = filmRepository;
         }
 
         public int CreateCommentInList(int ListID, CommentCreateDTO dto)
@@ -80,7 +83,7 @@ namespace WebFilm.Core.Services
                     noti.ReceiverUserId = list.UserID;
                     noti.SenderUserID = userID;
                     noti.Seen = false;
-                    noti.Content = "commented your list " + list.ListName;
+                    noti.Content = "commented your list \"" + list.ListName + "\"";
                     noti.CreatedDate = DateTime.Now;
                     noti.ModifiedDate = DateTime.Now;
                     noti.Date = DateTime.Now;
@@ -130,10 +133,15 @@ namespace WebFilm.Core.Services
                 {
                     Notification noti = new Notification();
                     User userReceive = _userRepository.GetByID(review.UserID);
+                    Film film = _filmRepository.GetByID(review.FilmID);
+
+                    noti.Content = "";
+                    if (film != null) {
+                        noti.Content = "commented on your review of \"" + film.Title + "\"";
+                    }
                     noti.ReceiverUserId = review.UserID;
                     noti.SenderUserID = userID;
                     noti.Seen = false;
-                    noti.Content = "commented your review of " + review.Content;
                     noti.CreatedDate = DateTime.Now;
                     noti.ModifiedDate = DateTime.Now;
                     noti.Date = DateTime.Now;

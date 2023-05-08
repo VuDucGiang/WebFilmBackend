@@ -123,11 +123,16 @@ namespace WebFilm.Core.Services
                     if (!userID.Equals(review.UserID))
                     {
                         Notification noti = new Notification();
+                        Film film = _filmRepository.GetByID(review.FilmID);
                         User userReceive = _userRepository.GetByID(review.UserID);
                         noti.ReceiverUserId = review.UserID;
                         noti.SenderUserID = userID;
                         noti.Seen = false;
-                        noti.Content = "liked your review of " + review.Content;
+                        noti.Content = "";
+                        if (film != null)
+                        {
+                            noti.Content = "liked your review of \"" + film.Title + "\"";
+                        }
                         noti.CreatedDate = DateTime.Now;
                         noti.ModifiedDate = DateTime.Now;
                         noti.Date = DateTime.Now;
@@ -176,7 +181,7 @@ namespace WebFilm.Core.Services
                         noti.ReceiverUserId = list.UserID;
                         noti.SenderUserID = userID;
                         noti.Seen = false;
-                        noti.Content = "liked your list " + list.ListName;
+                        noti.Content = "liked your list \"" + list.ListName + "\"";
                         noti.CreatedDate = DateTime.Now;
                         noti.ModifiedDate = DateTime.Now;
                         noti.Date = DateTime.Now;
