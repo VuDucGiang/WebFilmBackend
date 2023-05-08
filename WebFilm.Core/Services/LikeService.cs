@@ -136,7 +136,7 @@ namespace WebFilm.Core.Services
                         noti.CreatedDate = DateTime.Now;
                         noti.ModifiedDate = DateTime.Now;
                         noti.Date = DateTime.Now;
-                        noti.Link = "/u/" + userReceive.UserName + "reviews/" + review.ReviewID;
+                        noti.Link = "/u/" + userReceive.UserName + "/reviews/" + review.ReviewID;
                         _notificationRepository.Add(noti);
                     }
 
@@ -185,7 +185,7 @@ namespace WebFilm.Core.Services
                         noti.CreatedDate = DateTime.Now;
                         noti.ModifiedDate = DateTime.Now;
                         noti.Date = DateTime.Now;
-                        noti.Link = "/u/" + userReceive.UserName + "lists/" + list.ListID;
+                        noti.Link = "/u/" + userReceive.UserName + "/lists/" + list.ListID;
                         _notificationRepository.Add(noti);
                     }
                 }
