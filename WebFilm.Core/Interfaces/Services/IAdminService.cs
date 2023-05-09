@@ -7,5 +7,7 @@ namespace WebFilm.Core.Interfaces.Services
     {
         Task<object> GetPagingFilm(PagingParameterFilm_Admin parameter);
         int UpdateFilm(int id, Film_Admin entity);
+        int AddFilm(Film_Admin entity);
+        int DeleteFilm(int id);
     }
 }

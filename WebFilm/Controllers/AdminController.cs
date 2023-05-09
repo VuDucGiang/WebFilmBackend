@@ -53,5 +53,32 @@ namespace WebFilm.Controllers
             }
         }
 
+        [HttpPost("AddFilm")]
+        public async Task<IActionResult> AddFilm(Film_Admin entity)
+        {
+            try
+            {
+                var res = _adminService.AddFilm(entity);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+        [HttpDelete("DeleteFilm")]
+        public async Task<IActionResult> DeleteFilm(int id)
+        {
+            try
+            {
+                var res = _adminService.DeleteFilm(id);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
     }
 }

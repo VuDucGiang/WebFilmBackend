@@ -25,6 +25,14 @@ namespace WebFilm.Core.Services
         {
             return  _adminRepository.UpdateFilm(id, entity);
         }
+        public int AddFilm(Film_Admin entity)
+        {
+            return _adminRepository.AddFilm(entity);
+        }
+        public int DeleteFilm(int id)
+        {
+            return _adminRepository.DeleteFilm(id);
+        }
 
     }
 }

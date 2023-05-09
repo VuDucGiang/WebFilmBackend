@@ -75,11 +75,11 @@ namespace WebFilm.Infrastructure.Repository
                 int totalPage = (int)Math.Ceiling((double)total / parameter.pageSize);
                 return new
                 {
-                    Data = data,
-                    Total = total,
-                    PageSize = parameter.pageSize,
-                    PageIndex = parameter.pageIndex,
-                    TotalPage = totalPage
+                    listData = data,
+                    total = total,
+                    pageSize = parameter.pageSize,
+                    pageIndex = parameter.pageIndex,
+                    totalPage = totalPage
                 };
             }
         }
@@ -123,6 +123,54 @@ namespace WebFilm.Infrastructure.Repository
                 parameters.Add(keyName, id);
                 //Trả dữ liệu về client
                 var res = SqlConnection.Execute(sql.ToString(), parameters);
+                SqlConnection.Close();
+                return res;
+            }
+        }
+        public int AddFilm(Film_Admin entity)
+        {
+            var keyName = "FilmID";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var parameters = new DynamicParameters();
+                var properties = typeof(Film_Admin).GetProperties();
+
+                foreach (var property in properties)
+                {
+                    if (property.Name != keyName)
+                    {
+                        if (property.Name == "ModifiedDate" || property.Name == "CreatedDate")
+                        {
+                            //parameters.Add("@" + property.Name, DateTime.Now);
+                        }
+                        else
+                        {
+                            parameters.Add("@" + property.Name, property.GetValue(entity));
+                        }
+                    }
+                }
+
+                var columns = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => p.Name));
+                var values = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => "@" + p.Name));
+                var query = $"INSERT INTO `film` ({columns}) VALUES ({values})";
+
+                //Trả dữ liệu về client
+                var res = SqlConnection.Execute(query, parameters);
+                SqlConnection.Close();
+                return res;
+            }
+        }
+        public int DeleteFilm(int id)
+        {
+            var keyName = "FilmID";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                string query = $"DELETE FROM `Film` WHERE {keyName} = @id";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@id", id);
+
+                //Trả dữ liệu về client
+                var res = SqlConnection.Execute(query, parameters);
                 SqlConnection.Close();
                 return res;
             }
