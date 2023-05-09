@@ -39,5 +39,19 @@ namespace WebFilm.Controllers
             }
         }
 
+        [HttpPut("UpdateFilm")]
+        public async Task<IActionResult> Edit(int id, Film_Admin entity)
+        {
+            try
+            {
+                var res = _adminService.Edit(id,entity);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
     }
 }

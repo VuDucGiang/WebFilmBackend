@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using WebFilm.Core.Enitites.Admin;
@@ -12,6 +13,7 @@ using WebFilm.Core.Enitites.Film;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Interfaces.Repository;
 using WebFilm.Core.Interfaces.Services;
+using static Dapper.SqlMapper;
 
 namespace WebFilm.Infrastructure.Repository
 {
@@ -79,6 +81,50 @@ namespace WebFilm.Infrastructure.Repository
                     PageIndex = parameter.pageIndex,
                     TotalPage = totalPage
                 };
+            }
+        }
+        public int Edit(int id, Film_Admin entity)
+        {
+            var keyName = "FilmID";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                StringBuilder sql = new StringBuilder($"UPDATE `film` SET ");
+
+                PropertyInfo[] properties = typeof(Film_Admin).GetProperties();
+
+                DynamicParameters parameters = new DynamicParameters();
+
+                foreach (PropertyInfo property in properties)
+                {
+                    if (property.Name != keyName && property.Name != "CreatedDate")
+                    {
+                        if (property.Name == "ModifiedDate")
+                        {
+                           // sql.Append($"{property.Name} = @{property.Name}, ");
+                            //parameters.Add(property.Name, DateTime.Now);
+
+                        }
+                        else
+                        {
+                            if (property.GetValue(entity) != null)
+                            {
+                                sql.Append($"{property.Name} = @{property.Name}, ");
+                                parameters.Add(property.Name, property.GetValue(entity));
+                            }
+
+                        }
+                    }
+                }
+
+                sql.Remove(sql.Length - 2, 2); // remove the last comma and space
+
+                sql.Append($" WHERE {keyName} = @{keyName}");
+
+                parameters.Add(keyName, id);
+                //Trả dữ liệu về client
+                var res = SqlConnection.Execute(sql.ToString(), parameters);
+                SqlConnection.Close();
+                return res;
             }
         }
 

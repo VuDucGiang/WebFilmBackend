@@ -12,6 +12,7 @@ namespace WebFilm.Core.Interfaces.Repository
     public interface IAdminRepository : IBaseRepository<int, Admin>
     {
         Task<object> GetPagingFilm(PagingParameterFilm_Admin parameter);
+        int Edit(int id, Film_Admin entity);
 
     }
 }
