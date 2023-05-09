@@ -21,9 +21,9 @@ namespace WebFilm.Core.Services
             return await _adminRepository.GetPagingFilm(parameter);
         }
 
-        public int Edit(int id, Film_Admin entity)
+        public int UpdateFilm(int id, Film_Admin entity)
         {
-            return  _adminRepository.Edit(id, entity);
+            return  _adminRepository.UpdateFilm(id, entity);
         }
 
     }

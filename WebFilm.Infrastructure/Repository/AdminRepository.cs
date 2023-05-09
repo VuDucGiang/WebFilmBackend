@@ -83,7 +83,7 @@ namespace WebFilm.Infrastructure.Repository
                 };
             }
         }
-        public int Edit(int id, Film_Admin entity)
+        public int UpdateFilm(int id, Film_Admin entity)
         {
             var keyName = "FilmID";
             using (SqlConnection = new MySqlConnection(_connectionString))

@@ -6,6 +6,6 @@ namespace WebFilm.Core.Interfaces.Services
     public interface IAdminService : IBaseService<int, Admin>
     {
         Task<object> GetPagingFilm(PagingParameterFilm_Admin parameter);
-        int Edit(int id, Film_Admin entity);
+        int UpdateFilm(int id, Film_Admin entity);
     }
 }
