@@ -28,7 +28,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 int offset = (parameter.pageIndex - 1) * parameter.pageSize;
-                var sql = "SELECT f.FilmID, f.poster_path AS Poster_path, f.title AS Title, f.release_date AS Release_date, COUNT(f1.ListID) AS Appears, IF(l.LikeID IS NOT NULL, True, False) AS Liked FROM Film f LEFT JOIN `like` l ON f.FilmID = l.ParentID AND l.UserID = @userID AND l.Type = 'Film' LEFT JOIN filmlist f1 ON f.FilmID = f1.FilmID ";
+                var sql = "SELECT * FROM Film f ";
                 var where = "WHERE 1=1";
                 var orderBy = "";
                 DynamicParameters parameters = new DynamicParameters();
@@ -40,9 +40,9 @@ namespace WebFilm.Infrastructure.Repository
                     where += @" AND YEAR(release_date) BETWEEN @fromYear AND @toYear";
                 }
 
-                if (parameter.rating != null)
+                if (parameter.sort != null && parameter.sortBy != null)
                 {
-                    orderBy += @$"Order By vote_average {parameter.rating}";
+                    orderBy += @$"Order By {parameter.sortBy} {parameter.sort}";
                 }
 
                 if (!string.IsNullOrEmpty(parameter.genre))
@@ -60,7 +60,7 @@ namespace WebFilm.Infrastructure.Repository
                 sql += where + @$" GROUP BY f.FilmID {orderBy} LIMIT @pageSize OFFSET @offset;
                                 SELECT COUNT(FilmID) FROM Film " + where;
 
-                parameters.Add("@userID", _userContext.UserId);
+                //parameters.Add("@userID", _userContext.UserId);
                 //parameters.Add("@filter", parameter.filter);
                 parameters.Add("@pageSize", parameter.pageSize);
                 parameters.Add("@offset", offset);

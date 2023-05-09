@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using WebFilm.Core.Enitites.Admin;
+using WebFilm.Core.Enitites.Film;
 using WebFilm.Core.Interfaces.Repository;
 using WebFilm.Core.Interfaces.Services;
 
@@ -15,7 +16,10 @@ namespace WebFilm.Core.Services
             _adminRepository = adminRepository;
             _configuration = configuration;
         }
+        public async Task<object> GetPagingFilm(PagingParameterFilm_Admin parameter)
+        {
+            return await _adminRepository.GetPagingFilm(parameter);
+        }
 
-        
     }
 }
