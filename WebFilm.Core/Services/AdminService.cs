@@ -1,0 +1,21 @@
+﻿using Microsoft.Extensions.Configuration;
+using WebFilm.Core.Enitites.Admin;
+using WebFilm.Core.Interfaces.Repository;
+using WebFilm.Core.Interfaces.Services;
+
+namespace WebFilm.Core.Services
+{
+    public class AdminService : BaseService<int, Admin>, IAdminService
+    {
+        IAdminRepository _adminRepository;
+        private readonly IConfiguration _configuration;
+
+        public AdminService(IAdminRepository adminRepository, IConfiguration configuration) : base(adminRepository)
+        {
+            _adminRepository = adminRepository;
+            _configuration = configuration;
+        }
+
+        
+    }
+}
