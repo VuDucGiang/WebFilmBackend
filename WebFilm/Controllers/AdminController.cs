@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.Admin;
 using WebFilm.Core.Enitites.Film;
+using WebFilm.Core.Enitites.Journal;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Interfaces.Services;
 
@@ -115,6 +116,61 @@ namespace WebFilm.Controllers
             try
             {
                 var res = _adminService.DeleteUser(id);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpPost("PagingJournal")]
+        public async Task<IActionResult> GetPagingJournal([FromBody] PagingParameterJournal_Admin parameter)
+        {
+            try
+            {
+                var res = await _adminService.GetPagingJournal(parameter);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpPut("UpdateJournal")]
+        public async Task<IActionResult> UpdateJournal(int id, Journal_Admin entity)
+        {
+            try
+            {
+                var res = _adminService.UpdateJournal(id, entity);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpPost("AddJournal")]
+        public async Task<IActionResult> AddJournal(Journal_Admin entity)
+        {
+            try
+            {
+                var res = _adminService.AddJournal(entity);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+        [HttpDelete("DeleteJournal")]
+        public async Task<IActionResult> DeleteJournal(int id)
+        {
+            try
+            {
+                var res = _adminService.DeleteJournal(id);
                 return Ok(res);
             }
             catch (Exception ex)

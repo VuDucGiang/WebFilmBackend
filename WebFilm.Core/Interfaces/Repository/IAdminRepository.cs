@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using WebFilm.Core.Enitites.Film;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Enitites.Admin;
+using WebFilm.Core.Enitites.Journal;
 
 
 namespace WebFilm.Core.Interfaces.Repository
@@ -20,6 +21,10 @@ namespace WebFilm.Core.Interfaces.Repository
         Task<object> GetPagingUser(PagingParameterUser_Admin parameter);
         int UpdateUser(Guid id, User_Admin entity);
         int DeleteUser(Guid id);
+        Task<object> GetPagingJournal(PagingParameterJournal_Admin parameter);
+        int UpdateJournal(int id, Journal_Admin entity);
+        int AddJournal(Journal_Admin entity);
+        int DeleteJournal(int id);
 
     }
 }
