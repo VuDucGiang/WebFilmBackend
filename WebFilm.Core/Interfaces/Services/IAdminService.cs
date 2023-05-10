@@ -1,5 +1,6 @@
 ﻿using WebFilm.Core.Enitites.Admin;
 using WebFilm.Core.Enitites.Film;
+using WebFilm.Core.Enitites.User;
 
 namespace WebFilm.Core.Interfaces.Services
 {
@@ -9,5 +10,8 @@ namespace WebFilm.Core.Interfaces.Services
         int UpdateFilm(int id, Film_Admin entity);
         int AddFilm(Film_Admin entity);
         int DeleteFilm(int id);
+        Task<object> GetPagingUser(PagingParameterUser_Admin parameter);
+        int UpdateUser(Guid id, User_Admin entity);
+        int DeleteUser(Guid id);
     }
 }

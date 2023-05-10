@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using WebFilm.Core.Enitites.Admin;
 using WebFilm.Core.Enitites.Film;
+using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Interfaces.Repository;
 using WebFilm.Core.Interfaces.Services;
 
@@ -33,6 +34,19 @@ namespace WebFilm.Core.Services
         {
             return _adminRepository.DeleteFilm(id);
         }
+        public async Task<object> GetPagingUser(PagingParameterUser_Admin parameter)
+        {
+            return await _adminRepository.GetPagingUser(parameter);
+        }
 
+        public int UpdateUser(Guid id, User_Admin entity)
+        {
+            return _adminRepository.UpdateUser(id, entity);
+        }
+
+        public int DeleteUser(Guid id)
+        {
+            return _adminRepository.DeleteUser(id);
+        }
     }
 }

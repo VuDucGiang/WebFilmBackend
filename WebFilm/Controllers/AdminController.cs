@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.Admin;
 using WebFilm.Core.Enitites.Film;
+using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Interfaces.Services;
 
 using WebFilm.Core.Services;
@@ -72,6 +73,48 @@ namespace WebFilm.Controllers
             try
             {
                 var res = _adminService.DeleteFilm(id);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+        [HttpPost("PagingUser")]
+        public async Task<IActionResult> GetPagingUser([FromBody] PagingParameterUser_Admin parameter)
+        {
+            try
+            {
+                var res = await _adminService.GetPagingUser(parameter);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpPut("UpdateUser")]
+        public async Task<IActionResult> UpdateUser(Guid id, User_Admin entity)
+        {
+            try
+            {
+                var res = _adminService.UpdateUser(id, entity);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+
+        [HttpDelete("DeleteUser")]
+        public async Task<IActionResult> DeleteUser(Guid id)
+        {
+            try
+            {
+                var res = _adminService.DeleteUser(id);
                 return Ok(res);
             }
             catch (Exception ex)

@@ -176,6 +176,131 @@ namespace WebFilm.Infrastructure.Repository
             }
         }
 
+        public async Task<object> GetPagingUser(PagingParameterUser_Admin parameter)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                int offset = (parameter.pageIndex - 1) * parameter.pageSize;
+                var sql = "SELECT * FROM User u ";
+                var where = "WHERE 1=1";
+                var orderBy = "";
+                DynamicParameters parameters = new DynamicParameters();
+
+                if (parameter.roleType != null)
+                {
+                    parameters.Add("@roleType", parameter.roleType);         
+                    where += @" AND RoleType = @roleType";
+                }
+
+                if (parameter.status != null)
+                {
+                    parameters.Add("@status", parameter.status);
+                    where += @" AND Status = @status";
+                }
+
+                if (parameter.sort != null && parameter.sortBy != null)
+                {
+                    orderBy += @$"Order By {parameter.sortBy} {parameter.sort}";
+                }
+
+               
+
+                if (!string.IsNullOrEmpty(parameter.fullName))
+                {
+                    parameters.Add("@fullName", parameter.fullName);
+                    where += @" AND FullName LIKE CONCAT('%', @fullName, '%')";
+                }
+
+                if (!string.IsNullOrEmpty(parameter.userName))
+                {
+                    parameters.Add("@userName", parameter.userName);
+                    where += @" AND UserName LIKE CONCAT('%', @userName, '%')";
+                }
+
+                sql += where + @$" GROUP BY u.UserID {orderBy} LIMIT @pageSize OFFSET @offset;
+                                SELECT COUNT(UserID) FROM User " + where;
+
+                //parameters.Add("@userID", _userContext.UserId);
+                //parameters.Add("@filter", parameter.filter);
+                parameters.Add("@pageSize", parameter.pageSize);
+                parameters.Add("@offset", offset);
+                parameters.Add("@name", "name");
+
+                var result = await SqlConnection.QueryMultipleAsync(sql, parameters);
+                //Trả dữ liệu về client
+                var data = result.Read<object>().ToList();
+                var total = result.Read<int>().Single();
+                int totalPage = (int)Math.Ceiling((double)total / parameter.pageSize);
+                return new
+                {
+                    listData = data,
+                    total = total,
+                    pageSize = parameter.pageSize,
+                    pageIndex = parameter.pageIndex,
+                    totalPage = totalPage
+                };
+            }
+        }
+        public int UpdateUser(Guid id, User_Admin entity)
+        {
+            var keyName = "UserID";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                StringBuilder sql = new StringBuilder($"UPDATE `user` SET ");
+
+                PropertyInfo[] properties = typeof(User_Admin).GetProperties();
+
+                DynamicParameters parameters = new DynamicParameters();
+
+                foreach (PropertyInfo property in properties)
+                {
+                    if (property.Name != keyName && property.Name != "CreatedDate")
+                    {
+                        if (property.Name == "ModifiedDate")
+                        {
+                            // sql.Append($"{property.Name} = @{property.Name}, ");
+                            //parameters.Add(property.Name, DateTime.Now);
+
+                        }
+                        else
+                        {
+                            if (property.GetValue(entity) != null)
+                            {
+                                sql.Append($"{property.Name} = @{property.Name}, ");
+                                parameters.Add(property.Name, property.GetValue(entity));
+                            }
+
+                        }
+                    }
+                }
+
+                sql.Remove(sql.Length - 2, 2); // remove the last comma and space
+
+                sql.Append($" WHERE {keyName} = @{keyName}");
+
+                parameters.Add(keyName, id);
+                //Trả dữ liệu về client
+                var res = SqlConnection.Execute(sql.ToString(), parameters);
+                SqlConnection.Close();
+                return res;
+            }
+        }
+        public int DeleteUser(Guid id)
+        {
+            var keyName = "UserID";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                string query = $"DELETE FROM `User` WHERE {keyName} = @id";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@id", id);
+
+                //Trả dữ liệu về client
+                var res = SqlConnection.Execute(query, parameters);
+                SqlConnection.Close();
+                return res;
+            }
+        }
+
 
     }
 }
