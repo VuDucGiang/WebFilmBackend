@@ -400,6 +400,8 @@ namespace WebFilm.Infrastructure.Repository
                                 parameters.Add(property.Name, property.GetValue(entity));
                             }
 
+                            var test = "dsfdsf".Replace('"', '\"');
+                            if(test is String) { };
                         }
                     }
                 }
@@ -464,6 +466,53 @@ namespace WebFilm.Infrastructure.Repository
             }
         }
 
+        public User GetUserByID(Guid id)
+        {
+            var keyName = "UserID";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                //Thực thi lấy dữ liệu
+                var sqlCommand = $"SELECT * FROM `user` WHERE {keyName} = @id";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@id", id);
+                //Trả dữ liệu về client
+                var user = SqlConnection.QueryFirstOrDefault<User>(sqlCommand, parameters);
+                SqlConnection.Close();
+                return user;
+            }
+        }
+
+        public Film GetFilmByID(int id)
+        {
+            var keyName = "FilmID";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                //Thực thi lấy dữ liệu
+                var sqlCommand = $"SELECT * FROM `film` WHERE {keyName} = @id";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@id", id);
+                //Trả dữ liệu về client
+                var film = SqlConnection.QueryFirstOrDefault<Film>(sqlCommand, parameters);
+                SqlConnection.Close();
+                return film;
+            }
+        }
+
+        public Journal GetJournalByID(int id)
+        {
+            var keyName = "JournalID";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                //Thực thi lấy dữ liệu
+                var sqlCommand = $"SELECT * FROM `journal` WHERE {keyName} = @id";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@id", id);
+                //Trả dữ liệu về client
+                var journal = SqlConnection.QueryFirstOrDefault<Journal>(sqlCommand, parameters);
+                SqlConnection.Close();
+                return journal;
+            }
+        }
 
     }
 }

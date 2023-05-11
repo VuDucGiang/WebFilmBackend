@@ -18,5 +18,8 @@ namespace WebFilm.Core.Interfaces.Services
         int UpdateJournal(int id, Journal_Admin entity);
         int AddJournal(Journal_Admin entity);
         int DeleteJournal(int id);
+        User GetUserByID(Guid id);
+        Film GetFilmByID(int id);
+        Journal GetJournalByID(int id);
     }
 }

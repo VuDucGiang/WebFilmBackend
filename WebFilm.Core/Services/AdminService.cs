@@ -67,5 +67,19 @@ namespace WebFilm.Core.Services
         {
             return _adminRepository.DeleteJournal(id);
         }
+        public User GetUserByID(Guid id)
+        {
+            return _adminRepository.GetUserByID(id);
+        }
+
+        public Film GetFilmByID(int id)
+        {
+            return _adminRepository.GetFilmByID(id);
+        }
+
+        public Journal GetJournalByID(int id)
+        {
+            return _adminRepository.GetJournalByID(id);
+        }
     }
 }

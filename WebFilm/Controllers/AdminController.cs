@@ -179,5 +179,46 @@ namespace WebFilm.Controllers
             }
         }
 
+        [HttpGet("GetUserByID")]
+        public async Task<IActionResult> GetUserByID(Guid id)
+        {
+            try
+            {
+                var res = _adminService.GetUserByID(id);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpGet("GetFilmByID")]
+        public async Task<IActionResult> GetFilmByID(int id)
+        {
+            try
+            {
+                var res = _adminService.GetFilmByID(id);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpGet("GetJournalByID")]
+        public async Task<IActionResult> GetJournalByID(int id)
+        {
+            try
+            {
+                var res = _adminService.GetJournalByID(id);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
     }
 }
