@@ -562,8 +562,8 @@ namespace WebFilm.Core.Services
             profile.FavouriteFilms = filmFavourite;
             profile.TotalReview = reviews.Count;
             profile.TotalLists = lists.Count;
-            profile.Followers = follower;
-            profile.Following = following;
+            profile.Followers = following;
+            profile.Following =  follower;
             profile.WatchList = watchListDTO;
             profile.ListRecentList = recentListDTO;
             profile.RecentLikes = recentLikeDTOs;
@@ -694,8 +694,8 @@ namespace WebFilm.Core.Services
             res.Banner = user.Banner;
             res.TotalReview = reviews.Count;
             res.TotalLists = lists.Count;
-            res.Followers = follower;
-            res.Following = following;
+            res.Followers = following;
+            res.Following = follower ;
             res.IsFollowed = isFollowed;
 
             return res;
