@@ -64,6 +64,7 @@ namespace WebFilm.Infrastructure.Repository
                         }
                         listAnswerLite.Add(answerLite);
                     }
+                    listAnswerLite = listAnswerLite.OrderBy(i => Guid.NewGuid()).ToList();
                     quesAndAns.answers = listAnswerLite;
                     listQuesAndAns.Add(quesAndAns);
                 }
