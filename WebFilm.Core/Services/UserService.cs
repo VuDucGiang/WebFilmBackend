@@ -540,7 +540,7 @@ namespace WebFilm.Core.Services
 
             // recent like review
             List<BaseReviewDTO> recentLikesReview = new List<BaseReviewDTO>();
-            List<Like> likeRecentss = _likeRepository.GetAll().Where(p => p.UserID == user.UserID && "Review".Equals(p.Type))
+            List<Like> likeRecentss = _likeRepository.GetAll().Where(p => p.UserID == user.UserID && p.Type.Equals("Review"))
                 .OrderByDescending(p => p.CreatedDate).Take(4).ToList();
             List<int> recentIDS = likeRecentss.Select(p => p.ParentID).ToList();
             List<Review> reviewRecentss = _reviewRepository.GetAll().Where(p => recentIDS.Contains(p.ReviewID)).ToList();
@@ -583,14 +583,11 @@ namespace WebFilm.Core.Services
                 BaseReviewDTO dto = new BaseReviewDTO();
                 Film film = _filmRepository.GetByID(review.FilmID);
                 FilmReviewDTO filmReview = new FilmReviewDTO();
-                List<Review> reviewss = _reviewRepository.GetAll()
-                    .Where(p => (p.FilmID == film.FilmID && p.UserID.Equals(userID))).ToList();
-                if (reviewss.Count > 0)
-                {
-                    Review rate = reviewss[0];
-                    dto.Score = rate.Score;
+                //List<Review> reviewss = _reviewRepository.GetAll().Where(p => (p.FilmID == film.FilmID )).ToList();
+                
+                dto.Score = review.Score;
                     //dto.RatingCreatedAt = rate.CreatedDate.ToString().Substring(0, 10);
-                }
+                
                 if (film != null)
                 {
                     filmReview.FilmID = film.FilmID;
