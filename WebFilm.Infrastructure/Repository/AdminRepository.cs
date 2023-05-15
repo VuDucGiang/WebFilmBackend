@@ -1236,6 +1236,17 @@ namespace WebFilm.Infrastructure.Repository
         public int AddCredit(Credit_Admin entity)
         {
             var keyName = "credit_id";
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var stringChars = new char[15];
+            var random = new Random();
+
+            for (int i = 0; i < stringChars.Length; i++)
+            {
+                stringChars[i] = chars[random.Next(chars.Length)];
+            }
+
+            var finalString = new String(stringChars);
+            entity.Credit_id = finalString;
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 var parameters = new DynamicParameters();
