@@ -19,6 +19,7 @@ using static Dapper.SqlMapper;
 using WebFilm.Core.Enitites.Answer;
 using WebFilm.Core.Enitites.Related_film;
 using WebFilm.Core.Enitites.Similar_film;
+using WebFilm.Core.Enitites.Credit;
 
 namespace WebFilm.Infrastructure.Repository
 {
@@ -1177,6 +1178,201 @@ namespace WebFilm.Infrastructure.Repository
 
                 sql += where + @$" GROUP BY s.Similar_filmID {orderBy} LIMIT @pageSize OFFSET @offset;
                                 SELECT COUNT(Similar_filmID) FROM Similar_film " + where;
+
+                //parameters.Add("@userID", _userContext.UserId);
+                //parameters.Add("@filter", parameter.filter);
+                parameters.Add("@pageSize", parameter.pageSize);
+                parameters.Add("@offset", offset);
+                parameters.Add("@name", "name");
+
+                var result = await SqlConnection.QueryMultipleAsync(sql, parameters);
+                //Trả dữ liệu về client
+                var data = result.Read<object>().ToList();
+                var total = result.Read<int>().Single();
+                int totalPage = (int)Math.Ceiling((double)total / parameter.pageSize);
+                return new
+                {
+                    listData = data,
+                    total = total,
+                    pageSize = parameter.pageSize,
+                    pageIndex = parameter.pageIndex,
+                    totalPage = totalPage
+                };
+            }
+        }
+
+        public Credit GetCreditByID(string id)
+        {
+            var keyName = "credit_id";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                //Thực thi lấy dữ liệu
+                var sqlCommand = $"SELECT * FROM `credit` WHERE {keyName} = @id";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@id", id);
+                //Trả dữ liệu về client
+                var credit = SqlConnection.QueryFirstOrDefault<Credit>(sqlCommand, parameters);
+                SqlConnection.Close();
+                return credit;
+            }
+        }
+
+        public int DeleteCredit(string id)
+        {
+            var keyName = "credit_id";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                string query = $"DELETE FROM `Credit` WHERE {keyName} = @id";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@id", id);
+
+                //Trả dữ liệu về client
+                var res = SqlConnection.Execute(query, parameters);
+                SqlConnection.Close();
+                return res;
+            }
+        }
+
+        public int AddCredit(Credit_Admin entity)
+        {
+            var keyName = "credit_id";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var parameters = new DynamicParameters();
+                var properties = typeof(Credit_Admin).GetProperties();
+
+                foreach (var property in properties)
+                {
+                    if (property.Name != keyName)
+                    {
+                        if (property.Name == "ModifiedDate" || property.Name == "CreatedDate")
+                        {
+                            //parameters.Add("@" + property.Name, DateTime.Now);
+                        }
+                        else
+                        {
+                            parameters.Add("@" + property.Name, property.GetValue(entity));
+                        }
+                    }
+                }
+
+                var columns = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => p.Name));
+                var values = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => "@" + p.Name));
+                var query = $"INSERT INTO `credit` ({columns}) VALUES ({values})";
+
+                //Trả dữ liệu về client
+                var res = SqlConnection.Execute(query, parameters);
+                SqlConnection.Close();
+                return res;
+            }
+        }
+
+        public int UpdateCredit(string id, Credit_Admin entity)
+        {
+            var keyName = "credit_id";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                StringBuilder sql = new StringBuilder($"UPDATE `credit` SET ");
+
+                PropertyInfo[] properties = typeof(Credit_Admin).GetProperties();
+
+                DynamicParameters parameters = new DynamicParameters();
+
+                foreach (PropertyInfo property in properties)
+                {
+                    if (property.Name != keyName && property.Name != "CreatedDate")
+                    {
+                        if (property.Name == "ModifiedDate")
+                        {
+                            // sql.Append($"{property.Name} = @{property.Name}, ");
+                            //parameters.Add(property.Name, DateTime.Now);
+
+                        }
+                        else
+                        {
+                            if (property.GetValue(entity) != null)
+                            {
+                                sql.Append($"{property.Name} = @{property.Name}, ");
+                                parameters.Add(property.Name, property.GetValue(entity));
+                            }
+
+                            var test = "dsfdsf".Replace('"', '\"');
+                            if (test is String) { };
+                        }
+                    }
+                }
+
+                sql.Remove(sql.Length - 2, 2); // remove the last comma and space
+
+                sql.Append($" WHERE {keyName} = @{keyName}");
+
+                parameters.Add(keyName, id);
+                //Trả dữ liệu về client
+                var res = SqlConnection.Execute(sql.ToString(), parameters);
+                SqlConnection.Close();
+                return res;
+            }
+        }
+
+        public async Task<object> GetPagingCredit(PagingParameterCredit_Admin parameter)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                int offset = (parameter.pageIndex - 1) * parameter.pageSize;
+                var sql = "SELECT * FROM credit c ";
+                var where = "WHERE 1=1";
+                var orderBy = "";
+                DynamicParameters parameters = new DynamicParameters();
+
+
+
+                if (!string.IsNullOrEmpty(parameter.sort) && !string.IsNullOrEmpty(parameter.sortBy))
+                {
+                    orderBy += @$"Order By {parameter.sortBy} {parameter.sort}";
+                }
+
+                if (!string.IsNullOrEmpty(parameter.Type))
+                {
+                    parameters.Add("@type", parameter.Type);
+                    where += @" AND Type = @type";
+                }
+
+
+
+                if (!string.IsNullOrEmpty(parameter.Known_for_department))
+                {
+                    parameters.Add("@Known_for_department", parameter.Known_for_department);
+                    where += @" AND Known_for_department LIKE CONCAT('%', @Known_for_department, '%')";
+                }
+
+                if (!string.IsNullOrEmpty(parameter.Name))
+                {
+                    parameters.Add("@Name1", parameter.Name);
+                    where += @" AND name LIKE CONCAT('%', @Name1, '%')";
+                }
+
+                if (parameter.FilmID != null)
+                {
+                    parameters.Add("@FilmID", parameter.FilmID);
+                    where += @" AND FilmID = @FilmID";
+                }
+
+                if (!string.IsNullOrEmpty(parameter.Original_name))
+                {
+                    parameters.Add("@Original_name", parameter.Original_name);
+                    where += @" AND Original_name LIKE CONCAT('%', @Original_name, '%')";
+                }
+
+                if (!string.IsNullOrEmpty(parameter.Character_))
+                {
+                    parameters.Add("@Character_", parameter.Character_);
+                    where += @" AND Character_ LIKE CONCAT('%', @Character_, '%')";
+                }
+
+                
+
+                sql += where + @$" GROUP BY c.credit_id {orderBy} LIMIT @pageSize OFFSET @offset;
+                                SELECT COUNT(credit_id) FROM Credit " + where;
 
                 //parameters.Add("@userID", _userContext.UserId);
                 //parameters.Add("@filter", parameter.filter);

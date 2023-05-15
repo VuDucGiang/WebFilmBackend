@@ -12,6 +12,7 @@ using WebFilm.Core.Enitites.Related_film;
 using WebFilm.Core.Interfaces.Services;
 
 using WebFilm.Core.Services;
+using WebFilm.Core.Enitites.Credit;
 
 namespace WebFilm.Controllers
 {
@@ -492,6 +493,75 @@ namespace WebFilm.Controllers
             try
             {
                 var res = _adminService.GetSimilar_filmByID(id);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpPost("PagingCredit")]
+        public async Task<IActionResult> GetPagingCredit([FromBody] PagingParameterCredit_Admin parameter)
+        {
+            try
+            {
+                var res = await _adminService.GetPagingCredit(parameter);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpPut("UpdateCredit")]
+        public async Task<IActionResult> UpdateCredit(string id, Credit_Admin entity)
+        {
+            try
+            {
+                var res = _adminService.UpdateCredit(id, entity);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpPost("AddCredit")]
+        public async Task<IActionResult> AddCredit(Credit_Admin entity)
+        {
+            try
+            {
+                var res = _adminService.AddCredit(entity);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+        [HttpDelete("DeleteCredit")]
+        public async Task<IActionResult> DeleteCredit(string id)
+        {
+            try
+            {
+                var res = _adminService.DeleteCredit(id);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpGet("GetCreditByID")]
+        public async Task<IActionResult> GetCreditByID(string id)
+        {
+            try
+            {
+                var res = _adminService.GetCreditByID(id);
                 return Ok(res);
             }
             catch (Exception ex)

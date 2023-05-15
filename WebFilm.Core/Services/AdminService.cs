@@ -8,6 +8,7 @@ using WebFilm.Core.Enitites.Related_film;
 using WebFilm.Core.Enitites.Similar_film;
 
 using WebFilm.Core.Enitites.User;
+using WebFilm.Core.Enitites.Credit;
 
 
 using WebFilm.Core.Interfaces.Repository;
@@ -178,6 +179,28 @@ namespace WebFilm.Core.Services
         public Similar_film GetSimilar_filmByID(int id)
         {
             return _adminRepository.GetSimilar_filmByID(id);
+        }
+        public async Task<object> GetPagingCredit(PagingParameterCredit_Admin parameter)
+        {
+            return await _adminRepository.GetPagingCredit(parameter);
+        }
+
+        public int UpdateCredit(string id, Credit_Admin entity)
+        {
+            return _adminRepository.UpdateCredit(id, entity);
+        }
+        public int AddCredit(Credit_Admin entity)
+        {
+            return _adminRepository.AddCredit(entity);
+        }
+        public int DeleteCredit(string id)
+        {
+            return _adminRepository.DeleteCredit(id);
+        }
+
+        public Credit GetCreditByID(string id)
+        {
+            return _adminRepository.GetCreditByID(id);
         }
     }
 }

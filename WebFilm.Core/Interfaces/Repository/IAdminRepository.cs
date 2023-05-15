@@ -11,6 +11,7 @@ using WebFilm.Core.Enitites.Question;
 using WebFilm.Core.Enitites.Answer;
 using WebFilm.Core.Enitites.Related_film;
 using WebFilm.Core.Enitites.Similar_film;
+using WebFilm.Core.Enitites.Credit;
 
 
 namespace WebFilm.Core.Interfaces.Repository
@@ -54,6 +55,10 @@ namespace WebFilm.Core.Interfaces.Repository
         int UpdateSimilar_film(int id, Similar_film_Admin entity);
         int AddSimilar_film(Similar_film_Admin entity);
         int DeleteSimilar_film(int id);
-
+        Credit GetCreditByID(string id);
+        Task<object> GetPagingCredit(PagingParameterCredit_Admin parameter);
+        int UpdateCredit(string id, Credit_Admin entity);
+        int AddCredit(Credit_Admin entity);
+        int DeleteCredit(string id);
     }
 }
