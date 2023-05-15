@@ -7,6 +7,10 @@ using WebFilm.Core.Enitites.Film;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Enitites.Admin;
 using WebFilm.Core.Enitites.Journal;
+using WebFilm.Core.Enitites.Question;
+using WebFilm.Core.Enitites.Answer;
+using WebFilm.Core.Enitites.Related_film;
+using WebFilm.Core.Enitites.Similar_film;
 
 
 namespace WebFilm.Core.Interfaces.Repository
@@ -28,6 +32,28 @@ namespace WebFilm.Core.Interfaces.Repository
         User GetUserByID(Guid id);
         Film GetFilmByID(int id);
         Journal GetJournalByID(int id);
+
+        Question GetQuestionByID(int id);
+        Task<object> GetPagingQuestion(PagingParameterQuestion_Admin parameter);
+        int UpdateQuestion(int id, Question_Admin entity);
+        int AddQuestion(Question_Admin entity);
+        int DeleteQuestion(int id);
+        Answer GetAnswerByID(int id);
+        Task<object> GetPagingAnswer(PagingParameterAnswer_Admin parameter);
+        int UpdateAnswer(int id, Answer_Admin entity);
+        int AddAnswer(Answer_Admin entity);
+        int DeleteAnswer(int id);
+        Related_film GetRelated_filmByID(int id);
+        Task<object> GetPagingRelated_film(PagingParameterRelated_film_Admin parameter);
+        int UpdateRelated_film(int id, Related_film_Admin entity);
+        int AddRelated_film(Related_film_Admin entity);
+        int DeleteRelated_film(int id);
+
+        Similar_film GetSimilar_filmByID(int id);
+        Task<object> GetPagingSimilar_film(PagingParameterSimilar_film_Admin parameter);
+        int UpdateSimilar_film(int id, Similar_film_Admin entity);
+        int AddSimilar_film(Similar_film_Admin entity);
+        int DeleteSimilar_film(int id);
 
     }
 }

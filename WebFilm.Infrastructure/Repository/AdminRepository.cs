@@ -12,9 +12,13 @@ using WebFilm.Core.Enitites.Admin;
 using WebFilm.Core.Enitites.Film;
 using WebFilm.Core.Enitites.User;
 using WebFilm.Core.Enitites.Journal;
+using WebFilm.Core.Enitites.Question;
 using WebFilm.Core.Interfaces.Repository;
 using WebFilm.Core.Interfaces.Services;
 using static Dapper.SqlMapper;
+using WebFilm.Core.Enitites.Answer;
+using WebFilm.Core.Enitites.Related_film;
+using WebFilm.Core.Enitites.Similar_film;
 
 namespace WebFilm.Infrastructure.Repository
 {
@@ -511,6 +515,688 @@ namespace WebFilm.Infrastructure.Repository
                 var journal = SqlConnection.QueryFirstOrDefault<Journal>(sqlCommand, parameters);
                 SqlConnection.Close();
                 return journal;
+            }
+        }
+
+        public Question GetQuestionByID(int id)
+        {
+            var keyName = "QuestionID";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                //Thực thi lấy dữ liệu
+                var sqlCommand = $"SELECT * FROM `question` WHERE {keyName} = @id";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@id", id);
+                //Trả dữ liệu về client
+                var question = SqlConnection.QueryFirstOrDefault<Question>(sqlCommand, parameters);
+                SqlConnection.Close();
+                return question;
+            }
+        }
+
+        public int DeleteQuestion(int id)
+        {
+            var keyName = "QuestionID";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                string query = $"DELETE FROM `Question` WHERE {keyName} = @id";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@id", id);
+
+                //Trả dữ liệu về client
+                var res = SqlConnection.Execute(query, parameters);
+                SqlConnection.Close();
+                return res;
+            }
+        }
+
+        public int AddQuestion(Question_Admin entity)
+        {
+            var keyName = "QuestionID";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var parameters = new DynamicParameters();
+                var properties = typeof(Question_Admin).GetProperties();
+
+                foreach (var property in properties)
+                {
+                    if (property.Name != keyName)
+                    {
+                        if (property.Name == "ModifiedDate" || property.Name == "CreatedDate")
+                        {
+                            //parameters.Add("@" + property.Name, DateTime.Now);
+                        }
+                        else
+                        {
+                            parameters.Add("@" + property.Name, property.GetValue(entity));
+                        }
+                    }
+                }
+
+                var columns = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => p.Name));
+                var values = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => "@" + p.Name));
+                var query = $"INSERT INTO `question` ({columns}) VALUES ({values})";
+
+                //Trả dữ liệu về client
+                var res = SqlConnection.Execute(query, parameters);
+                SqlConnection.Close();
+                return res;
+            }
+        }
+
+        public int UpdateQuestion(int id, Question_Admin entity)
+        {
+            var keyName = "QuestionID";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                StringBuilder sql = new StringBuilder($"UPDATE `question` SET ");
+
+                PropertyInfo[] properties = typeof(Question_Admin).GetProperties();
+
+                DynamicParameters parameters = new DynamicParameters();
+
+                foreach (PropertyInfo property in properties)
+                {
+                    if (property.Name != keyName && property.Name != "CreatedDate")
+                    {
+                        if (property.Name == "ModifiedDate")
+                        {
+                            // sql.Append($"{property.Name} = @{property.Name}, ");
+                            //parameters.Add(property.Name, DateTime.Now);
+
+                        }
+                        else
+                        {
+                            if (property.GetValue(entity) != null)
+                            {
+                                sql.Append($"{property.Name} = @{property.Name}, ");
+                                parameters.Add(property.Name, property.GetValue(entity));
+                            }
+
+                            var test = "dsfdsf".Replace('"', '\"');
+                            if (test is String) { };
+                        }
+                    }
+                }
+
+                sql.Remove(sql.Length - 2, 2); // remove the last comma and space
+
+                sql.Append($" WHERE {keyName} = @{keyName}");
+
+                parameters.Add(keyName, id);
+                //Trả dữ liệu về client
+                var res = SqlConnection.Execute(sql.ToString(), parameters);
+                SqlConnection.Close();
+                return res;
+            }
+        }
+
+        public async Task<object> GetPagingQuestion(PagingParameterQuestion_Admin parameter)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                int offset = (parameter.pageIndex - 1) * parameter.pageSize;
+                var sql = "SELECT * FROM question q ";
+                var where = "WHERE 1=1";
+                var orderBy = "";
+                DynamicParameters parameters = new DynamicParameters();
+
+                
+
+                if (!string.IsNullOrEmpty(parameter.sort) && !string.IsNullOrEmpty(parameter.sortBy))
+                {
+                    orderBy += @$"Order By {parameter.sortBy} {parameter.sort}";
+                }
+
+                
+
+                if (!string.IsNullOrEmpty(parameter.question))
+                {
+                    parameters.Add("@question", parameter.question);
+                    where += @" AND Question LIKE CONCAT('%', @question, '%')";
+                }
+             
+            
+
+                sql += where + @$" GROUP BY q.QuestionID {orderBy} LIMIT @pageSize OFFSET @offset;
+                                SELECT COUNT(QuestionID) FROM Question " + where;
+
+                //parameters.Add("@userID", _userContext.UserId);
+                //parameters.Add("@filter", parameter.filter);
+                parameters.Add("@pageSize", parameter.pageSize);
+                parameters.Add("@offset", offset);
+                parameters.Add("@name", "name");
+
+                var result = await SqlConnection.QueryMultipleAsync(sql, parameters);
+                //Trả dữ liệu về client
+                var data = result.Read<object>().ToList();
+                var total = result.Read<int>().Single();
+                int totalPage = (int)Math.Ceiling((double)total / parameter.pageSize);
+                return new
+                {
+                    listData = data,
+                    total = total,
+                    pageSize = parameter.pageSize,
+                    pageIndex = parameter.pageIndex,
+                    totalPage = totalPage
+                };
+            }
+        }
+
+        public Answer GetAnswerByID(int id)
+        {
+            var keyName = "AnswerID";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                //Thực thi lấy dữ liệu
+                var sqlCommand = $"SELECT * FROM `answer` WHERE {keyName} = @id";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@id", id);
+                //Trả dữ liệu về client
+                var answer = SqlConnection.QueryFirstOrDefault<Answer>(sqlCommand, parameters);
+                SqlConnection.Close();
+                return answer;
+            }
+        }
+
+        public int DeleteAnswer(int id)
+        {
+            var keyName = "AnswerID";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                string query = $"DELETE FROM `Answer` WHERE {keyName} = @id";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@id", id);
+
+                //Trả dữ liệu về client
+                var res = SqlConnection.Execute(query, parameters);
+                SqlConnection.Close();
+                return res;
+            }
+        }
+
+        public int AddAnswer(Answer_Admin entity)
+        {
+            var keyName = "AnswerID";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var parameters = new DynamicParameters();
+                var properties = typeof(Answer_Admin).GetProperties();
+
+                foreach (var property in properties)
+                {
+                    if (property.Name != keyName)
+                    {
+                        if (property.Name == "ModifiedDate" || property.Name == "CreatedDate")
+                        {
+                            //parameters.Add("@" + property.Name, DateTime.Now);
+                        }
+                        else
+                        {
+                            parameters.Add("@" + property.Name, property.GetValue(entity));
+                        }
+                    }
+                }
+
+                var columns = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => p.Name));
+                var values = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => "@" + p.Name));
+                var query = $"INSERT INTO `answer` ({columns}) VALUES ({values})";
+
+                //Trả dữ liệu về client
+                var res = SqlConnection.Execute(query, parameters);
+                SqlConnection.Close();
+                return res;
+            }
+        }
+
+        public int UpdateAnswer(int id, Answer_Admin entity)
+        {
+            var keyName = "AnswerID";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                StringBuilder sql = new StringBuilder($"UPDATE `answer` SET ");
+
+                PropertyInfo[] properties = typeof(Answer_Admin).GetProperties();
+
+                DynamicParameters parameters = new DynamicParameters();
+
+                foreach (PropertyInfo property in properties)
+                {
+                    if (property.Name != keyName && property.Name != "CreatedDate")
+                    {
+                        if (property.Name == "ModifiedDate")
+                        {
+                            // sql.Append($"{property.Name} = @{property.Name}, ");
+                            //parameters.Add(property.Name, DateTime.Now);
+
+                        }
+                        else
+                        {
+                            if (property.GetValue(entity) != null)
+                            {
+                                sql.Append($"{property.Name} = @{property.Name}, ");
+                                parameters.Add(property.Name, property.GetValue(entity));
+                            }
+
+                            var test = "dsfdsf".Replace('"', '\"');
+                            if (test is String) { };
+                        }
+                    }
+                }
+
+                sql.Remove(sql.Length - 2, 2); // remove the last comma and space
+
+                sql.Append($" WHERE {keyName} = @{keyName}");
+
+                parameters.Add(keyName, id);
+                //Trả dữ liệu về client
+                var res = SqlConnection.Execute(sql.ToString(), parameters);
+                SqlConnection.Close();
+                return res;
+            }
+        }
+
+        public async Task<object> GetPagingAnswer(PagingParameterAnswer_Admin parameter)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                int offset = (parameter.pageIndex - 1) * parameter.pageSize;
+                var sql = "SELECT * FROM answer a ";
+                var where = "WHERE 1=1";
+                var orderBy = "";
+                DynamicParameters parameters = new DynamicParameters();
+
+
+
+                if (!string.IsNullOrEmpty(parameter.sort) && !string.IsNullOrEmpty(parameter.sortBy))
+                {
+                    orderBy += @$"Order By {parameter.sortBy} {parameter.sort}";
+                }
+
+                if (parameter.RightAnswer != null)
+                {
+                    parameters.Add("@rightAnswer", parameter.RightAnswer);
+                    where += @" AND RightAnswer = @rightAnswer";
+                }
+
+                if (parameter.QuestionID != null)
+                {
+                    parameters.Add("@questionID", parameter.QuestionID);
+                    where += @" AND QuestionID = @questionID";
+                }
+
+                if (!string.IsNullOrEmpty(parameter.answer))
+                {
+                    parameters.Add("@answer", parameter.answer);
+                    where += @" AND Answer LIKE CONCAT('%', @answer, '%')";
+                }
+
+
+
+                sql += where + @$" GROUP BY a.AnswerID {orderBy} LIMIT @pageSize OFFSET @offset;
+                                SELECT COUNT(AnswerID) FROM Answer " + where;
+
+                //parameters.Add("@userID", _userContext.UserId);
+                //parameters.Add("@filter", parameter.filter);
+                parameters.Add("@pageSize", parameter.pageSize);
+                parameters.Add("@offset", offset);
+                parameters.Add("@name", "name");
+
+                var result = await SqlConnection.QueryMultipleAsync(sql, parameters);
+                //Trả dữ liệu về client
+                var data = result.Read<object>().ToList();
+                var total = result.Read<int>().Single();
+                int totalPage = (int)Math.Ceiling((double)total / parameter.pageSize);
+                return new
+                {
+                    listData = data,
+                    total = total,
+                    pageSize = parameter.pageSize,
+                    pageIndex = parameter.pageIndex,
+                    totalPage = totalPage
+                };
+            }
+        }
+
+        public Related_film GetRelated_filmByID(int id)
+        {
+            var keyName = "Related_filmID";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                //Thực thi lấy dữ liệu
+                var sqlCommand = $"SELECT * FROM `related_film` WHERE {keyName} = @id";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@id", id);
+                //Trả dữ liệu về client
+                var related_film = SqlConnection.QueryFirstOrDefault<Related_film>(sqlCommand, parameters);
+                SqlConnection.Close();
+                return related_film;
+            }
+        }
+
+        public int DeleteRelated_film(int id)
+        {
+            var keyName = "Related_filmID";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                string query = $"DELETE FROM `Related_film` WHERE {keyName} = @id";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@id", id);
+
+                //Trả dữ liệu về client
+                var res = SqlConnection.Execute(query, parameters);
+                SqlConnection.Close();
+                return res;
+            }
+        }
+
+        public int AddRelated_film(Related_film_Admin entity)
+        {
+            var keyName = "Related_filmID";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var parameters = new DynamicParameters();
+                var properties = typeof(Related_film_Admin).GetProperties();
+
+                foreach (var property in properties)
+                {
+                    if (property.Name != keyName)
+                    {
+                        if (property.Name == "ModifiedDate" || property.Name == "CreatedDate")
+                        {
+                            //parameters.Add("@" + property.Name, DateTime.Now);
+                        }
+                        else
+                        {
+                            parameters.Add("@" + property.Name, property.GetValue(entity));
+                        }
+                    }
+                }
+
+                var columns = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => p.Name));
+                var values = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => "@" + p.Name));
+                var query = $"INSERT INTO `related_film` ({columns}) VALUES ({values})";
+
+                //Trả dữ liệu về client
+                var res = SqlConnection.Execute(query, parameters);
+                SqlConnection.Close();
+                return res;
+            }
+        }
+
+        public int UpdateRelated_film(int id, Related_film_Admin entity)
+        {
+            var keyName = "Related_filmID";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                StringBuilder sql = new StringBuilder($"UPDATE `related_film` SET ");
+
+                PropertyInfo[] properties = typeof(Related_film_Admin).GetProperties();
+
+                DynamicParameters parameters = new DynamicParameters();
+
+                foreach (PropertyInfo property in properties)
+                {
+                    if (property.Name != keyName && property.Name != "CreatedDate")
+                    {
+                        if (property.Name == "ModifiedDate")
+                        {
+                            // sql.Append($"{property.Name} = @{property.Name}, ");
+                            //parameters.Add(property.Name, DateTime.Now);
+
+                        }
+                        else
+                        {
+                            if (property.GetValue(entity) != null)
+                            {
+                                sql.Append($"{property.Name} = @{property.Name}, ");
+                                parameters.Add(property.Name, property.GetValue(entity));
+                            }
+
+                            var test = "dsfdsf".Replace('"', '\"');
+                            if (test is String) { };
+                        }
+                    }
+                }
+
+                sql.Remove(sql.Length - 2, 2); // remove the last comma and space
+
+                sql.Append($" WHERE {keyName} = @{keyName}");
+
+                parameters.Add(keyName, id);
+                //Trả dữ liệu về client
+                var res = SqlConnection.Execute(sql.ToString(), parameters);
+                SqlConnection.Close();
+                return res;
+            }
+        }
+
+        public async Task<object> GetPagingRelated_film(PagingParameterRelated_film_Admin parameter)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                int offset = (parameter.pageIndex - 1) * parameter.pageSize;
+                var sql = "SELECT * FROM related_film r ";
+                var where = "WHERE 1=1";
+                var orderBy = "";
+                DynamicParameters parameters = new DynamicParameters();
+
+
+
+                if (!string.IsNullOrEmpty(parameter.sort) && !string.IsNullOrEmpty(parameter.sortBy))
+                {
+                    orderBy += @$"Order By {parameter.sortBy} {parameter.sort}";
+                }
+
+                if (parameter.DetailFilmID != null)
+                {
+                    parameters.Add("@detailFilmID", parameter.DetailFilmID);
+                    where += @" AND DetailFilmID = @detailFilmID";
+                }
+
+                
+
+                if (!string.IsNullOrEmpty(parameter.Title))
+                {
+                    parameters.Add("@title", parameter.Title);
+                    where += @" AND title LIKE CONCAT('%', @title, '%')";
+                }
+
+
+
+                sql += where + @$" GROUP BY r.Related_filmID {orderBy} LIMIT @pageSize OFFSET @offset;
+                                SELECT COUNT(Related_filmID) FROM Related_film " + where;
+
+                //parameters.Add("@userID", _userContext.UserId);
+                //parameters.Add("@filter", parameter.filter);
+                parameters.Add("@pageSize", parameter.pageSize);
+                parameters.Add("@offset", offset);
+                parameters.Add("@name", "name");
+
+                var result = await SqlConnection.QueryMultipleAsync(sql, parameters);
+                //Trả dữ liệu về client
+                var data = result.Read<object>().ToList();
+                var total = result.Read<int>().Single();
+                int totalPage = (int)Math.Ceiling((double)total / parameter.pageSize);
+                return new
+                {
+                    listData = data,
+                    total = total,
+                    pageSize = parameter.pageSize,
+                    pageIndex = parameter.pageIndex,
+                    totalPage = totalPage
+                };
+            }
+        }
+
+        public Similar_film GetSimilar_filmByID(int id)
+        {
+            var keyName = "Similar_filmID";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                //Thực thi lấy dữ liệu
+                var sqlCommand = $"SELECT * FROM `similar_film` WHERE {keyName} = @id";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@id", id);
+                //Trả dữ liệu về client
+                var similar_film = SqlConnection.QueryFirstOrDefault<Similar_film>(sqlCommand, parameters);
+                SqlConnection.Close();
+                return similar_film;
+            }
+        }
+
+        public int DeleteSimilar_film(int id)
+        {
+            var keyName = "Similar_filmID";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                string query = $"DELETE FROM `Similar_film` WHERE {keyName} = @id";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@id", id);
+
+                //Trả dữ liệu về client
+                var res = SqlConnection.Execute(query, parameters);
+                SqlConnection.Close();
+                return res;
+            }
+        }
+
+        public int AddSimilar_film(Similar_film_Admin entity)
+        {
+            var keyName = "Similar_filmID";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                var parameters = new DynamicParameters();
+                var properties = typeof(Similar_film_Admin).GetProperties();
+
+                foreach (var property in properties)
+                {
+                    if (property.Name != keyName)
+                    {
+                        if (property.Name == "ModifiedDate" || property.Name == "CreatedDate")
+                        {
+                            //parameters.Add("@" + property.Name, DateTime.Now);
+                        }
+                        else
+                        {
+                            parameters.Add("@" + property.Name, property.GetValue(entity));
+                        }
+                    }
+                }
+
+                var columns = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => p.Name));
+                var values = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => "@" + p.Name));
+                var query = $"INSERT INTO `similar_film` ({columns}) VALUES ({values})";
+
+                //Trả dữ liệu về client
+                var res = SqlConnection.Execute(query, parameters);
+                SqlConnection.Close();
+                return res;
+            }
+        }
+
+        public int UpdateSimilar_film(int id, Similar_film_Admin entity)
+        {
+            var keyName = "Similar_filmID";
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                StringBuilder sql = new StringBuilder($"UPDATE `similar_film` SET ");
+
+                PropertyInfo[] properties = typeof(Similar_film_Admin).GetProperties();
+
+                DynamicParameters parameters = new DynamicParameters();
+
+                foreach (PropertyInfo property in properties)
+                {
+                    if (property.Name != keyName && property.Name != "CreatedDate")
+                    {
+                        if (property.Name == "ModifiedDate")
+                        {
+                            // sql.Append($"{property.Name} = @{property.Name}, ");
+                            //parameters.Add(property.Name, DateTime.Now);
+
+                        }
+                        else
+                        {
+                            if (property.GetValue(entity) != null)
+                            {
+                                sql.Append($"{property.Name} = @{property.Name}, ");
+                                parameters.Add(property.Name, property.GetValue(entity));
+                            }
+
+                            var test = "dsfdsf".Replace('"', '\"');
+                            if (test is String) { };
+                        }
+                    }
+                }
+
+                sql.Remove(sql.Length - 2, 2); // remove the last comma and space
+
+                sql.Append($" WHERE {keyName} = @{keyName}");
+
+                parameters.Add(keyName, id);
+                //Trả dữ liệu về client
+                var res = SqlConnection.Execute(sql.ToString(), parameters);
+                SqlConnection.Close();
+                return res;
+            }
+        }
+
+        public async Task<object> GetPagingSimilar_film(PagingParameterSimilar_film_Admin parameter)
+        {
+            using (SqlConnection = new MySqlConnection(_connectionString))
+            {
+                int offset = (parameter.pageIndex - 1) * parameter.pageSize;
+                var sql = "SELECT * FROM similar_film s ";
+                var where = "WHERE 1=1";
+                var orderBy = "";
+                DynamicParameters parameters = new DynamicParameters();
+
+
+
+                if (!string.IsNullOrEmpty(parameter.sort) && !string.IsNullOrEmpty(parameter.sortBy))
+                {
+                    orderBy += @$"Order By {parameter.sortBy} {parameter.sort}";
+                }
+
+                if (parameter.DetailFilmID != null)
+                {
+                    parameters.Add("@detailFilmID", parameter.DetailFilmID);
+                    where += @" AND DetailFilmID = @detailFilmID";
+                }
+
+
+
+                if (!string.IsNullOrEmpty(parameter.Title))
+                {
+                    parameters.Add("@title", parameter.Title);
+                    where += @" AND title LIKE CONCAT('%', @title, '%')";
+                }
+
+
+
+                sql += where + @$" GROUP BY s.Similar_filmID {orderBy} LIMIT @pageSize OFFSET @offset;
+                                SELECT COUNT(Similar_filmID) FROM Similar_film " + where;
+
+                //parameters.Add("@userID", _userContext.UserId);
+                //parameters.Add("@filter", parameter.filter);
+                parameters.Add("@pageSize", parameter.pageSize);
+                parameters.Add("@offset", offset);
+                parameters.Add("@name", "name");
+
+                var result = await SqlConnection.QueryMultipleAsync(sql, parameters);
+                //Trả dữ liệu về client
+                var data = result.Read<object>().ToList();
+                var total = result.Read<int>().Single();
+                int totalPage = (int)Math.Ceiling((double)total / parameter.pageSize);
+                return new
+                {
+                    listData = data,
+                    total = total,
+                    pageSize = parameter.pageSize,
+                    pageIndex = parameter.pageIndex,
+                    totalPage = totalPage
+                };
             }
         }
 

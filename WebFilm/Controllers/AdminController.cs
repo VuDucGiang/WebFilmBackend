@@ -2,9 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using WebFilm.Core.Enitites;
 using WebFilm.Core.Enitites.Admin;
+using WebFilm.Core.Enitites.Answer;
 using WebFilm.Core.Enitites.Film;
 using WebFilm.Core.Enitites.Journal;
+using WebFilm.Core.Enitites.Question;
 using WebFilm.Core.Enitites.User;
+using WebFilm.Core.Enitites.Similar_film;
+using WebFilm.Core.Enitites.Related_film;
 using WebFilm.Core.Interfaces.Services;
 
 using WebFilm.Core.Services;
@@ -213,6 +217,281 @@ namespace WebFilm.Controllers
             try
             {
                 var res = _adminService.GetJournalByID(id);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpPost("PagingQuestion")]
+        public async Task<IActionResult> GetPagingQuestion([FromBody] PagingParameterQuestion_Admin parameter)
+        {
+            try
+            {
+                var res = await _adminService.GetPagingQuestion(parameter);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpPut("UpdateQuestion")]
+        public async Task<IActionResult> UpdateQuestion(int id, Question_Admin entity)
+        {
+            try
+            {
+                var res = _adminService.UpdateQuestion(id, entity);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpPost("AddQuestion")]
+        public async Task<IActionResult> AddQuestion(Question_Admin entity)
+        {
+            try
+            {
+                var res = _adminService.AddQuestion(entity);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+        [HttpDelete("DeleteQuestion")]
+        public async Task<IActionResult> DeleteQuestion(int id)
+        {
+            try
+            {
+                var res = _adminService.DeleteQuestion(id);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpGet("GetQuestionByID")]
+        public async Task<IActionResult> GetQuestionByID(int id)
+        {
+            try
+            {
+                var res = _adminService.GetQuestionByID(id);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpPost("PagingAnswer")]
+        public async Task<IActionResult> GetPagingAnswer([FromBody] PagingParameterAnswer_Admin parameter)
+        {
+            try
+            {
+                var res = await _adminService.GetPagingAnswer(parameter);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpPut("UpdateAnswer")]
+        public async Task<IActionResult> UpdateAnswer(int id, Answer_Admin entity)
+        {
+            try
+            {
+                var res = _adminService.UpdateAnswer(id, entity);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpPost("AddAnswer")]
+        public async Task<IActionResult> AddAnswer(Answer_Admin entity)
+        {
+            try
+            {
+                var res = _adminService.AddAnswer(entity);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+        [HttpDelete("DeleteAnswer")]
+        public async Task<IActionResult> DeleteAnswer(int id)
+        {
+            try
+            {
+                var res = _adminService.DeleteAnswer(id);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpGet("GetAnswerByID")]
+        public async Task<IActionResult> GetAnswerByID(int id)
+        {
+            try
+            {
+                var res = _adminService.GetAnswerByID(id);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+        [HttpPost("PagingRelated_film")]
+        public async Task<IActionResult> GetPagingRelated_film([FromBody] PagingParameterRelated_film_Admin parameter)
+        {
+            try
+            {
+                var res = await _adminService.GetPagingRelated_film(parameter);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpPut("UpdateRelated_film")]
+        public async Task<IActionResult> UpdateRelated_film(int id, Related_film_Admin entity)
+        {
+            try
+            {
+                var res = _adminService.UpdateRelated_film(id, entity);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpPost("AddRelated_film")]
+        public async Task<IActionResult> AddRelated_film(Related_film_Admin entity)
+        {
+            try
+            {
+                var res = _adminService.AddRelated_film(entity);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+        [HttpDelete("DeleteRelated_film")]
+        public async Task<IActionResult> DeleteRelated_film(int id)
+        {
+            try
+            {
+                var res = _adminService.DeleteRelated_film(id);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpGet("GetRelated_filmByID")]
+        public async Task<IActionResult> GetRelated_filmByID(int id)
+        {
+            try
+            {
+                var res = _adminService.GetRelated_filmByID(id);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpPost("PagingSimilar_film")]
+        public async Task<IActionResult> GetPagingSimilar_film([FromBody] PagingParameterSimilar_film_Admin parameter)
+        {
+            try
+            {
+                var res = await _adminService.GetPagingSimilar_film(parameter);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpPut("UpdateSimilar_film")]
+        public async Task<IActionResult> UpdateSimilar_film(int id, Similar_film_Admin entity)
+        {
+            try
+            {
+                var res = _adminService.UpdateSimilar_film(id, entity);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpPost("AddSimilar_film")]
+        public async Task<IActionResult> AddSimilar_film(Similar_film_Admin entity)
+        {
+            try
+            {
+                var res = _adminService.AddSimilar_film(entity);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+        [HttpDelete("DeleteSimilar_film")]
+        public async Task<IActionResult> DeleteSimilar_film(int id)
+        {
+            try
+            {
+                var res = _adminService.DeleteSimilar_film(id);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        [HttpGet("GetSimilar_filmByID")]
+        public async Task<IActionResult> GetSimilar_filmByID(int id)
+        {
+            try
+            {
+                var res = _adminService.GetSimilar_filmByID(id);
                 return Ok(res);
             }
             catch (Exception ex)
