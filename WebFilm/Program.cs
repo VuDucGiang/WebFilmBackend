@@ -12,6 +12,7 @@ using WebFilm.Infrastructure.Repository;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -91,20 +92,20 @@ builder.Services.AddControllers()
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
-                      policy =>
-                      {
-                          policy.WithOrigins("http://localhost:5173")
-                                                  .AllowAnyHeader()
-                                                  .AllowAnyMethod();
-                      });
-    options.AddPolicy(name: MyAllowSpecificOrigins,
                           policy =>
                           {
                               policy.WithOrigins("http://localhost:3000")
                                                       .AllowAnyHeader()
                                                       .AllowAnyMethod();
+                              policy.WithOrigins("http://localhost:5173")
+                                                      .AllowAnyHeader()
+                                                      .AllowAnyMethod();
+
                           });
+   
 });
+
+
 
 builder.Services.AddSwaggerGen(options =>
 {
