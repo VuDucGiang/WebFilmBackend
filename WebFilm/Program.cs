@@ -97,6 +97,13 @@ builder.Services.AddCors(options =>
                                                   .AllowAnyHeader()
                                                   .AllowAnyMethod();
                       });
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                          policy =>
+                          {
+                              policy.WithOrigins("http://localhost:3000")
+                                                      .AllowAnyHeader()
+                                                      .AllowAnyMethod();
+                          });
 });
 
 builder.Services.AddSwaggerGen(options =>

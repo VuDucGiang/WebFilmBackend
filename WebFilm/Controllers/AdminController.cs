@@ -16,7 +16,7 @@ using WebFilm.Core.Enitites.Credit;
 
 namespace WebFilm.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class AdminController : BaseAdminController<int, Admin>
