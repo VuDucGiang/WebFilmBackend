@@ -54,6 +54,7 @@ namespace WebFilm.Infrastructure.Repository
                             LEFT JOIN follow f2 ON u.UserID = f2.UserID
                             LEFT JOIN review r ON u.UserID = r.UserID
                             WHERE l.Type = 'Film' AND l.ParentID = @filmID
+                            Group by u.UserID
                             LIMIT @pageSize OFFSET @offset;
                             
                             SELECT COUNT(DISTINCT l.UserID)
