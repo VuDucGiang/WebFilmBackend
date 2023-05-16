@@ -11,7 +11,7 @@ namespace WebFilm.Core.Enitites.Film
     public class Film_Admin
     {
         [Key]
-        public int? FilmID { get; set; }
+        public int FilmID { get; set; }
         public bool? Adult { get; set; }
         public string? Backdrop_path { get; set; }
         public string? Trailer { get; set; }

@@ -135,7 +135,14 @@ namespace WebFilm.Infrastructure.Repository
         }
         public int AddFilm(Film_Admin entity)
         {
-            var keyName = "FilmID";
+            //return entity.FilmID;
+            var keyName = "FilmID123";
+            Random RandNum = new Random();
+            int RandomNumber; 
+            RandomNumber = RandNum.Next(10000000, 999999999);
+            entity.FilmID = RandomNumber;
+            //return entity.FilmID;
+
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 var parameters = new DynamicParameters();
@@ -143,7 +150,7 @@ namespace WebFilm.Infrastructure.Repository
 
                 foreach (var property in properties)
                 {
-                    if (property.Name != keyName)
+                    if (true)
                     {
                         if (property.Name == "ModifiedDate" || property.Name == "CreatedDate")
                         {
@@ -151,6 +158,8 @@ namespace WebFilm.Infrastructure.Repository
                         }
                         else
                         {
+                            Console.WriteLine(property.Name);
+                            Console.WriteLine(property.GetValue(entity));
                             parameters.Add("@" + property.Name, property.GetValue(entity));
                         }
                     }
@@ -994,8 +1003,12 @@ namespace WebFilm.Infrastructure.Repository
                     parameters.Add("@detailFilmID", parameter.DetailFilmID);
                     where += @" AND DetailFilmID = @detailFilmID";
                 }
+                if (parameter.FilmID != null)
+                {
+                    parameters.Add("@FilmID", parameter.FilmID);
+                    where += @" AND FilmID = @FilmID";
+                }
 
-                
 
                 if (!string.IsNullOrEmpty(parameter.Title))
                 {
@@ -1065,6 +1078,11 @@ namespace WebFilm.Infrastructure.Repository
         public int AddSimilar_film(Similar_film_Admin entity)
         {
             var keyName = "Similar_filmID";
+
+
+            
+            
+
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 var parameters = new DynamicParameters();
@@ -1166,6 +1184,11 @@ namespace WebFilm.Infrastructure.Repository
                     where += @" AND DetailFilmID = @detailFilmID";
                 }
 
+                if (parameter.FilmID != null)
+                {
+                    parameters.Add("@FilmID", parameter.FilmID);
+                    where += @" AND FilmID = @FilmID";
+                }
 
 
                 if (!string.IsNullOrEmpty(parameter.Title))

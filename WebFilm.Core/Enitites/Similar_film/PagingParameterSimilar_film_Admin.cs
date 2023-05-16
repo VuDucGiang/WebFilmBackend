@@ -13,6 +13,7 @@ namespace WebFilm.Core.Enitites.Film
         public string? sort { get; set; }
         public string? sortBy { get; set; }
         public int? DetailFilmID { get; set; }
+        public int? FilmID { get; set; }
         public string? Title { get; set; }
     }
 }
