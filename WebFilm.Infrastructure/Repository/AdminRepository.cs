@@ -65,6 +65,12 @@ namespace WebFilm.Infrastructure.Repository
                     where += @" AND title LIKE CONCAT('%', @title, '%')";
                 }
 
+                if (!string.IsNullOrEmpty(parameter.status))
+                {
+                    parameters.Add("@status", parameter.status);
+                    where += @" AND status LIKE CONCAT('%', @status, '%')";
+                }
+
                 sql += where + @$" GROUP BY f.FilmID {orderBy} LIMIT @pageSize OFFSET @offset;
                                 SELECT COUNT(FilmID) FROM Film " + where;
 
