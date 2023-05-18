@@ -320,3 +320,4 @@ __pycache__/
 /WebFilm/obj/Debug/net6.0/staticwebassets.build.json
 
 /WebFilm/appsettings.json
+.vs

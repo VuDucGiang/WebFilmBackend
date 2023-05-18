@@ -34,15 +34,15 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCommand = @$"INSERT INTO review (UserID, FilmID, CreatedDate, ModifiedDate, Content, HaveSpoiler, WatchedDate, Score)
+                var sqlCommand = @$"INSERT INTO Review (UserID, FilmID, CreatedDate, ModifiedDate, Content, HaveSpoiler, WatchedDate, Score)
                                     VALUES (@UserID, @FilmID, NOW(), NOW(), @Content, @HaveSpoiler, @WatchedDate, @Score);";
                 if (review.Liked)
                 {
-                    sqlCommand += @$" INSERT INTO `like` (UserID, Type, ParentID, CreatedDate, ModifiedDate)
+                    sqlCommand += @$" INSERT INTO `Like` (UserID, Type, ParentID, CreatedDate, ModifiedDate)
                                     VALUES(@UserID, 'Film', @FilmID, NOW(), NOW());";
                 }
-                sqlCommand += $@" UPDATE film f 
-                                SET f.ReviewsCount = (SELECT COUNT(DISTINCT r.ReviewID) FROM review r WHERE r.FilmID = @FilmID)
+                sqlCommand += $@" UPDATE Film f 
+                                SET f.ReviewsCount = (SELECT COUNT(DISTINCT r.ReviewID) FROM Review r WHERE r.FilmID = @FilmID)
                                 WHERE f.FilmID = @FilmID;";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("UserID", _userContext.UserId);
@@ -64,7 +64,7 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCommand = @$"UPDATE review r 
+                var sqlCommand = @$"UPDATE Review r 
                                     SET ModifiedDate = NOW(),
                                         Content = @Content,
                                         HaveSpoiler = @HaveSpoiler,
@@ -73,14 +73,14 @@ namespace WebFilm.Infrastructure.Repository
                                     WHERE ReviewID = @ReviewID;";
                 if (review.Liked)
                 {
-                    sqlCommand += @$" INSERT INTO `like` (UserID, Type, ParentID, CreatedDate, ModifiedDate)
+                    sqlCommand += @$" INSERT INTO `Like` (UserID, Type, ParentID, CreatedDate, ModifiedDate)
                                     VALUES(@UserID, 'Film', @FilmID, NOW(), NOW());";
                 } else
                 {
-                    sqlCommand += $@" DELETE FROM `like` WHERE UserID = @UserID AND Type = 'Film' AND ParentID = @FilmID;";
+                    sqlCommand += $@" DELETE FROM `Like` WHERE UserID = @UserID AND Type = 'Film' AND ParentID = @FilmID;";
                 }
-                sqlCommand += $@"UPDATE film f 
-                                SET f.LikesCount = (SELECT COUNT(DISTINCT l.LikeID) FROM `like` l WHERE l.ParentID = @FilmID AND l.Type = 'Film')
+                sqlCommand += $@"UPDATE Film f 
+                                SET f.LikesCount = (SELECT COUNT(DISTINCT l.LikeID) FROM `Like` l WHERE l.ParentID = @FilmID AND l.Type = 'Film')
                                 WHERE f.FilmID = @FilmID;";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("UserID", _userContext.UserId);
@@ -104,9 +104,9 @@ namespace WebFilm.Infrastructure.Repository
             var filmID = this.GetByID(reviewID).FilmID;
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCommand = @$"DELETE FROM review WHERE ReviewID = @ReviewID;";
-                sqlCommand += $@"UPDATE film f 
-                                SET f.ReviewsCount = (SELECT COUNT(DISTINCT r.ReviewID) FROM review r WHERE r.FilmID = @FilmID)
+                var sqlCommand = @$"DELETE FROM Review WHERE ReviewID = @ReviewID;";
+                sqlCommand += $@"UPDATE Film f 
+                                SET f.ReviewsCount = (SELECT COUNT(DISTINCT r.ReviewID) FROM Review r WHERE r.FilmID = @FilmID)
                                 WHERE f.FilmID = @FilmID;";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("ReviewID", reviewID);
@@ -138,17 +138,17 @@ namespace WebFilm.Infrastructure.Repository
                                         'Avatar', u.Avatar,
                                         'FullName', u.FullName
                                     ) AS User
-                                    FROM review r
-                                    LEFT JOIN film f ON r.FilmID = f.FilmID
-                                    LEFT JOIN user u ON r.UserID = u.UserID
+                                    FROM Review r
+                                    LEFT JOIN Film f ON r.FilmID = f.FilmID
+                                    LEFT JOIN User u ON r.UserID = u.UserID
                                     WHERE u.UserName = @userName
                                     ORDER BY r.WatchedDate DESC
                                     LIMIT @pageSize OFFSET @offset;
 
                                     SELECT COUNT(DISTINCT r.ReviewID) 
-                                    FROM review r
-                                    LEFT JOIN film f ON r.FilmID = f.FilmID
-                                    LEFT JOIN user u ON r.UserID = u.UserID
+                                    FROM Review r
+                                    LEFT JOIN Film f ON r.FilmID = f.FilmID
+                                    LEFT JOIN User u ON r.UserID = u.UserID
                                     WHERE u.UserName = @userName;";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@pageSize", pageSize);
@@ -230,16 +230,16 @@ namespace WebFilm.Infrastructure.Repository
                     default:
                         break;
                 }
-                var sqlCommand = @$"SELECT r.*, u.UserName, f.title AS Title, f.poster_path AS Poster_path, f.overview Overview, f.release_date Release_date, f.vote_average Vote_average, IF(l.LikeID IS NOT NULL, True, False) AS Liked, COUNT(l1.LikeID) AS LikeInSort FROM review r 
-                                    INNER JOIN user u ON u.UserID = r.UserID
-                                    INNER JOIN film f ON f.FilmID = r.FilmID
-                                    LEFT JOIN `like` l ON r.ReviewID = l.ParentID AND l.UserID = @userID AND l.Type = 'Review'
-                                    LEFT JOIN `like` l1 ON r.ReviewID = l1.ParentID AND l1.Type = 'Review' {where}
+                var sqlCommand = @$"SELECT r.*, u.UserName, f.title AS Title, f.poster_path AS Poster_path, f.overview Overview, f.release_date Release_date, f.vote_average Vote_average, IF(l.LikeID IS NOT NULL, True, False) AS Liked, COUNT(l1.LikeID) AS LikeInSort FROM Review r 
+                                    INNER JOIN User u ON u.UserID = r.UserID
+                                    INNER JOIN Film f ON f.FilmID = r.FilmID
+                                    LEFT JOIN `Like` l ON r.ReviewID = l.ParentID AND l.UserID = @userID AND l.Type = 'Review'
+                                    LEFT JOIN `Like` l1 ON r.ReviewID = l1.ParentID AND l1.Type = 'Review' {where}
                                     GROUP BY r.ReviewID
                                     ORDER BY LikeInSort DESC
                                     LIMIT @pageSize OFFSET @offset;
 
-                                    SELECT COUNT(r.ReviewID) FROM review r;";
+                                    SELECT COUNT(r.ReviewID) FROM Review r;";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@filter", filter);
                 parameters.Add("@pageSize", pageSize);
@@ -297,7 +297,7 @@ namespace WebFilm.Infrastructure.Repository
                         case "everyone":
                             break;
                         case "friends":
-                            join = "LEFT JOIN follow f2 ON f2.UserID = @userID ";
+                            join = "LEFT JOIN Follow f2 ON f2.UserID = @userID ";
                             where = "AND r.UserID = f2.FollowedUserID";
                             break;
                         case "you":
@@ -315,18 +315,18 @@ namespace WebFilm.Infrastructure.Repository
                                         'Avatar', u.Avatar,
                                         'FullName', u.FullName
                                     ) AS User
-                                    FROM review r 
+                                    FROM Review r 
                                     {join}
-                                    INNER JOIN user u ON u.UserID = r.UserID {where}
-                                    LEFT JOIN `like` l ON r.ReviewID = l.ParentID AND l.UserID = @userID AND l.Type = 'Review'
+                                    INNER JOIN User u ON u.UserID = r.UserID {where}
+                                    LEFT JOIN `Like` l ON r.ReviewID = l.ParentID AND l.UserID = @userID AND l.Type = 'Review'
                                     WHERE r.FilmID = @filmID
                                     GROUP BY r.ReviewID
                                     {orderBy}
                                     LIMIT @pageSize OFFSET @offset;
 
-                                    SELECT COUNT(DISTINCT r.ReviewID) FROM review r
+                                    SELECT COUNT(DISTINCT r.ReviewID) FROM Review r
                                     {join}
-                                    INNER JOIN user u ON u.UserID = r.UserID {where}
+                                    INNER JOIN User u ON u.UserID = r.UserID {where}
                                     WHERE r.FilmID = @filmID;";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@filter", parameter.filter);
@@ -356,7 +356,7 @@ namespace WebFilm.Infrastructure.Repository
                 }
                 var total = result.Read<int>().Single();
                 int totalPage = (int)Math.Ceiling((double)total / parameter.pageSize);
-                sqlCommand = @$"SELECT f.FilmID, f.poster_path Poster_path, f.release_date Release_date, f.title Title FROM film f WHERE f.FilmID = @filmID";
+                sqlCommand = @$"SELECT f.FilmID, f.poster_path Poster_path, f.release_date Release_date, f.title Title FROM Film f WHERE f.FilmID = @filmID";
                 var film = await SqlConnection.QueryAsync(sqlCommand, parameters);
                 return new
                 {
@@ -374,7 +374,7 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCommand = "SELECT ParentID as ListID, COUNT(*) as LikeCounts FROM `like` " +
+                var sqlCommand = "SELECT ParentID as ListID, COUNT(*) as LikeCounts FROM `Like` " +
                     "WHERE createdDate >= DATE_SUB(NOW(), INTERVAL 1 WEEK) and `type` = 'Review' " +
                     "GROUP BY ParentID ORDER BY LikeCounts DESC LIMIT 6;";
                 DynamicParameters parameters = new DynamicParameters();
@@ -456,7 +456,7 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCommand = "SELECT FilmID as ListID, COUNT(*) as LikeCounts FROM `review` " +
+                var sqlCommand = "SELECT FilmID as ListID, COUNT(*) as LikeCounts FROM `Review` " +
                     "WHERE createdDate >= DATE_SUB(NOW(), INTERVAL 1 MONTH) " +
                     "GROUP BY FilmID ORDER BY LikeCounts DESC;";
                 DynamicParameters parameters = new DynamicParameters();
