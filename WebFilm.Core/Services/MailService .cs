@@ -29,8 +29,11 @@ namespace WebFilm.Core.Services
 
                 #region Sender / Receiver
                 // Sender
-                mail.From.Add(new MailboxAddress(_settings.DisplayName, mailData.From ?? _settings.From));
-                mail.Sender = new MailboxAddress(mailData.DisplayName ?? _settings.DisplayName, mailData.From ?? _settings.From);
+                //mail.From.Add(new MailboxAddress(_settings.DisplayName, mailData.From ?? _settings.From));
+                //mail.Sender = new MailboxAddress(mailData.DisplayName ?? _settings.DisplayName, mailData.From ?? _settings.From);
+
+                mail.From.Add(new MailboxAddress("Web Film", mailData.From ?? "filmjournaluet@gmail.com"));
+                mail.Sender = new MailboxAddress(mailData.DisplayName ?? "Web Film", mailData.From ?? "filmjournaluet@gmail.com");
 
                 // Receiver
                 foreach (string mailAddress in mailData.To)
@@ -72,11 +75,17 @@ namespace WebFilm.Core.Services
 
                 using var smtp = new SmtpClient();
 
-                if (_settings.UseSSL)
-                {
-                }
-                await smtp.ConnectAsync(_settings.Host, _settings.Port, SecureSocketOptions.StartTls, ct);
-                await smtp.AuthenticateAsync(_settings.UserName, _settings.Password, ct);
+                
+
+                //if (_settings.UseSSL){                }
+
+                //await smtp.ConnectAsync(_settings.Host, _settings.Port, SecureSocketOptions.StartTls, ct);
+                //await smtp.AuthenticateAsync(_settings.UserName, _settings.Password, ct);
+                //await smtp.SendAsync(mail, ct);
+                //await smtp.DisconnectAsync(true, ct);
+
+                await smtp.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls, ct);
+                await smtp.AuthenticateAsync("filmjournaluet@gmail.com", "ronmhvaofupiienr", ct);
                 await smtp.SendAsync(mail, ct);
                 await smtp.DisconnectAsync(true, ct);
 

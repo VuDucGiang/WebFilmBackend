@@ -128,18 +128,18 @@ namespace WebFilm.Core.Services
             var res = _userRepository.Signup(user);
 
             // Gửi mail
-            //MailTemplate welcomeMail = new MailTemplate()
-            //{
-            //    Email = user.Email,
-            //    Name = user.UserName
-            //};
-            //MailData mailData = new MailData()
-            //{
-            //    To = new List<string>() { user.Email },
-            //    Subject = "Thank you for signing up",
-            //    Body = _mail.GetEmailTemplate("welcome", welcomeMail)
-            //};
-            //_mail.SendAsync(mailData, new CancellationToken());
+            MailTemplate welcomeMail = new MailTemplate()
+            {
+               Email = user.Email,
+                Name = user.UserName
+            };
+            MailData mailData = new MailData()
+            {
+                To = new List<string>() { user.Email },
+                Subject = "Thank you for signing up",
+                Body = _mail.GetEmailTemplate("welcome", welcomeMail)
+            };
+            _mail.SendAsync(mailData, new CancellationToken());
 
             return res;
         }
