@@ -139,7 +139,7 @@ namespace WebFilm.Core.Services
                 Subject = "Thank you for signing up",
                 Body = _mail.GetEmailTemplate("welcome", welcomeMail)
             };
-            _mail.SendAsync(mailData, new CancellationToken());
+            //_mail.SendAsync(mailData, new CancellationToken());
 
             return res;
         }
