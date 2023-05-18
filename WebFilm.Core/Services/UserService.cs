@@ -116,11 +116,11 @@ namespace WebFilm.Core.Services
            // }
 
             //UserName không được phép trùng
-            var isDuplicateUsername = _userRepository.CheckDuplicateUserName(user.UserName);
-            if (isDuplicateUsername)
-            {
-                throw new ServiceException(Resources.Resource.Error_Duplicate_UserName);
-            }
+            //var isDuplicateUsername = _userRepository.CheckDuplicateUserName(user.UserName);
+            //if (isDuplicateUsername)
+            //{
+            //    throw new ServiceException(Resources.Resource.Error_Duplicate_UserName);
+            //}
 
             //Chờ xác nhận
             user.Status = 1;
