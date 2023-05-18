@@ -25,7 +25,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
 
-                var sqlCommand = @$"INSERT INTO watchlist (UserID, FilmID, CreatedDate, ModifiedDate)
+                var sqlCommand = @$"INSERT INTO WatchList (UserID, FilmID, CreatedDate, ModifiedDate)
                                     VALUES (@userID, @filmID, NOW(), NOW());";
 
                 DynamicParameters parameters = new DynamicParameters();
@@ -44,7 +44,7 @@ namespace WebFilm.Infrastructure.Repository
                 var listfilmID = param.filmIDs.Split(',');
                 foreach (var item in listfilmID)
                 {
-                    var sqlCommand = @$"DELETE FROM watchlist Where FilmID = @filmID AND UserID = @userID;";
+                    var sqlCommand = @$"DELETE FROM WatchList Where FilmID = @filmID AND UserID = @userID;";
 
                     DynamicParameters parameters = new DynamicParameters();
                     parameters.Add("filmID", item);

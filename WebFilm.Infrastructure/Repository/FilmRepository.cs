@@ -48,17 +48,17 @@ namespace WebFilm.Infrastructure.Repository
                             COUNT(DISTINCT f1.FollowID) AS Follower,
                             COUNT(DISTINCT f2.FollowID) AS Following,
                             COUNT(DISTINCT r.ReviewID) AS Reviews
-                            FROM `like` l
-                            LEFT JOIN user u ON l.UserID = u.UserID
-                            LEFT JOIN follow f1 ON u.UserID = f1.FollowedUserID 
-                            LEFT JOIN follow f2 ON u.UserID = f2.UserID
-                            LEFT JOIN review r ON u.UserID = r.UserID
+                            FROM `Like` l
+                            LEFT JOIN User u ON l.UserID = u.UserID
+                            LEFT JOIN Follow f1 ON u.UserID = f1.FollowedUserID 
+                            LEFT JOIN Follow f2 ON u.UserID = f2.UserID
+                            LEFT JOIN Review r ON u.UserID = r.UserID
                             WHERE l.Type = 'Film' AND l.ParentID = @filmID
                             Group by u.UserID
                             LIMIT @pageSize OFFSET @offset;
                             
                             SELECT COUNT(DISTINCT l.UserID)
-                            FROM `like` l
+                            FROM `Like` l
                             WHERE l.Type = 'Film' AND l.ParentID = @filmID";
 
                 DynamicParameters parameters = new DynamicParameters();
@@ -71,7 +71,7 @@ namespace WebFilm.Infrastructure.Repository
                 var data = result.Read<object>().ToList();
                 var total = result.Read<int>().Single();
                 int totalPage = (int)Math.Ceiling((double)total / pageSize);
-                sql = @$"SELECT f.FilmID, f.poster_path Poster_path, f.release_date Release_date, f.title Title FROM film f WHERE f.FilmID = @filmID";
+                sql = @$"SELECT f.FilmID, f.poster_path Poster_path, f.release_date Release_date, f.title Title FROM Film f WHERE f.FilmID = @filmID";
                 var film = await SqlConnection.QueryAsync(sql, parameters);
                 return new
                 {
@@ -93,7 +93,7 @@ namespace WebFilm.Infrastructure.Repository
                 var msg = "";
                 foreach (var item in listIDArr)
                 {
-                    var sqlCommand = @$"SELECT l.ListName FROM filmlist f LEFT JOIN list l ON f.ListID = l.ListID WHERE f.FilmID = @filmID AND f.ListID = @listID";
+                    var sqlCommand = @$"SELECT l.ListName FROM FilmList f LEFT JOIN List l ON f.ListID = l.ListID WHERE f.FilmID = @filmID AND f.ListID = @listID";
 
                     DynamicParameters parameters = new DynamicParameters();
                     parameters.Add("filmID", filmID);
@@ -116,7 +116,7 @@ namespace WebFilm.Infrastructure.Repository
                 var listIDArr = listIDs.Split(',');
                 foreach (var item in listIDArr)
                 {
-                    var sqlCommand = @$"SELECT l.UserID FROM list l WHERE l.ListID = @listID";
+                    var sqlCommand = @$"SELECT l.UserID FROM List l WHERE l.ListID = @listID";
                     DynamicParameters parameters = new DynamicParameters();
                     parameters.Add("listID", item);
                     var result = await SqlConnection.QueryAsync<Guid>(sqlCommand, parameters);
@@ -140,7 +140,7 @@ namespace WebFilm.Infrastructure.Repository
                 var listIDArr = listIDs.Split(',');
                 foreach (var item in listIDArr)
                 {
-                    var sqlCommand = @$"INSERT INTO filmlist (FilmID, ListID, CreatedDate, ModifiedDate)
+                    var sqlCommand = @$"INSERT INTO FilmList (FilmID, ListID, CreatedDate, ModifiedDate)
                                         VALUES (@filmID, @listID, NOW(), NOW());";
 
                     DynamicParameters parameters = new DynamicParameters();
@@ -193,8 +193,8 @@ namespace WebFilm.Infrastructure.Repository
                 //Thực thi lấy dữ liệu
                 var sqlCommand = @$"SELECT f.*,
                                     COUNT(DISTINCT f1.ListID) AS Appears
-                                    FROM film f
-                                    LEFT JOIN filmlist f1 ON f.FilmID = f1.FilmID
+                                    FROM Film f
+                                    LEFT JOIN FilmList f1 ON f.FilmID = f1.FilmID
                                     WHERE f.FilmID = @id
                                     GROUP BY f.FilmID;";
                 DynamicParameters parameters = new DynamicParameters();
@@ -217,7 +217,7 @@ namespace WebFilm.Infrastructure.Repository
                                           'poster_path', c1.poster_path
                                         )
                                       ) AS credits
-                                    FROM credit c1 
+                                    FROM Credit c1 
                                     WHERE c1.FilmID = @id;";
                 var credits = await SqlConnection.QueryAsync<string>(sqlCommand, parameters);
                 if (credits.ToList().Count > 0)
@@ -238,10 +238,10 @@ namespace WebFilm.Infrastructure.Repository
                                     IF(r.ReviewID IS NOT NULL, True, False) AS Reviewed,
                                     IF(w.watchlistID IS NOT NULL, True, False) AS Watchlisted,
                                     IF(l.LikeID IS NOT NULL, True, False) AS Liked 
-                                    FROM film f
-                                    LEFT JOIN `like` l ON f.FilmID = l.ParentID AND l.UserID = @userID AND l.Type = 'Film'
-                                    LEFT JOIN review r ON r.FilmID = f.FilmID AND r.UserID = @userID
-                                    LEFT JOIN watchlist w ON  f.FilmID = w.FilmID AND w.UserID = @userID
+                                    FROM Film f
+                                    LEFT JOIN `Like` l ON f.FilmID = l.ParentID AND l.UserID = @userID AND l.Type = 'Film'
+                                    LEFT JOIN Review r ON r.FilmID = f.FilmID AND r.UserID = @userID
+                                    LEFT JOIN WatchList w ON  f.FilmID = w.FilmID AND w.UserID = @userID
                                     WHERE f.FilmID = @id
                                     GROUP BY f.FilmID;";
                 DynamicParameters parameters = new DynamicParameters();
@@ -259,7 +259,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 int offset = (parameter.pageIndex - 1) * parameter.pageSize;
-                var sql = "SELECT f.FilmID, f.poster_path AS Poster_path, f.title AS Title, f.release_date AS Release_date, COUNT(f1.ListID) AS Appears, IF(l.LikeID IS NOT NULL, True, False) AS Liked FROM Film f LEFT JOIN `like` l ON f.FilmID = l.ParentID AND l.UserID = @userID AND l.Type = 'Film' LEFT JOIN filmlist f1 ON f.FilmID = f1.FilmID ";
+                var sql = "SELECT f.FilmID, f.poster_path AS Poster_path, f.title AS Title, f.release_date AS Release_date, COUNT(f1.ListID) AS Appears, IF(l.LikeID IS NOT NULL, True, False) AS Liked FROM Film f LEFT JOIN `Like` l ON f.FilmID = l.ParentID AND l.UserID = @userID AND l.Type = 'Film' LEFT JOIN FilmList f1 ON f.FilmID = f1.FilmID ";
                 var where = "WHERE 1=1";
                 var orderBy = "";
                 DynamicParameters parameters = new DynamicParameters();
@@ -335,15 +335,15 @@ namespace WebFilm.Infrastructure.Repository
                     default:
                         break;
                 }
-                var sqlCommand = @$"SELECT f.FilmID, f.poster_path AS Poster_path, f.title AS Title, f.release_date AS Release_date, f.LikesCount, f.ReviewsCount, COUNT(f1.ListID) AS Appears, IF(l.LikeID IS NOT NULL, True, False) AS Liked, COUNT(l1.LikeID) AS LikeInSort FROM film f
-                                    LEFT JOIN `like` l ON f.FilmID = l.ParentID AND l.UserID = @userID AND l.Type = 'Film'
-                                    LEFT JOIN filmlist f1 ON f.FilmID = f1.FilmID
-                                    LEFT JOIN `like` l1 ON f.FilmID = l1.ParentID AND l1.Type = 'Film' {where}
+                var sqlCommand = @$"SELECT f.FilmID, f.poster_path AS Poster_path, f.title AS Title, f.release_date AS Release_date, f.LikesCount, f.ReviewsCount, COUNT(f1.ListID) AS Appears, IF(l.LikeID IS NOT NULL, True, False) AS Liked, COUNT(l1.LikeID) AS LikeInSort FROM Film f
+                                    LEFT JOIN `Like` l ON f.FilmID = l.ParentID AND l.UserID = @userID AND l.Type = 'Film'
+                                    LEFT JOIN FilmList f1 ON f.FilmID = f1.FilmID
+                                    LEFT JOIN `Like` l1 ON f.FilmID = l1.ParentID AND l1.Type = 'Film' {where}
                                     GROUP BY f.FilmID
                                     ORDER BY LikeInSort DESC
                                     LIMIT @pageSize OFFSET @offset;
 
-                                    SELECT COUNT(*) FROM film f;";
+                                    SELECT COUNT(*) FROM Film f;";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@filter", filter);
                 parameters.Add("@pageSize", pageSize);
@@ -371,13 +371,13 @@ namespace WebFilm.Infrastructure.Repository
             {
                 //Thực thi lấy dữ liệu
                 var sqlCommand = @$"SELECT r.ReviewID, r.FilmID, MAX(r.CreatedDate) AS LatestReviewDate, f.title AS Title, f.poster_path AS Poster_path, f.release_date AS Release_date
-                                    FROM review r
-                                    JOIN film f ON r.FilmID = f.FilmID
+                                    FROM Review r
+                                    JOIN Film f ON r.FilmID = f.FilmID
                                     GROUP BY r.FilmID
                                     ORDER BY LatestReviewDate DESC
                                     LIMIT 12;
 
-                                    SELECT COUNT(DISTINCT r.FilmID) FROM review r";
+                                    SELECT COUNT(DISTINCT r.FilmID) FROM Review r";
 
                 var result = await SqlConnection.QueryMultipleAsync(sqlCommand);
                 //Trả dữ liệu về client
@@ -397,8 +397,8 @@ namespace WebFilm.Infrastructure.Repository
             {
                 //Thực thi lấy dữ liệu
                 int offset = (parameter.pageIndex - 1) * parameter.pageSize;
-                var sqlCommand = @$"SELECT rf.FilmID, rf.poster_path Poster_path FROM related_film rf WHERE rf.DetailFilmID = @id LIMIT @pageSize OFFSET @offset;
-                                    SELECT COUNT(rf.Related_filmID) FROM related_film rf WHERE rf.DetailFilmID = @id";
+                var sqlCommand = @$"SELECT rf.FilmID, rf.poster_path Poster_path FROM Related_film rf WHERE rf.DetailFilmID = @id LIMIT @pageSize OFFSET @offset;
+                                    SELECT COUNT(rf.Related_filmID) FROM Related_film rf WHERE rf.DetailFilmID = @id";
 
                 //Trả dữ liệu về client
                 DynamicParameters parameters = new DynamicParameters();
@@ -428,8 +428,8 @@ namespace WebFilm.Infrastructure.Repository
             {
                 //Thực thi lấy dữ liệu
                 int offset = (parameter.pageIndex - 1) * parameter.pageSize;
-                var sqlCommand = @$"SELECT sf.FilmID, sf.poster_path Poster_path FROM similar_film sf WHERE sf.DetailFilmID = @id LIMIT @pageSize OFFSET @offset;
-                                    SELECT COUNT(sf.Similar_filmID) FROM similar_film sf WHERE sf.DetailFilmID = @id";
+                var sqlCommand = @$"SELECT sf.FilmID, sf.poster_path Poster_path FROM Similar_film sf WHERE sf.DetailFilmID = @id LIMIT @pageSize OFFSET @offset;
+                                    SELECT COUNT(sf.Similar_filmID) FROM Similar_film sf WHERE sf.DetailFilmID = @id";
 
                 //Trả dữ liệu về client
                 DynamicParameters parameters = new DynamicParameters();

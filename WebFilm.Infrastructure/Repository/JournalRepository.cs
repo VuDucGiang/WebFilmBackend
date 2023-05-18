@@ -31,7 +31,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
 
-                var sqlCommand = "SELECT Author,Banner,Category,CreatedDate,Intro,JournalID,MentionedFilm,ModifiedDate,Title FROM journal order by CreatedDate desc LIMIT 7";
+                var sqlCommand = "SELECT Author,Banner,Category,CreatedDate,Intro,JournalID,MentionedFilm,ModifiedDate,Title FROM Journal order by CreatedDate desc LIMIT 7";
                 var journal = SqlConnection.Query<JournalLite>(sqlCommand);
 
 
@@ -59,7 +59,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
 
-                var sqlCommand = "SELECT Author,Banner,Category,CreatedDate,Intro,JournalID,MentionedFilm,ModifiedDate,Title FROM journal WHERE Category = 'Review' order by CreatedDate desc LIMIT 3";
+                var sqlCommand = "SELECT Author,Banner,Category,CreatedDate,Intro,JournalID,MentionedFilm,ModifiedDate,Title FROM Journal WHERE Category = 'Review' order by CreatedDate desc LIMIT 3";
                 var journal = SqlConnection.Query<JournalLite>(sqlCommand);
 
                 
@@ -74,7 +74,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
 
-                var sqlCommand = "SELECT Author,Banner,Category,CreatedDate,Intro,JournalID,MentionedFilm,ModifiedDate,Title FROM journal WHERE Category = 'News' order by CreatedDate desc LIMIT 3";
+                var sqlCommand = "SELECT Author,Banner,Category,CreatedDate,Intro,JournalID,MentionedFilm,ModifiedDate,Title FROM Journal WHERE Category = 'News' order by CreatedDate desc LIMIT 3";
                 var journal = SqlConnection.Query<JournalLite>(sqlCommand);
 
 
@@ -89,7 +89,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 int offset = (pageIndex - 1) * pageSize;
-                var sql = "SELECT Author,Banner,Category,CreatedDate,Intro,JournalID,MentionedFilm,ModifiedDate,Title FROM journal order by CreatedDate desc LIMIT @pageSize OFFSET @offset;";
+                var sql = "SELECT Author,Banner,Category,CreatedDate,Intro,JournalID,MentionedFilm,ModifiedDate,Title FROM Journal order by CreatedDate desc LIMIT @pageSize OFFSET @offset;";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@pageSize", pageSize);
                 parameters.Add("@offset", offset);

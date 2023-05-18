@@ -30,7 +30,7 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sql = "SELECT * FROM question q where q.FilmID = @FilmID;";
+                var sql = "SELECT * FROM Question q where q.FilmID = @FilmID;";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@FilmID", FilmID);
                 var result = SqlConnection.Query<Question>(sql,parameters);
@@ -38,7 +38,7 @@ namespace WebFilm.Infrastructure.Repository
                 var total = listQues.Count;
                 List<QuesAndAns> listQuesAndAns = new List<QuesAndAns>();
 
-                var sql2 = "SELECT * FROM answer;";
+                var sql2 = "SELECT * FROM Answer;";
                 var result2 = SqlConnection.Query<Answer>(sql2);
                 List<Answer> allAnswers = result2.ToList();
 

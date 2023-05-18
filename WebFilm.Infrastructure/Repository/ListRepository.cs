@@ -49,19 +49,19 @@ namespace WebFilm.Infrastructure.Repository
                                         'Avatar', u.Avatar,
                                         'FullName', u.FullName
                                     ) AS User
-                                    FROM list l
-                                    LEFT JOIN filmlist f ON l.ListID = f.ListID
-                                    INNER JOIN film f1 ON f.FilmID = f1.FilmID
-                                    LEFT JOIN user u ON u.UserID = l.UserID
+                                    FROM List l
+                                    LEFT JOIN FilmList f ON l.ListID = f.ListID
+                                    INNER JOIN Film f1 ON f.FilmID = f1.FilmID
+                                    LEFT JOIN User u ON u.UserID = l.UserID
                                     WHERE u.UserName = @userName AND 
                                     ((l.Private = 1 AND l.UserID = @userID) OR l.Private = 0) 
                                     GROUP BY l.ListID
                                     LIMIT @pageSize OFFSET @offset;
 
-                                    SELECT COUNT(DISTINCT f.ListID) FROM list l
-                                    LEFT JOIN filmlist f ON l.ListID = f.ListID
-                                    INNER JOIN film f1 ON f.FilmID = f1.FilmID
-                                    LEFT JOIN user u ON u.UserID = l.UserID
+                                    SELECT COUNT(DISTINCT f.ListID) FROM List l
+                                    LEFT JOIN FilmList f ON l.ListID = f.ListID
+                                    INNER JOIN Film f1 ON f.FilmID = f1.FilmID
+                                    LEFT JOIN User u ON u.UserID = l.UserID
                                     WHERE u.UserName = @userName AND 
                                     ((l.Private = 1 AND l.UserID = @userID) OR l.Private = 0);";
                 DynamicParameters parameters = new DynamicParameters();
@@ -125,7 +125,7 @@ namespace WebFilm.Infrastructure.Repository
                 var filmIDs = list.FilmIDs.Split(',');
                 foreach (var item in filmIDs)
                 {
-                    var sqlCommand = @$"INSERT INTO filmlist (FilmID, ListID, CreatedDate, ModifiedDate)
+                    var sqlCommand = @$"INSERT INTO FilmList (FilmID, ListID, CreatedDate, ModifiedDate)
                                         VALUES (@filmID, @listID, NOW(), NOW());";
 
                     DynamicParameters parameters = new DynamicParameters();
@@ -146,14 +146,14 @@ namespace WebFilm.Infrastructure.Repository
             await this.EditListMaster(list);
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCommand = @$"DELETE FROM filmlist WHERE ListID = @listID;";
+                var sqlCommand = @$"DELETE FROM FilmList WHERE ListID = @listID;";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("listID", list.ListID);
                 await SqlConnection.ExecuteAsync(sqlCommand, parameters);
                 var filmIDs = list.FilmIDs.Split(',');
                 foreach (var item in filmIDs)
                 {
-                    sqlCommand = @$"INSERT INTO filmlist (FilmID, ListID, CreatedDate, ModifiedDate)
+                    sqlCommand = @$"INSERT INTO FilmList (FilmID, ListID, CreatedDate, ModifiedDate)
                                         VALUES (@filmID, @listID, NOW(), NOW());";
 
                     parameters.Add("filmID", item);
@@ -167,8 +167,8 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCommand = @$"DELETE FROM list l WHERE l.ListID = @listID;
-                                    DELETE FROM filmlist fl WHERE fl.ListID = @listID;";
+                var sqlCommand = @$"DELETE FROM List l WHERE l.ListID = @listID;
+                                    DELETE FROM FilmList fl WHERE fl.ListID = @listID;";
                                     
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("listID", listID);
@@ -181,7 +181,7 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCommand = @$"INSERT INTO list(ListID, UserID, ListName, Description, CreatedDate, ModifiedDate)
+                var sqlCommand = @$"INSERT INTO List(ListID, UserID, ListName, Description, CreatedDate, ModifiedDate)
                                     VALUES(@listID, @userID, @listName, @description, NOW(), NOW());";
 
                 DynamicParameters parameters = new DynamicParameters();
@@ -198,7 +198,7 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCommand = @$"UPDATE list l 
+                var sqlCommand = @$"UPDATE List l 
                                     SET ListName = @listName,
                                         Description = @description,
                                         ModifiedDate = NOW()
@@ -217,7 +217,7 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCommand = @$"SELECT COALESCE(MAX(ListID), 0) + 1 FROM list;";
+                var sqlCommand = @$"SELECT COALESCE(MAX(ListID), 0) + 1 FROM List;";
 
                 var result = await SqlConnection.QueryAsync<int>(sqlCommand);
                 return result.FirstOrDefault();
@@ -254,7 +254,7 @@ namespace WebFilm.Infrastructure.Repository
                         case "everyone":
                             break;
                         case "friends":
-                            join = "LEFT JOIN follow f2 ON f2.UserID = @userID ";
+                            join = "LEFT JOIN Follow f2 ON f2.UserID = @userID ";
                             where = "AND l.UserID = f2.FollowedUserID";
                             break;
                         case "you":
@@ -281,25 +281,25 @@ namespace WebFilm.Infrastructure.Repository
                                         'Avatar', u.Avatar,
                                         'FullName', u.FullName
                                     ) AS User
-                                    FROM list l
+                                    FROM List l
                                     {join}
-                                    LEFT JOIN filmlist f ON l.ListID = f.ListID
-                                    LEFT JOIN filmlist f2 ON f.ListID = f2.ListID
-                                    INNER JOIN film f1 ON f2.FilmID = f1.FilmID
-                                    LEFT JOIN user u ON u.UserID = l.UserID {where}
-                                    LEFT JOIN `like` l1 ON l.ListID = l1.ParentID AND l1.UserID = @userID AND l1.Type = 'List'
+                                    LEFT JOIN FilmList f ON l.ListID = f.ListID
+                                    LEFT JOIN FilmList f2 ON f.ListID = f2.ListID
+                                    INNER JOIN Film f1 ON f2.FilmID = f1.FilmID
+                                    LEFT JOIN User u ON u.UserID = l.UserID {where}
+                                    LEFT JOIN `Like` l1 ON l.ListID = l1.ParentID AND l1.UserID = @userID AND l1.Type = 'List'
                                     WHERE f.FilmID = @filmID
                                     GROUP BY l.ListID
                                     {orderBy}
                                     LIMIT @pageSize OFFSET @offset;
 
-                                    SELECT COUNT(DISTINCT l.ListID) FROM list l
+                                    SELECT COUNT(DISTINCT l.ListID) FROM List l
                                     {join}
-                                    LEFT JOIN filmlist f ON l.ListID = f.ListID
-                                    LEFT JOIN filmlist f2 ON f.ListID = f2.ListID
-                                    INNER JOIN film f1 ON f2.FilmID = f1.FilmID
-                                    LEFT JOIN user u ON u.UserID = l.UserID {where}
-                                    LEFT JOIN `like` l1 ON l.ListID = l1.ParentID AND l1.UserID = @userID AND l1.Type = 'List'
+                                    LEFT JOIN Filmlist f ON l.ListID = f.ListID
+                                    LEFT JOIN Filmlist f2 ON f.ListID = f2.ListID
+                                    INNER JOIN Film f1 ON f2.FilmID = f1.FilmID
+                                    LEFT JOIN User u ON u.UserID = l.UserID {where}
+                                    LEFT JOIN `Like` l1 ON l.ListID = l1.ParentID AND l1.UserID = @userID AND l1.Type = 'List'
                                     WHERE f.FilmID = @filmID";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@filter", parameter.filter);
@@ -342,7 +342,7 @@ namespace WebFilm.Infrastructure.Repository
                 }
                 var total = result.Read<int>().Single();
                 int totalPage = (int)Math.Ceiling((double)total / parameter.pageSize);
-                sqlCommand = @$"SELECT f.FilmID, f.poster_path Poster_path, f.release_date Release_date, f.title Title FROM film f WHERE f.FilmID = @filmID";
+                sqlCommand = @$"SELECT f.FilmID, f.poster_path Poster_path, f.release_date Release_date, f.title Title FROM Film f WHERE f.FilmID = @filmID";
                 var film = await SqlConnection.QueryAsync(sqlCommand, parameters);
                 return new
                 {
@@ -360,7 +360,7 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCommand = "SELECT ParentID as ListID, COUNT(*) as LikeCounts FROM `like` " +
+                var sqlCommand = "SELECT ParentID as ListID, COUNT(*) as LikeCounts FROM `Like` " +
                     "WHERE createdDate >= DATE_SUB(NOW(), INTERVAL 1 MONTH) and `type` = 'List' " +
                     "GROUP BY ParentID ORDER BY LikeCounts DESC LIMIT 5;";
                 DynamicParameters parameters = new DynamicParameters();
@@ -376,7 +376,7 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCommand = "SELECT ParentID as ListID, COUNT(*) as LikeCounts FROM `like` " +
+                var sqlCommand = "SELECT ParentID as ListID, COUNT(*) as LikeCounts FROM `Like` " +
                     "WHERE createdDate >= DATE_SUB(NOW(), INTERVAL 1 WEEK) and `type` = 'List' " +
                     "GROUP BY ParentID ORDER BY LikeCounts DESC LIMIT 3;";
                 DynamicParameters parameters = new DynamicParameters();
@@ -392,7 +392,7 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCommand = "SELECT parentID as ListID, MAX(createdDate) as Date FROM `like` " +
+                var sqlCommand = "SELECT parentID as ListID, MAX(createdDate) as Date FROM `Like` " +
                     "where `type` = 'List' " +
                     "GROUP BY parentID ORDER BY Date DESC LIMIT 6;";
                 DynamicParameters parameters = new DynamicParameters();
@@ -409,7 +409,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 var sqlCommand = "SELECT l.ListID as ListID, l.CommentsCount AS LikeCounts " +
-                    "FROM list l " +
+                    "FROM List l " +
                     "ORDER BY LikeCounts DESC LIMIT 3";
                 DynamicParameters parameters = new DynamicParameters();
                 var lists = SqlConnection.Query<ListPopularWeekDTO>(sqlCommand);
@@ -424,7 +424,7 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCommand = "SELECT ParentID as ListID, COUNT(*) as LikeCounts FROM `like` " +
+                var sqlCommand = "SELECT ParentID as ListID, COUNT(*) as LikeCounts FROM `Like` " +
                     "WHERE `type` = 'List' " +
                     "GROUP BY ParentID ORDER BY LikeCounts DESC LIMIT 2;";
                 DynamicParameters parameters = new DynamicParameters();

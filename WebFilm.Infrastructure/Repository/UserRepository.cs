@@ -24,10 +24,10 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCommand = @$"DELETE FROM follow WHERE FollowedUserID = @followedUserID AND UserID = @userID;";
+                var sqlCommand = @$"DELETE FROM Follow WHERE FollowedUserID = @followedUserID AND UserID = @userID;";
                 if (follow)
                 {
-                    sqlCommand = @$"INSERT INTO follow (UserID, UserName, FollowedUserID, FollowedUserName, CreatedDate, ModifiedDate)
+                    sqlCommand = @$"INSERT INTO Follow (UserID, UserName, FollowedUserID, FollowedUserName, CreatedDate, ModifiedDate)
                                         SELECT @userID, @userName, u.UserID, u.UserName, NOW(), NOW() FROM user u WHERE u.UserID = @followedUserID;";
                 }
                 DynamicParameters parameters = new DynamicParameters();
@@ -72,7 +72,7 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCommand = $@"INSERT INTO user (UserID, UserName, FullName, Password, Email, DateOfBirth, Status, RoleType, ModifiedDate)
+                var sqlCommand = $@"INSERT INTO User (UserID, UserName, FullName, Password, Email, DateOfBirth, Status, RoleType, ModifiedDate)
                                               VALUES (UUID(), @v_UserName, @v_FullName, @v_Password, @v_Email, @v_DateOfBirth, @v_Status, @v_RoleType, NOW());";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("v_UserName", user.UserName);
@@ -99,7 +99,7 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCommand = $"SELECT * FROM user WHERE Email = @v_Email";
+                var sqlCommand = $"SELECT * FROM User WHERE Email = @v_Email";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@v_Email", email);
                 var res = SqlConnection.QueryFirstOrDefault<UserDto>(sqlCommand, parameters);
@@ -152,7 +152,7 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCheck = "UPDATE user SET Status = 2 WHERE Email = @v_Email";
+                var sqlCheck = "UPDATE User SET Status = 2 WHERE Email = @v_Email";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@v_Email", email);
 
@@ -166,7 +166,7 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCheck = "UPDATE user u SET Password = @v_NewPass WHERE u.Email = @v_Email;";
+                var sqlCheck = "UPDATE User u SET Password = @v_NewPass WHERE u.Email = @v_Email;";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@v_Email", email);
                 parameters.Add("@v_NewPass", newPass);
@@ -184,7 +184,7 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCheck = @$"UPDATE user u 
+                var sqlCheck = @$"UPDATE User u 
                                 SET UserName = @UserName,
                                     FullName = @FullName,
                                     Bio = @Bio,
@@ -192,13 +192,13 @@ namespace WebFilm.Infrastructure.Repository
                                     ModifiedDate = NOW()
                                 WHERE UserID = @UserID;
                                 
-                                UPDATE follow f 
-                                LEFT JOIN user u1 ON f.FollowedUserID = u1.UserID
+                                UPDATE Follow f 
+                                LEFT JOIN User u1 ON f.FollowedUserID = u1.UserID
                                 SET f.FollowedUserName = u1.UserName
                                 WHERE f.FollowedUserID = @UserID;
 
-                                UPDATE follow f 
-                                LEFT JOIN user u ON f.UserID = u.UserID
+                                UPDATE Follow f 
+                                LEFT JOIN User u ON f.UserID = u.UserID
                                 SET f.UserName = u.UserName
                                 WHERE f.UserID = @UserID;";
                 DynamicParameters parameters = new DynamicParameters();
@@ -217,7 +217,7 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCheck = @$"UPDATE user u 
+                var sqlCheck = @$"UPDATE User u 
                                 SET Avatar = @url,
                                     ModifiedDate = NOW()
                                 WHERE UserID = @UserID;";
@@ -233,7 +233,7 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCheck = @$"UPDATE user u 
+                var sqlCheck = @$"UPDATE User u 
                                 SET Banner = @url,
                                     ModifiedDate = NOW()
                                 WHERE UserID = @UserID;";
@@ -250,7 +250,7 @@ namespace WebFilm.Infrastructure.Repository
            
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCheck = "UPDATE user u SET u.PasswordResetToken = @v_PasswordResetToken, u.ResetTokenExpires = @v_ResetTokenExpires WHERE u.UserID = @v_UserID;";
+                var sqlCheck = "UPDATE User u SET u.PasswordResetToken = @v_PasswordResetToken, u.ResetTokenExpires = @v_ResetTokenExpires WHERE u.UserID = @v_UserID;";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@v_UserID", user.UserID);
                 parameters.Add("@v_PasswordResetToken", user.PasswordResetToken);
@@ -295,15 +295,15 @@ namespace WebFilm.Infrastructure.Repository
                     case TypeUser.All:
                         break;
                     case TypeUser.Following:
-                        tableJoin = "INNER JOIN follow f ON u.UserID = f.FollowedUserID";
+                        tableJoin = "INNER JOIN Follow f ON u.UserID = f.FollowedUserID";
                         where = "f.UserName = @userName";
                         break;
                     case TypeUser.Follower:
-                        tableJoin = "INNER JOIN follow f ON u.UserID = f.UserID";
+                        tableJoin = "INNER JOIN Follow f ON u.UserID = f.UserID";
                         where = "f.FollowedUserName = @userName";
                         break;
                     case TypeUser.Blocked:
-                        tableJoin = "INNER JOIN block b ON u.UserID = b.BlockedUserID";
+                        tableJoin = "INNER JOIN Block b ON u.UserID = b.BlockedUserID";
                         where = "b.UserName = @userName";
                         break;
                     default:
@@ -316,18 +316,18 @@ namespace WebFilm.Infrastructure.Repository
                                     IF(f1.FollowID IS NOT NULL, True, False) AS Followed,
                                     COUNT(DISTINCT f3.FollowID) AS Follower,
                                     COUNT(DISTINCT f4.FollowID) AS Following
-                                    FROM user u 
-                                    LEFT JOIN follow f1 ON u.UserID = f1.FollowedUserID AND @userName = f1.UserName
-                                    LEFT JOIN follow f3 ON u.UserID = f3.FollowedUserID 
-                                    LEFT JOIN follow f4 ON u.UserID = f4.UserID
-                                    LEFT JOIN list l ON u.UserID = l.UserID
-                                    LEFT JOIN `like` l1 ON u.UserID = l1.UserID
-                                    LEFT JOIN review r ON u.UserID = r.UserID
+                                    FROM User u 
+                                    LEFT JOIN Follow f1 ON u.UserID = f1.FollowedUserID AND @userName = f1.UserName
+                                    LEFT JOIN Follow f3 ON u.UserID = f3.FollowedUserID 
+                                    LEFT JOIN Follow f4 ON u.UserID = f4.UserID
+                                    LEFT JOIN List l ON u.UserID = l.UserID
+                                    LEFT JOIN `Like` l1 ON u.UserID = l1.UserID
+                                    LEFT JOIN Review r ON u.UserID = r.UserID
                                     {tableJoin}
                                     WHERE {where} AND (u.UserName LIKE CONCAT('%', @filter, '%') OR u.Email LIKE CONCAT('%', @filter, '%'))
                                     GROUP BY u.UserID
                                     {orderBy} LIMIT @pageSize OFFSET @offset;
-                                    SELECT COUNT(*) FROM user u {tableJoin} WHERE {where};";
+                                    SELECT COUNT(*) FROM User u {tableJoin} WHERE {where};";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@filter", filter);
                 parameters.Add("@pageSize", pageSize);
@@ -379,18 +379,18 @@ namespace WebFilm.Infrastructure.Repository
                                     COUNT(DISTINCT f2.FollowID) AS FollowInSort,
                                     COUNT(DISTINCT f3.FollowID) AS Follower,
                                     COUNT(DISTINCT f4.FollowID) AS Following 
-                                    FROM user u
-                                    LEFT JOIN follow f1 ON f1.UserID = @userId AND u.UserID = f1.FollowedUserID
-                                    LEFT JOIN follow f2 ON u.UserID = f2.FollowedUserID {where}
-                                    LEFT JOIN follow f3 ON u.UserID = f3.FollowedUserID 
-                                    LEFT JOIN follow f4 ON u.UserID = f4.UserID
-                                    LEFT JOIN review r ON u.UserID = r.UserID 
+                                    FROM User u
+                                    LEFT JOIN Follow f1 ON f1.UserID = @userId AND u.UserID = f1.FollowedUserID
+                                    LEFT JOIN Follow f2 ON u.UserID = f2.FollowedUserID {where}
+                                    LEFT JOIN Follow f3 ON u.UserID = f3.FollowedUserID 
+                                    LEFT JOIN Follow f4 ON u.UserID = f4.UserID
+                                    LEFT JOIN Review r ON u.UserID = r.UserID 
                                     WHERE (u.UserName LIKE CONCAT('%', @filter, '%') OR u.Email LIKE CONCAT('%', @filter, '%'))
                                     GROUP BY u.UserID
                                     ORDER BY FollowInSort DESC 
                                     LIMIT @pageSize OFFSET @offset;
 
-                                    SELECT COUNT(*) FROM user u WHERE (u.UserName LIKE CONCAT('%', @filter, '%') OR u.Email LIKE CONCAT('%', @filter, '%'));";
+                                    SELECT COUNT(*) FROM User u WHERE (u.UserName LIKE CONCAT('%', @filter, '%') OR u.Email LIKE CONCAT('%', @filter, '%'));";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@filter", filter);
                 parameters.Add("@pageSize", pageSize);

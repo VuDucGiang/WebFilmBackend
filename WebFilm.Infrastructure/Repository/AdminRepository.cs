@@ -100,7 +100,7 @@ namespace WebFilm.Infrastructure.Repository
             var keyName = "FilmID";
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                StringBuilder sql = new StringBuilder($"UPDATE `film` SET ");
+                StringBuilder sql = new StringBuilder($"UPDATE `Film` SET ");
 
                 PropertyInfo[] properties = typeof(Film_Admin).GetProperties();
 
@@ -173,7 +173,7 @@ namespace WebFilm.Infrastructure.Repository
 
                 var columns = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => p.Name));
                 var values = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => "@" + p.Name));
-                var query = $"INSERT INTO `film` ({columns}) VALUES ({values})";
+                var query = $"INSERT INTO `Film` ({columns}) VALUES ({values})";
 
                 //Trả dữ liệu về client
                 var res = SqlConnection.Execute(query, parameters);
@@ -267,7 +267,7 @@ namespace WebFilm.Infrastructure.Repository
             var keyName = "UserID";
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                StringBuilder sql = new StringBuilder($"UPDATE `user` SET ");
+                StringBuilder sql = new StringBuilder($"UPDATE `User` SET ");
 
                 PropertyInfo[] properties = typeof(User_Admin).GetProperties();
 
@@ -327,7 +327,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 int offset = (parameter.pageIndex - 1) * parameter.pageSize;
-                var sql = "SELECT * FROM journal j ";
+                var sql = "SELECT * FROM Journal j ";
                 var where = "WHERE 1=1";
                 var orderBy = "";
                 DynamicParameters parameters = new DynamicParameters();
@@ -396,7 +396,7 @@ namespace WebFilm.Infrastructure.Repository
             var keyName = "JournalID";
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                StringBuilder sql = new StringBuilder($"UPDATE `journal` SET ");
+                StringBuilder sql = new StringBuilder($"UPDATE `Journal` SET ");
 
                 PropertyInfo[] properties = typeof(Journal_Admin).GetProperties();
 
@@ -462,7 +462,7 @@ namespace WebFilm.Infrastructure.Repository
 
                 var columns = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => p.Name));
                 var values = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => "@" + p.Name));
-                var query = $"INSERT INTO `journal` ({columns}) VALUES ({values})";
+                var query = $"INSERT INTO `Journal` ({columns}) VALUES ({values})";
 
                 //Trả dữ liệu về client
                 var res = SqlConnection.Execute(query, parameters);
@@ -492,7 +492,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 //Thực thi lấy dữ liệu
-                var sqlCommand = $"SELECT * FROM `user` WHERE {keyName} = @id";
+                var sqlCommand = $"SELECT * FROM `User` WHERE {keyName} = @id";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@id", id);
                 //Trả dữ liệu về client
@@ -508,7 +508,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 //Thực thi lấy dữ liệu
-                var sqlCommand = $"SELECT * FROM `film` WHERE {keyName} = @id";
+                var sqlCommand = $"SELECT * FROM `Film` WHERE {keyName} = @id";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@id", id);
                 //Trả dữ liệu về client
@@ -524,7 +524,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 //Thực thi lấy dữ liệu
-                var sqlCommand = $"SELECT * FROM `journal` WHERE {keyName} = @id";
+                var sqlCommand = $"SELECT * FROM `Journal` WHERE {keyName} = @id";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@id", id);
                 //Trả dữ liệu về client
@@ -540,7 +540,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 //Thực thi lấy dữ liệu
-                var sqlCommand = $"SELECT * FROM `question` WHERE {keyName} = @id";
+                var sqlCommand = $"SELECT * FROM `Question` WHERE {keyName} = @id";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@id", id);
                 //Trả dữ liệu về client
@@ -591,7 +591,7 @@ namespace WebFilm.Infrastructure.Repository
 
                 var columns = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => p.Name));
                 var values = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => "@" + p.Name));
-                var query = $"INSERT INTO `question` ({columns}) VALUES ({values})";
+                var query = $"INSERT INTO `Question` ({columns}) VALUES ({values})";
 
                 //Trả dữ liệu về client
                 var res = SqlConnection.Execute(query, parameters);
@@ -605,7 +605,7 @@ namespace WebFilm.Infrastructure.Repository
             var keyName = "QuestionID";
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                StringBuilder sql = new StringBuilder($"UPDATE `question` SET ");
+                StringBuilder sql = new StringBuilder($"UPDATE `Question` SET ");
 
                 PropertyInfo[] properties = typeof(Question_Admin).GetProperties();
 
@@ -652,7 +652,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 int offset = (parameter.pageIndex - 1) * parameter.pageSize;
-                var sql = "SELECT * FROM question q ";
+                var sql = "SELECT * FROM Question q ";
                 var where = "WHERE 1=1";
                 var orderBy = "";
                 DynamicParameters parameters = new DynamicParameters();
@@ -705,7 +705,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 //Thực thi lấy dữ liệu
-                var sqlCommand = $"SELECT * FROM `answer` WHERE {keyName} = @id";
+                var sqlCommand = $"SELECT * FROM `Answer` WHERE {keyName} = @id";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@id", id);
                 //Trả dữ liệu về client
@@ -756,7 +756,7 @@ namespace WebFilm.Infrastructure.Repository
 
                 var columns = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => p.Name));
                 var values = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => "@" + p.Name));
-                var query = $"INSERT INTO `answer` ({columns}) VALUES ({values})";
+                var query = $"INSERT INTO `Answer` ({columns}) VALUES ({values})";
 
                 //Trả dữ liệu về client
                 var res = SqlConnection.Execute(query, parameters);
@@ -770,7 +770,7 @@ namespace WebFilm.Infrastructure.Repository
             var keyName = "AnswerID";
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                StringBuilder sql = new StringBuilder($"UPDATE `answer` SET ");
+                StringBuilder sql = new StringBuilder($"UPDATE `Answer` SET ");
 
                 PropertyInfo[] properties = typeof(Answer_Admin).GetProperties();
 
@@ -817,7 +817,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 int offset = (parameter.pageIndex - 1) * parameter.pageSize;
-                var sql = "SELECT * FROM answer a ";
+                var sql = "SELECT * FROM Answer a ";
                 var where = "WHERE 1=1";
                 var orderBy = "";
                 DynamicParameters parameters = new DynamicParameters();
@@ -880,7 +880,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 //Thực thi lấy dữ liệu
-                var sqlCommand = $"SELECT * FROM `related_film` WHERE {keyName} = @id";
+                var sqlCommand = $"SELECT * FROM `Related_film` WHERE {keyName} = @id";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@id", id);
                 //Trả dữ liệu về client
@@ -931,7 +931,7 @@ namespace WebFilm.Infrastructure.Repository
 
                 var columns = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => p.Name));
                 var values = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => "@" + p.Name));
-                var query = $"INSERT INTO `related_film` ({columns}) VALUES ({values})";
+                var query = $"INSERT INTO `Related_film` ({columns}) VALUES ({values})";
 
                 //Trả dữ liệu về client
                 var res = SqlConnection.Execute(query, parameters);
@@ -945,7 +945,7 @@ namespace WebFilm.Infrastructure.Repository
             var keyName = "Related_filmID";
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                StringBuilder sql = new StringBuilder($"UPDATE `related_film` SET ");
+                StringBuilder sql = new StringBuilder($"UPDATE `Related_film` SET ");
 
                 PropertyInfo[] properties = typeof(Related_film_Admin).GetProperties();
 
@@ -992,7 +992,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 int offset = (parameter.pageIndex - 1) * parameter.pageSize;
-                var sql = "SELECT * FROM related_film r ";
+                var sql = "SELECT * FROM Related_film r ";
                 var where = "WHERE 1=1";
                 var orderBy = "";
                 DynamicParameters parameters = new DynamicParameters();
@@ -1055,7 +1055,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 //Thực thi lấy dữ liệu
-                var sqlCommand = $"SELECT * FROM `similar_film` WHERE {keyName} = @id";
+                var sqlCommand = $"SELECT * FROM `Similar_film` WHERE {keyName} = @id";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@id", id);
                 //Trả dữ liệu về client
@@ -1111,7 +1111,7 @@ namespace WebFilm.Infrastructure.Repository
 
                 var columns = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => p.Name));
                 var values = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => "@" + p.Name));
-                var query = $"INSERT INTO `similar_film` ({columns}) VALUES ({values})";
+                var query = $"INSERT INTO `Similar_film` ({columns}) VALUES ({values})";
 
                 //Trả dữ liệu về client
                 var res = SqlConnection.Execute(query, parameters);
@@ -1125,7 +1125,7 @@ namespace WebFilm.Infrastructure.Repository
             var keyName = "Similar_filmID";
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                StringBuilder sql = new StringBuilder($"UPDATE `similar_film` SET ");
+                StringBuilder sql = new StringBuilder($"UPDATE `Similar_film` SET ");
 
                 PropertyInfo[] properties = typeof(Similar_film_Admin).GetProperties();
 
@@ -1172,7 +1172,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 int offset = (parameter.pageIndex - 1) * parameter.pageSize;
-                var sql = "SELECT * FROM similar_film s ";
+                var sql = "SELECT * FROM Similar_film s ";
                 var where = "WHERE 1=1";
                 var orderBy = "";
                 DynamicParameters parameters = new DynamicParameters();
@@ -1236,7 +1236,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 //Thực thi lấy dữ liệu
-                var sqlCommand = $"SELECT * FROM `credit` WHERE {keyName} = @id";
+                var sqlCommand = $"SELECT * FROM `Credit` WHERE {keyName} = @id";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@id", id);
                 //Trả dữ liệu về client
@@ -1298,7 +1298,7 @@ namespace WebFilm.Infrastructure.Repository
 
                 var columns = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => p.Name));
                 var values = string.Join(", ", properties.Where(p => p.Name != keyName).Select(p => "@" + p.Name));
-                var query = $"INSERT INTO `credit` ({columns}) VALUES ({values})";
+                var query = $"INSERT INTO `Credit` ({columns}) VALUES ({values})";
 
                 //Trả dữ liệu về client
                 var res = SqlConnection.Execute(query, parameters);
@@ -1312,7 +1312,7 @@ namespace WebFilm.Infrastructure.Repository
             var keyName = "credit_id";
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                StringBuilder sql = new StringBuilder($"UPDATE `credit` SET ");
+                StringBuilder sql = new StringBuilder($"UPDATE `Credit` SET ");
 
                 PropertyInfo[] properties = typeof(Credit_Admin).GetProperties();
 
@@ -1359,7 +1359,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 int offset = (parameter.pageIndex - 1) * parameter.pageSize;
-                var sql = "SELECT * FROM credit c ";
+                var sql = "SELECT * FROM Credit c ";
                 var where = "WHERE 1=1";
                 var orderBy = "";
                 DynamicParameters parameters = new DynamicParameters();
