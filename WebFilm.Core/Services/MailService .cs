@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using RazorEngineCore;
+using System.Net.Http;
 using System.Text;
 using WebFilm.Core.Enitites.Mail;
 using WebFilm.Core.Enitites.User;
@@ -15,10 +16,12 @@ namespace WebFilm.Core.Services
     public class MailService : IMailService
     {
         private readonly MailSettings _settings;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public MailService(IOptions<MailSettings> settings)
+        public MailService(IOptions<MailSettings> settings, IHttpContextAccessor httpContextAccessor)
         {
             _settings = settings.Value;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<bool> SendAsync(MailData mailData, CancellationToken ct = default)
@@ -109,6 +112,33 @@ namespace WebFilm.Core.Services
 
         public string LoadTemplate(string emailTemplate)
         {
+            HttpContext httpContext = _httpContextAccessor.HttpContext;
+            if (IsLocalRequest(httpContext))
+            {
+                // Xử lý cho yêu cầu từ localhost
+                string templateDir = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
+                string templatePath = templateDir + $"\\WebFilm.Core\\Enitites\\Mail\\{emailTemplate}.html";
+
+                using FileStream fileStream = new FileStream(templatePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                using StreamReader streamReader = new StreamReader(fileStream, Encoding.Default);
+
+                string mailTemplate = streamReader.ReadToEnd();
+                streamReader.Close();
+
+                return mailTemplate;
+            } else
+            {
+                string templatePath = Path.Combine("WebFilm.Core", "Enitites", "Mail", $"{emailTemplate}.html");
+
+                using (FileStream fileStream = new FileStream(templatePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    using (StreamReader streamReader = new StreamReader(fileStream, Encoding.Default))
+                    {
+                        string mailTemplate = streamReader.ReadToEnd();
+                        return mailTemplate;
+                    }
+                }
+            }
             //string templateDir = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
             //string templatePath = templateDir + $"\\WebFilm.Core\\Enitites\\Mail\\{emailTemplate}.html";
 
@@ -119,16 +149,15 @@ namespace WebFilm.Core.Services
             //streamReader.Close();
 
             //return mailTemplate;
-            string templateDir = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
-            string templatePath = Path.Combine(templateDir, "WebFilm.Core", "Enitites", "Mail", $"{emailTemplate}.html");
+        }
 
-            templatePath = Path.GetDirectoryName(templatePath) + Path.DirectorySeparatorChar + Path.GetFileName(templatePath);
+        private bool IsLocalRequest(HttpContext httpContext)
+        {
 
-            using (StreamReader streamReader = new StreamReader(templatePath, Encoding.Default))
-            {
-                string mailTemplate = streamReader.ReadToEnd();
-                return mailTemplate;
-            }
+            string ipAddress = httpContext.Connection.RemoteIpAddress?.ToString();
+            bool isLocal = ipAddress == "::1" || ipAddress == "127.0.0.1" || ipAddress == "::ffff:127.0.0.1";
+
+            return isLocal;
         }
     }
 }
