@@ -295,8 +295,8 @@ namespace WebFilm.Infrastructure.Repository
 
                                     SELECT COUNT(DISTINCT l.ListID) FROM List l
                                     {join}
-                                    LEFT JOIN Filmlist f ON l.ListID = f.ListID
-                                    LEFT JOIN Filmlist f2 ON f.ListID = f2.ListID
+                                    LEFT JOIN FilmList f ON l.ListID = f.ListID
+                                    LEFT JOIN FilmList f2 ON f.ListID = f2.ListID
                                     INNER JOIN Film f1 ON f2.FilmID = f1.FilmID
                                     LEFT JOIN User u ON u.UserID = l.UserID {where}
                                     LEFT JOIN `Like` l1 ON l.ListID = l1.ParentID AND l1.UserID = @userID AND l1.Type = 'List'
