@@ -108,16 +108,26 @@ namespace WebFilm.Core.Services
 
         public string LoadTemplate(string emailTemplate)
         {
-            string templateDir = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
-            string templatePath = templateDir + $"\\WebFilm.Core\\Enitites\\Mail\\{emailTemplate}.html";
+            //string templateDir = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
+            //string templatePath = templateDir + $"\\WebFilm.Core\\Enitites\\Mail\\{emailTemplate}.html";
 
-            using FileStream fileStream = new FileStream(templatePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            using StreamReader streamReader = new StreamReader(fileStream, Encoding.Default);
+            //using FileStream fileStream = new FileStream(templatePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            //using StreamReader streamReader = new StreamReader(fileStream, Encoding.Default);
 
-            string mailTemplate = streamReader.ReadToEnd();
-            streamReader.Close();
+            //string mailTemplate = streamReader.ReadToEnd();
+            //streamReader.Close();
 
-            return mailTemplate;
+            //return mailTemplate;
+            string templatePath = Path.Combine("WebFilm.Core", "Enitites", "Mail", $"{emailTemplate}.html");
+
+            using (FileStream fileStream = new FileStream(templatePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                using (StreamReader streamReader = new StreamReader(fileStream, Encoding.Default))
+                {
+                    string mailTemplate = streamReader.ReadToEnd();
+                    return mailTemplate;
+                }
+            }
         }
     }
 }
