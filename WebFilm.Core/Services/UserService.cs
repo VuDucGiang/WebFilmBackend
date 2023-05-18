@@ -128,11 +128,11 @@ namespace WebFilm.Core.Services
             var res = _userRepository.Signup(user);
 
             // Gửi mail
-            //MailTemplate welcomeMail = new MailTemplate()
-            //{
-            //   Email = user.Email,
-            //    Name = user.UserName
-            //};
+            MailTemplate welcomeMail = new MailTemplate()
+            {
+               Email = user.Email,
+               Name = user.UserName
+            };
             //MailData mailData = new MailData()
             //{
             //    To = new List<string>() { user.Email },
