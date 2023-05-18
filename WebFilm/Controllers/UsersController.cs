@@ -73,13 +73,13 @@ namespace WebFilm.Controllers
         /// <param name="userName"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        [HttpGet("login")]
+        [HttpPost("login")]
         [AllowAnonymous]
-        public IActionResult Login(string email, string password)
+        public IActionResult Login(User_Login user)
         {
             try
             {
-                var res = _userService.Login(email, password);
+                var res = _userService.Login(user.email, user.password);
                 return Ok(res);
             }
             catch (Exception ex)
