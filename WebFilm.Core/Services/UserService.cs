@@ -133,12 +133,12 @@ namespace WebFilm.Core.Services
                Email = user.Email,
                Name = user.UserName
             };
-            //MailData mailData = new MailData()
-            //{
-            //    To = new List<string>() { user.Email },
-            //    Subject = "Thank you for signing up",
-            //    Body = _mail.GetEmailTemplate("welcome", welcomeMail)
-            //};
+            MailData mailData = new MailData()
+            {
+                To = new List<string>() { user.Email },
+                Subject = "Thank you for signing up",
+                Body = _mail.GetEmailTemplate("welcome", welcomeMail)
+            };
             //_mail.SendAsync(mailData, new CancellationToken());
 
             return res;
