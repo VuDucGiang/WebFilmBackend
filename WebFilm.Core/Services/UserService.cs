@@ -109,11 +109,11 @@ namespace WebFilm.Core.Services
             }
 
             //Email không được phép trùng
-            var isDuplicateEmail = _userRepository.CheckDuplicateEmail(user.Email);
-            if (isDuplicateEmail)
-            {
-                throw new ServiceException(Resources.Resource.Error_Duplicate_Email);
-            }
+           // var isDuplicateEmail = _userRepository.CheckDuplicateEmail(user.Email);
+         //   if (isDuplicateEmail)
+           // {
+           //     throw new ServiceException(Resources.Resource.Error_Duplicate_Email);
+           // }
 
             //UserName không được phép trùng
             var isDuplicateUsername = _userRepository.CheckDuplicateUserName(user.UserName);
