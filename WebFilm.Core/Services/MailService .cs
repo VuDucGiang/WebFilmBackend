@@ -1,5 +1,6 @@
 ﻿using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using RazorEngineCore;
@@ -121,13 +122,12 @@ namespace WebFilm.Core.Services
             string templateDir = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
             string templatePath = Path.Combine(templateDir, "WebFilm.Core", "Enitites", "Mail", $"{emailTemplate}.html");
 
-            using (FileStream fileStream = new FileStream(templatePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            templatePath = Path.GetDirectoryName(templatePath) + Path.DirectorySeparatorChar + Path.GetFileName(templatePath);
+
+            using (StreamReader streamReader = new StreamReader(templatePath, Encoding.Default))
             {
-                using (StreamReader streamReader = new StreamReader(fileStream, Encoding.Default))
-                {
-                    string mailTemplate = streamReader.ReadToEnd();
-                    return mailTemplate;
-                }
+                string mailTemplate = streamReader.ReadToEnd();
+                return mailTemplate;
             }
         }
     }
