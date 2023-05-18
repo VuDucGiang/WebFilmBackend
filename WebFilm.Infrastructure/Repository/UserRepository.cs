@@ -122,7 +122,7 @@ namespace WebFilm.Infrastructure.Repository
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@v_Email", email);
 
-                var res = SqlConnection.QueryFirstOrDefault<string>(sql: sqlCheck, param: parameters);
+                var res = SqlConnection.QueryFirstOrDefault<int>(sql: sqlCheck, param: parameters);
                 if (res == 1)
                 {
                     return true;
