@@ -118,12 +118,12 @@ namespace WebFilm.Infrastructure.Repository
         {
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
-                var sqlCheck = "SELECT UserName FROM User WHERE Email = @v_Email";
+                var sqlCheck = "SELECT @v_Email IN (SELECT email from User);";
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@v_Email", email);
 
                 var res = SqlConnection.QueryFirstOrDefault<string>(sql: sqlCheck, param: parameters);
-                if (res != null)
+                if (res == 1)
                 {
                     return true;
                 }
