@@ -118,7 +118,8 @@ namespace WebFilm.Core.Services
             //streamReader.Close();
 
             //return mailTemplate;
-            string templatePath = Path.Combine("WebFilm.Core", "Enitites", "Mail", $"{emailTemplate}.html");
+            string templateDir = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
+            string templatePath = Path.Combine(templateDir, "WebFilm.Core", "Enitites", "Mail", $"{emailTemplate}.html");
 
             using (FileStream fileStream = new FileStream(templatePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
