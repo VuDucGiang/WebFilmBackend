@@ -94,7 +94,7 @@ namespace WebFilm.Infrastructure.Repository
                 parameters.Add("@pageSize", pageSize);
                 parameters.Add("@offset", offset);
                 var result = SqlConnection.Query(sql, parameters);
-                var sql2 = "SELECT * FROM `journal`;";
+                var sql2 = "SELECT * FROM `Journal`;";
                 var result2 = SqlConnection.Query(sql2);
                 var total = result2.ToList().Count;
                 int totalPage = (int)Math.Ceiling((double)total / pageSize);
