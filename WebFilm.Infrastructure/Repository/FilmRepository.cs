@@ -44,7 +44,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 int offset = (pageIndex - 1) * pageSize;
-                var sql = @$"SELECT u.UserID, u.UserName, u.FullName, u.Avatar,
+                var sql = @$"SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));SELECT u.UserID, u.UserName, u.FullName, u.Avatar,
                             COUNT(DISTINCT f1.FollowID) AS Follower,
                             COUNT(DISTINCT f2.FollowID) AS Following,
                             COUNT(DISTINCT r.ReviewID) AS Reviews
@@ -191,7 +191,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 //Thực thi lấy dữ liệu
-                var sqlCommand = @$"SELECT f.*,
+                var sqlCommand = @$"SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));SELECT f.*,
                                     COUNT(DISTINCT f1.ListID) AS Appears
                                     FROM Film f
                                     LEFT JOIN FilmList f1 ON f.FilmID = f1.FilmID
@@ -234,7 +234,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 //Thực thi lấy dữ liệu
-                var sqlCommand = @$"SELECT 
+                var sqlCommand = @$"SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));SELECT 
                                     IF(r.ReviewID IS NOT NULL, True, False) AS Reviewed,
                                     IF(w.watchlistID IS NOT NULL, True, False) AS Watchlisted,
                                     IF(l.LikeID IS NOT NULL, True, False) AS Liked 
@@ -259,7 +259,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 int offset = (parameter.pageIndex - 1) * parameter.pageSize;
-                var sql = "SELECT f.FilmID, f.poster_path AS Poster_path, f.title AS Title, f.release_date AS Release_date, COUNT(f1.ListID) AS Appears, IF(l.LikeID IS NOT NULL, True, False) AS Liked FROM Film f LEFT JOIN `Like` l ON f.FilmID = l.ParentID AND l.UserID = @userID AND l.Type = 'Film' LEFT JOIN FilmList f1 ON f.FilmID = f1.FilmID ";
+                var sql = "SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));SELECT f.FilmID, f.poster_path AS Poster_path, f.title AS Title, f.release_date AS Release_date, COUNT(f1.ListID) AS Appears, IF(l.LikeID IS NOT NULL, True, False) AS Liked FROM Film f LEFT JOIN `Like` l ON f.FilmID = l.ParentID AND l.UserID = @userID AND l.Type = 'Film' LEFT JOIN FilmList f1 ON f.FilmID = f1.FilmID ";
                 var where = "WHERE 1=1";
                 var orderBy = "";
                 DynamicParameters parameters = new DynamicParameters();
@@ -335,7 +335,7 @@ namespace WebFilm.Infrastructure.Repository
                     default:
                         break;
                 }
-                var sqlCommand = @$"SELECT f.FilmID, f.poster_path AS Poster_path, f.title AS Title, f.release_date AS Release_date, f.LikesCount, f.ReviewsCount, COUNT(f1.ListID) AS Appears, IF(l.LikeID IS NOT NULL, True, False) AS Liked, COUNT(l1.LikeID) AS LikeInSort FROM Film f
+                var sqlCommand = @$"SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));SELECT f.FilmID, f.poster_path AS Poster_path, f.title AS Title, f.release_date AS Release_date, f.LikesCount, f.ReviewsCount, COUNT(f1.ListID) AS Appears, IF(l.LikeID IS NOT NULL, True, False) AS Liked, COUNT(l1.LikeID) AS LikeInSort FROM Film f
                                     LEFT JOIN `Like` l ON f.FilmID = l.ParentID AND l.UserID = @userID AND l.Type = 'Film'
                                     LEFT JOIN FilmList f1 ON f.FilmID = f1.FilmID
                                     LEFT JOIN `Like` l1 ON f.FilmID = l1.ParentID AND l1.Type = 'Film' {where}
@@ -370,7 +370,7 @@ namespace WebFilm.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(_connectionString))
             {
                 //Thực thi lấy dữ liệu
-                var sqlCommand = @$"SELECT r.ReviewID, r.FilmID, MAX(r.CreatedDate) AS LatestReviewDate, f.title AS Title, f.poster_path AS Poster_path, f.release_date AS Release_date
+                var sqlCommand = @$"SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));SELECT r.ReviewID, r.FilmID, MAX(r.CreatedDate) AS LatestReviewDate, f.title AS Title, f.poster_path AS Poster_path, f.release_date AS Release_date
                                     FROM Review r
                                     JOIN Film f ON r.FilmID = f.FilmID
                                     GROUP BY r.FilmID

@@ -33,7 +33,7 @@ namespace WebFilm.Infrastructure.Repository
             {
                 int offset = (pageIndex - 1) * pageSize;
 
-                var sqlCommand = @$"SELECT l.ListID, l.ListName, l.Description, l.LikesCount, l.CommentsCount,
+                var sqlCommand = @$"SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));SELECT l.ListID, l.ListName, l.Description, l.LikesCount, l.CommentsCount,
                                     COUNT(f.FilmID) FilmsCount,
                                     JSON_ARRAYAGG(
                                         JSON_OBJECT(
@@ -264,7 +264,7 @@ namespace WebFilm.Infrastructure.Repository
                             break;
                     }
                 }
-                var sqlCommand = @$"SELECT l.*,
+                var sqlCommand = @$"SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));SELECT l.*,
                                     IF(l1.LikeID IS NOT NULL, True, False) AS Liked,
                                     COUNT(f.FilmID) FilmsCount,
                                     JSON_ARRAYAGG(

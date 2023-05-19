@@ -309,7 +309,7 @@ namespace WebFilm.Infrastructure.Repository
                     default:
                         break;
                 }
-                var sqlCommand = @$"SELECT DISTINCT u.UserID, u.UserName, u.FullName, u.Avatar,
+                var sqlCommand = @$"SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));SELECT DISTINCT u.UserID, u.UserName, u.FullName, u.Avatar,
                                     COUNT(DISTINCT l.ListID) AS Lists,
                                     COUNT(DISTINCT l1.LikeID) AS Likes,
                                     COUNT(DISTINCT r.ReviewID) AS Reviews,
@@ -372,7 +372,7 @@ namespace WebFilm.Infrastructure.Repository
                     default:
                         break;
                 }
-                var sqlCommand = @$"SELECT u.UserID, u.UserName, u.FullName, u.FavouriteFilmList, u.Avatar,
+                var sqlCommand = @$"SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));SELECT u.UserID, u.UserName, u.FullName, u.FavouriteFilmList, u.Avatar,
                                     IF(f1.FollowID IS NOT NULL, true, FALSE) AS Followed,
                                     r.LikesCount,
                                     COUNT(DISTINCT r.ReviewID) AS Reviews,

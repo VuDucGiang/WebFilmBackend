@@ -230,7 +230,7 @@ namespace WebFilm.Infrastructure.Repository
                     default:
                         break;
                 }
-                var sqlCommand = @$"SELECT r.*, u.UserName, f.title AS Title, f.poster_path AS Poster_path, f.overview Overview, f.release_date Release_date, f.vote_average Vote_average, IF(l.LikeID IS NOT NULL, True, False) AS Liked, COUNT(l1.LikeID) AS LikeInSort FROM Review r 
+                var sqlCommand = @$"SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));SELECT r.*, u.UserName, f.title AS Title, f.poster_path AS Poster_path, f.overview Overview, f.release_date Release_date, f.vote_average Vote_average, IF(l.LikeID IS NOT NULL, True, False) AS Liked, COUNT(l1.LikeID) AS LikeInSort FROM Review r 
                                     INNER JOIN User u ON u.UserID = r.UserID
                                     INNER JOIN Film f ON f.FilmID = r.FilmID
                                     LEFT JOIN `Like` l ON r.ReviewID = l.ParentID AND l.UserID = @userID AND l.Type = 'Review'
@@ -307,7 +307,7 @@ namespace WebFilm.Infrastructure.Repository
                             break;
                     }
                 }
-                var sqlCommand = @$"SELECT r.ReviewID, r.Content, r.LikesCount, r.HaveSpoiler, r.WatchedDate, r.Score, r.CommentsCount,
+                var sqlCommand = @$"SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));SELECT r.ReviewID, r.Content, r.LikesCount, r.HaveSpoiler, r.WatchedDate, r.Score, r.CommentsCount,
                                     IF(l.LikeID IS NOT NULL, True, False) AS Liked,
                                     JSON_OBJECT(
                                         'UserID', u.UserID,
