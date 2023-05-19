@@ -28,7 +28,7 @@ namespace WebFilm.Infrastructure.Repository
                 if (follow)
                 {
                     sqlCommand = @$"INSERT INTO Follow (UserID, UserName, FollowedUserID, FollowedUserName, CreatedDate, ModifiedDate)
-                                        SELECT @userID, @userName, u.UserID, u.UserName, NOW(), NOW() FROM user u WHERE u.UserID = @followedUserID;";
+                                        SELECT @userID, @userName, u.UserID, u.UserName, NOW(), NOW() FROM User u WHERE u.UserID = @followedUserID;";
                 }
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("userID", _userContext.UserId);
