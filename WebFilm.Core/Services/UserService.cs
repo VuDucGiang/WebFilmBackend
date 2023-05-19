@@ -130,13 +130,11 @@ namespace WebFilm.Core.Services
             user.Status = 1;
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
             var res = _userRepository.Signup(user);
-            HttpContext httpContext = _httpContextAccessor.HttpContext;
             // Gửi mail
             MailTemplate welcomeMail = new MailTemplate()
             {
                 Email = user.Email,
-                Name = user.UserName,
-                IsLocal = this.IsLocalRequest(httpContext)
+                Name = user.UserName
             };
             MailData mailData = new MailData()
             {
@@ -307,15 +305,13 @@ namespace WebFilm.Core.Services
             userDto.ResetTokenExpires = DateTime.Now.AddDays(1);
 
             var res = _userRepository.AddTokenReset(userDto);
-            HttpContext httpContext = _httpContextAccessor.HttpContext;
             // Gửi mail
             if (res)
             {
                 MailTemplate welcomeMail = new MailTemplate()
                 {
                     Email = email,
-                    Token = userDto.PasswordResetToken,
-                    IsLocal = this.IsLocalRequest(httpContext)
+                    Token = userDto.PasswordResetToken
                 };
                 MailData mailData = new MailData()
                 {
