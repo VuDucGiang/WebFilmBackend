@@ -80,9 +80,17 @@ namespace WebFilm.Core.Services
 
                 
 
-                if (_settings.UseSSL){}
+                //if (_settings.UseSSL){}
 
-                await smtp.ConnectAsync(_settings.Host, _settings.Port, SecureSocketOptions.StartTls, ct);
+                //await smtp.ConnectAsync(_settings.Host, _settings.Port, SecureSocketOptions.StartTls, ct);
+                if (_settings.UseSSL)
+                {
+                    smtp.Connect(_settings.Host, _settings.Port, SecureSocketOptions.SslOnConnect);
+                }
+                else
+                {
+                    smtp.Connect(_settings.Host, _settings.Port, SecureSocketOptions.StartTls);
+                }
                 await smtp.AuthenticateAsync(_settings.UserName, _settings.Password, ct);
                 await smtp.SendAsync(mail, ct);
                 await smtp.DisconnectAsync(true, ct);
