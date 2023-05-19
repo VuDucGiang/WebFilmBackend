@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Crypto;
@@ -45,6 +46,7 @@ namespace WebFilm.Core.Services
         ICreditRepository _creditRepository;
         private readonly IMailService _mail;
         private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public UserService(IUserRepository userRepository,
             IMailService mail,
@@ -58,7 +60,8 @@ namespace WebFilm.Core.Services
             ILikeRepository likeRepository,
             IRatingRepository ratingRepository,
             IUserContext userContext,
-            ICreditRepository creditRepository) : base(userRepository)
+            ICreditRepository creditRepository,
+            IHttpContextAccessor httpContextAccessor) : base(userRepository)
         {
             _userRepository = userRepository;
             _reviewRepository = reviewRepository;
@@ -73,6 +76,7 @@ namespace WebFilm.Core.Services
             _ratingRepository = ratingRepository;
             _userContext = userContext;
             _creditRepository = creditRepository;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         #region Method
@@ -126,12 +130,13 @@ namespace WebFilm.Core.Services
             user.Status = 1;
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
             var res = _userRepository.Signup(user);
-
+            HttpContext httpContext = _httpContextAccessor.HttpContext;
             // Gửi mail
             MailTemplate welcomeMail = new MailTemplate()
             {
-               Email = user.Email,
-               Name = user.UserName
+                Email = user.Email,
+                Name = user.UserName,
+                IsLocal = this.IsLocalRequest(httpContext)
             };
             MailData mailData = new MailData()
             {
@@ -302,14 +307,15 @@ namespace WebFilm.Core.Services
             userDto.ResetTokenExpires = DateTime.Now.AddDays(1);
 
             var res = _userRepository.AddTokenReset(userDto);
-
+            HttpContext httpContext = _httpContextAccessor.HttpContext;
             // Gửi mail
             if (res)
             {
                 MailTemplate welcomeMail = new MailTemplate()
                 {
                     Email = email,
-                    Token = userDto.PasswordResetToken
+                    Token = userDto.PasswordResetToken,
+                    IsLocal = this.IsLocalRequest(httpContext)
                 };
                 MailData mailData = new MailData()
                 {
@@ -1222,6 +1228,15 @@ namespace WebFilm.Core.Services
             }
            
             return res;
+        }
+
+        private bool IsLocalRequest(HttpContext httpContext)
+        {
+
+            string ipAddress = httpContext.Connection.RemoteIpAddress?.ToString();
+            bool isLocal = ipAddress == "::1" || ipAddress == "127.0.0.1" || ipAddress == "::ffff:127.0.0.1";
+
+            return isLocal;
         }
         #endregion
     }

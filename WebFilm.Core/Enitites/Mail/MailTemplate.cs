@@ -11,5 +11,6 @@ namespace WebFilm.Core.Enitites.Mail
         public string? Name { get; set; }
         public string? Email { get; set; }
         public string? Token { get; set; }
+        public bool? IsLocal { get; set; }
     }
 }
