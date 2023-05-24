@@ -28,12 +28,17 @@ namespace WebFilm.Infrastructure.Repository
                 if (follow)
                 {
                     sqlCommand = @$"INSERT INTO Follow (UserID, UserName, FollowedUserID, FollowedUserName, CreatedDate, ModifiedDate)
-                                        SELECT @userID, @userName, u.UserID, u.UserName, NOW(), NOW() FROM User u WHERE u.UserID = @followedUserID;";
+                                        SELECT @userID, @userName, u.UserID, u.UserName, NOW(), NOW() FROM User u WHERE u.UserID = @followedUserID;
+
+                                    INSERT INTO Notification (SenderUserID, ReceiverUserId, Link, Date, Content, Seen, ModifiedDate, CreatedDate)
+                                    VALUES (@userID, @followedUserID, @link, NOW(), 'followed you', 0, NOW(), NOW());";
+
                 }
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("userID", _userContext.UserId);
                 parameters.Add("userName", _userContext.UserName);
                 parameters.Add("followedUserID", userID);
+                parameters.Add("link", $"u/{_userContext.UserName}");
                 var res = await SqlConnection.ExecuteAsync(sqlCommand, parameters);
 
                 //Trả dữ liệu về client
